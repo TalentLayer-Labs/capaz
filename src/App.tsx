@@ -26,9 +26,8 @@ function App() {
     <>
       <Routes>
         <Route path='/' element={<Home />} />
-        <Route path='about' element={<About />} />
-        <Route path='services' element={<Services />} />
-        <Route path='dashboard' element={<Dashboard />} />
+        <Route path='dashboard' key='dashboard-home' element={<Dashboard />} />
+        <Route path='dashboard#sendPayment' key='dashboard-sendPayment' element={<Dashboard />} />
         <Route path='notlog' element={<NotLog />} />
       </Routes>
       <Web3Modal config={config} />

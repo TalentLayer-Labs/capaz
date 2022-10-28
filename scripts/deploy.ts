@@ -1,9 +1,10 @@
 import { ethers } from 'hardhat'
 
 async function main() {
-  //   const CapazEscrow = await ethers.getContractFactory('CapazEscrow')
-  //   const capazEscrow = await CapazEscrow.deploy()
-  console.log('coucou')
+  // Deploy CapazEscrowFactory Contract
+  const CapazEscrowFactory = await ethers.getContractFactory('CapazEscrowFactory')
+  const capazEscrowFactory = await CapazEscrowFactory.deploy()
+  console.log('CapazEscrowFactory deployed to:', capazEscrowFactory.address)
 }
 
 // We recommend this pattern to be able to use async/await everywhere

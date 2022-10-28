@@ -4,16 +4,18 @@ pragma solidity ^0.8.17;
 import {ERC721} from "@openzeppelin/contracts/token/ERC721/ERC721.sol";
 import {Counters} from "@openzeppelin/contracts/utils/Counters.sol";
 import {IERC20} from "@openzeppelin/contracts/token/ERC20/IERC20.sol";
+import "@openzeppelin/contracts/access/Ownable.sol";
 
 import {ICapazEscrow} from "./interfaces/ICapazEscrow.sol";
 import {CapazEscrow} from "./CapazEscrow.sol";
 import {CapazCommon} from "./CapazCommon.sol";
+import {ERC2981} from "./EIP2981/ERC2981.sol";
 
 /**
  * @title CapazEscrowFactory
  * @author Capaz Team @ ETHLisbon Hackathon
  */
-contract CapazEscrowFactory is ERC721 {
+contract CapazEscrowFactory is ERC721, ERC2981, Ownable {
     using Counters for Counters.Counter;
 
     /// tokenId to Escrow mapping
@@ -22,7 +24,13 @@ contract CapazEscrowFactory is ERC721 {
     // Counter of nft
     Counters.Counter private _tokenIdCounter;
 
-    constructor() ERC721("Capaz Escrow Tokens", "CET") {}
+    /**
+     * Allows a user to mint a new escrow payment
+     * Fees defined to the deployer - 0,5%
+     */
+    constructor() ERC721("Capaz Escrow Tokens", "CET") {
+        setRoyalties(msg.sender, 50);
+    }
 
     /**
      * Allows a user to mint a new escrow payment
@@ -96,6 +104,28 @@ contract CapazEscrowFactory is ERC721 {
         returns (CapazCommon.Escrow memory)
     {
         return escrows[tokenId];
+    }
+
+    /**
+     * @dev See {IERC165-supportsInterface}.
+     */
+    function supportsInterface(bytes4 interfaceId)
+        public
+        view
+        virtual
+        override(ERC2981, ERC721)
+        returns (bool)
+    {
+        return super.supportsInterface(interfaceId);
+    }
+
+    /**
+     * Update royalties recipient and value
+     * @param recipient address which will receive the royalties
+     * @param value percentage (using 2 decimals - 10000 = 100%)
+     */
+    function setRoyalties(address recipient, uint256 value) public onlyOwner {
+        _setRoyalties(recipient, value);
     }
 
     /**

@@ -67,7 +67,7 @@ contract CapazEscrowFactory is ERC721 {
             "CapazEscrowFactory: periodDuration must be greater than 0"
         );
         require(
-            _esc.times > 0,
+            _esc.periods > 0,
             "CapazEscrowFactory: times must be greater than 0"
         );
         require(

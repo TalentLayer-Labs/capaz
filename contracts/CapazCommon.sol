@@ -11,6 +11,6 @@ contract CapazCommon {
         uint256 periodDuration;
         uint256 startTime;
         address escrowAddress;
-        uint256 times;
+        uint256 periods;
     }
 }

@@ -8,7 +8,7 @@ import {
   XMarkIcon,
 } from '@heroicons/react/24/outline';
 import { MagnifyingGlassIcon } from '@heroicons/react/20/solid';
-import { useAccount, Web3Modal, ConnectButton } from '@web3modal/react';
+import { useAccount, Web3Modal, ConnectButton, useDisconnect } from '@web3modal/react';
 import { redirect, Route, Routes, useNavigate } from 'react-router-dom';
 import { truncateAddress } from '../utils';
 
@@ -20,7 +20,6 @@ const navigation = [
 const userNavigation = [
   { name: 'Your Profile', href: '#' },
   { name: 'Settings', href: '#' },
-  { name: 'Sign out', href: '#' },
 ];
 
 function classNames(...classes: any[]) {
@@ -31,9 +30,11 @@ function Dashboard() {
   const { account, isReady } = useAccount();
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const navigate = useNavigate();
+  const disconnect = useDisconnect();
+
   console.log(account.isConnected);
 
-  if (!account.isConnected) {
+  if (account.isConnected === false) {
     navigate('/notlog');
   }
 
@@ -223,6 +224,22 @@ function Dashboard() {
                           )}
                         </Menu.Item>
                       ))}
+                      <Menu.Item key='Log out'>
+                        {({ active }) => (
+                          <a
+                            href='Log out'
+                            onClick={event => {
+                              event.preventDefault();
+                              disconnect();
+                            }}
+                            className={classNames(
+                              active ? 'bg-gray-100' : '',
+                              'block px-4 py-2 text-sm text-gray-700',
+                            )}>
+                            Log out
+                          </a>
+                        )}
+                      </Menu.Item>
                     </Menu.Items>
                   </Transition>
                 </Menu>

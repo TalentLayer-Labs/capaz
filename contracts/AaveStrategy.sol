@@ -14,8 +14,6 @@ contract AaveStrategy {
      * @param amount amount to deposit
      */
     function deposit(address pool, address token, uint256 amount) external {
-        // TODO: add address of the user to params
-
         // Send tokens to this contract
         IERC20(token).transferFrom(msg.sender, address(this), amount);
 

@@ -3,6 +3,8 @@ pragma solidity ^0.8.17;
 
 import {ERC721} from "@openzeppelin/contracts/token/ERC721/ERC721.sol";
 import {Counters} from "@openzeppelin/contracts/utils/Counters.sol";
+import {IERC20} from "@openzeppelin/contracts/token/ERC20/IERC20.sol";
+
 import {ICapazEscrow} from "./interfaces/ICapazEscrow.sol";
 import {CapazEscrow} from "./CapazEscrow.sol";
 import {CapazCommon} from "./CapazCommon.sol";
@@ -21,12 +23,17 @@ contract CapazEscrowFactory is ERC721 {
         returns (uint256)
     {
         //!TODO right now done without using openzeppelin clone
-
         address newEscrow = address(new CapazEscrow());
+        IERC20(_escrow.tokenAddress).transferFrom(
+            _escrow.sender,
+            newEscrow,
+            _escrow.totalAmount
+        );
         uint256 tokenId = _tokenIdCounter.current();
         _tokenIdCounter.increment();
         _escrow.escrowAddress = newEscrow;
         escrows[tokenId] = _escrow;
+        ICapazEscrow(newEscrow).setup(tokenId);
         _safeMint(_escrow.receiver, tokenId);
 
         emit EscrowCreated(_escrow.sender, _escrow.receiver, _escrow);

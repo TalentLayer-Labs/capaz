@@ -15,17 +15,15 @@ contract CapazEscrow is Ownable {
     bool isYieldClaimed;
 
     function setup(uint256 _tokenId) public onlyOwner {
+        CapazCommon.Escrow memory esc = es();
         tokenId = _tokenId;
         escrowFactory = ICapazEscrowFactory(owner());
         claimedAmount = 0;
-    }
 
-    function intialise() public onlySender {
-        CapazCommon.Escrow memory esc = es();
-        address token = esc.tokenAddress;
         //!TODO deposit funds into strategy
+        address token = esc.tokenAddress;
 
-        emit Initialised(esc.sender, esc.receiver, esc);
+        emit SetUp(esc.sender, esc.receiver, esc);
     }
 
     function releasableAmount() public view returns (uint256) {
@@ -104,7 +102,7 @@ contract CapazEscrow is Ownable {
         _;
     }
 
-    event Initialised(
+    event SetUp(
         address indexed sender,
         address indexed receiver,
         CapazCommon.Escrow escrow

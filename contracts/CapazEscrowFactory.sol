@@ -28,6 +28,9 @@ contract CapazEscrowFactory is ERC721 {
         _escrow.escrowAddress = newEscrow;
         escrows[tokenId] = _escrow;
         _safeMint(_escrow.receiver, tokenId);
+
+        emit EscrowCreated(_escrow.sender, _escrow.receiver, _escrow);
+
         return tokenId;
     }
 
@@ -38,6 +41,8 @@ contract CapazEscrowFactory is ERC721 {
     ) public override {
         super.transferFrom(from, to, tokenId);
         escrows[tokenId].receiver = to;
+
+        emit ReceiverUpdated(from, to, tokenId);
     }
 
     function safeTransferFrom(
@@ -47,6 +52,8 @@ contract CapazEscrowFactory is ERC721 {
     ) public override {
         super.safeTransferFrom(from, to, tokenId);
         escrows[tokenId].receiver = to;
+
+        emit ReceiverUpdated(from, to, tokenId);
     }
 
     function getEscrow(uint256 tokenId)
@@ -76,4 +83,16 @@ contract CapazEscrowFactory is ERC721 {
         );
         _;
     }
+
+    event EscrowCreated(
+        address indexed sender,
+        address indexed receiver,
+        CapazCommon.Escrow escrow
+    );
+
+    event ReceiverUpdated(
+        address indexed sender,
+        address indexed receiver,
+        uint256 tokenId
+    );
 }

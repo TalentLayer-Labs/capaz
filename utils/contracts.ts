@@ -6,10 +6,11 @@ import ERC20Abi from '../artifacts/@openzeppelin/contracts/token/ERC20/IERC20.so
 import AavePoolAbi from '../artifacts/@aave/core-v3/contracts/interfaces/IPool.sol/IPool.json'
 
 import { SignerWithAddress } from '@nomiclabs/hardhat-ethers/signers'
+import { AaveStrategy } from '../types/contracts/AaveStrategy'
 
 export const getAaveStrategyContract = async () => {
   const AaveStrategy = await ethers.getContractFactory('AaveStrategy')
-  return AaveStrategy.attach(AAVE_STRATEGY_ADDRESS)
+  return AaveStrategy.attach(AAVE_STRATEGY_ADDRESS) as AaveStrategy
 }
 
 export const getTokenContract = (account?: SignerWithAddress) => {

@@ -3,7 +3,7 @@ import { expect } from 'chai'
 import { BigNumber, Contract } from 'ethers'
 import { ethers } from 'hardhat'
 import { AAVE_POOL_ADDRESS, AAVE_STRATEGY_ADDRESS, TOKEN_ADDRESS } from '../constants/addresses'
-import { AaveStrategy } from '../typechain-types/contracts/AaveStrategy'
+import { AaveStrategy } from '../types/contracts/AaveStrategy'
 import { getAavePoolContract, getAaveStrategyContract, getTokenContract } from '../utils/contracts'
 
 describe('AAVE Strategy', () => {

@@ -31,7 +31,7 @@ contract AaveStrategy {
      * @param pool AAVE pool proxy address
      * @param token token address
      * @param amount amount to withdraw
-     * @param user address of the user who should received the withdrawn tokens
+     * @param user address of the user who should receive the withdrawn tokens
      */
     function claim(address pool, address token, uint256 amount, address user) external {
         // Withdraw from AAVE to the user
@@ -41,7 +41,7 @@ contract AaveStrategy {
     /**
      * @param pool AAVE pool proxy address
      * @param token token address
-     * @param user address of the user who should received the withdrawn tokens
+     * @param user address of the user who should receive the withdrawn tokens
      */
     function claimAll(address pool, address token, address user) external {
         // Withdraw from AAVE to the user

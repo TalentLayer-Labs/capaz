@@ -9,14 +9,25 @@ import {ICapazEscrow} from "./interfaces/ICapazEscrow.sol";
 import {CapazEscrow} from "./CapazEscrow.sol";
 import {CapazCommon} from "./CapazCommon.sol";
 
+/**
+ * @title CapazEscrowFactory
+ * @author Capaz Team @ ETHLisbon Hackathon
+ */
 contract CapazEscrowFactory is ERC721 {
     using Counters for Counters.Counter;
 
+    /// tokenId to Escrow mapping
     mapping(uint256 => CapazCommon.Escrow) public escrows;
+
+    // Counter of nft
     Counters.Counter private _tokenIdCounter;
 
     constructor() ERC721("Capaz Escrow Tokens", "CET") {}
 
+    /**
+     * Allows a user to mint a new escrow payment
+     * @param _escrow The escrow configuration
+     */
     function mint(CapazCommon.Escrow memory _escrow)
         public
         onlyValidEscrow(_escrow)
@@ -41,6 +52,12 @@ contract CapazEscrowFactory is ERC721 {
         return tokenId;
     }
 
+    /**
+     * Transfer - the new owner of the nft become the receiver of the funds
+     * @param from address of the sender
+     * @param to address of the receiver
+     * @param tokenId to transfer
+     */
     function transferFrom(
         address from,
         address to,
@@ -52,6 +69,12 @@ contract CapazEscrowFactory is ERC721 {
         emit ReceiverUpdated(from, to, tokenId);
     }
 
+    /**
+     * SafeTransfer - the new owner of the nft become the receiver of the funds
+     * @param from address of the sender
+     * @param to address of the receiver
+     * @param tokenId NFT id to transfer
+     */
     function safeTransferFrom(
         address from,
         address to,
@@ -63,6 +86,10 @@ contract CapazEscrowFactory is ERC721 {
         emit ReceiverUpdated(from, to, tokenId);
     }
 
+    /**
+     * Get the escrow configuration for a given tokenId
+     * @param tokenId nft id
+     */
     function getEscrow(uint256 tokenId)
         public
         view
@@ -71,32 +98,47 @@ contract CapazEscrowFactory is ERC721 {
         return escrows[tokenId];
     }
 
-    modifier onlyValidEscrow(CapazCommon.Escrow memory _esc) {
+    /**
+     * Checker to ensure that the escrow configuration is valid
+     */
+    modifier onlyValidEscrow(CapazCommon.Escrow memory _escrow) {
         require(
-            _esc.totalAmount > 0,
+            _escrow.totalAmount > 0,
             "CapazEscrowFactory: totalAmount must be greater than 0"
         );
         require(
-            _esc.periodDuration > 0,
+            _escrow.periodDuration > 0,
             "CapazEscrowFactory: periodDuration must be greater than 0"
         );
         require(
-            _esc.periods > 0,
+            _escrow.periods > 0,
             "CapazEscrowFactory: times must be greater than 0"
         );
         require(
-            _esc.startTime > block.timestamp,
+            _escrow.startTime > block.timestamp,
             "CapazEscrowFactory: startTime must be greater than current time"
         );
         _;
     }
 
+    /**
+     * Emit when a new escrow is created
+     * @param sender Address of the sender of the escrow
+     * @param receiver Address of the receiver of the escrow
+     * @param escrow the complete escrow configuration
+     */
     event EscrowCreated(
         address indexed sender,
         address indexed receiver,
         CapazCommon.Escrow escrow
     );
 
+    /**
+     * Emit when the NFT is transfered
+     * @param sender Address of the sender of the escrow
+     * @param receiver Address of the new receiver of the escrow
+     * @param tokenId NFT id
+     */
     event ReceiverUpdated(
         address indexed sender,
         address indexed receiver,

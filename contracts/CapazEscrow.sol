@@ -8,53 +8,73 @@ import {IERC20} from "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 import {ICapazEscrowFactory} from "./interfaces/ICapazEscrowFactory.sol";
 import {CapazCommon} from "./CapazCommon.sol";
 
+/**
+ * @title CapazEscrow
+ * @author Capaz Team @ ETHLisbon Hackathon
+ */
 contract CapazEscrow is Ownable {
     ICapazEscrowFactory escrowFactory;
     uint256 tokenId;
     uint256 claimedAmount;
     bool isYieldClaimed;
 
+    /**
+     * Function called when the contract instance is cloned
+     * @param _tokenId The tokenId to setup
+     */
     function setup(uint256 _tokenId) public onlyOwner {
-        CapazCommon.Escrow memory esc = es();
+        CapazCommon.Escrow memory escrow = getEscrow();
         tokenId = _tokenId;
         escrowFactory = ICapazEscrowFactory(owner());
-        claimedAmount = 0;
 
+        //!TODO Handle strategies mapping and handle adding a new one
         //!TODO deposit funds into strategy
-        address token = esc.tokenAddress;
+        address token = escrow.tokenAddress;
 
-        emit SetUp(esc.sender, esc.receiver, esc);
+        emit SetUp(escrow.sender, escrow.receiver, escrow);
     }
 
+    /**
+     * Get the total amount of token that the receiver can claimed
+     */
     function releasableAmount() public view returns (uint256) {
-        CapazCommon.Escrow memory esc = es();
-        uint256 periods = esc.periods;
+        CapazCommon.Escrow memory escrow = getEscrow();
+        uint256 periods = escrow.periods;
         uint256 periodsPassed = Math.min(
-            (block.timestamp - esc.startTime) / esc.periodDuration,
+            (block.timestamp - escrow.startTime) / escrow.periodDuration,
             periods
         );
-        uint256 releasable = (periodsPassed * esc.totalAmount) / periods;
+        uint256 releasable = (periodsPassed * escrow.totalAmount) / periods;
         return releasable;
     }
 
-    function release() public onlySender {
-        CapazCommon.Escrow memory esc = es();
-        address receiver = esc.receiver;
-        uint256 releasable = releasableAmount();
-        IERC20(esc.tokenAddress).transfer(receiver, releasable);
-        claimedAmount += releasableAmount();
+    /**
+     * Let the receiver release the avaiable funds
+     */
+    function release() public onlyReceiver {
+        CapazCommon.Escrow memory escrow = getEscrow();
+        address receiver = escrow.receiver;
+        uint256 amount = releasableAmount();
+        require(amount > 0, "You don't have any funds to release");
+        IERC20(escrow.tokenAddress).transfer(receiver, amount);
+        claimedAmount += amount;
 
-        emit Released(receiver, releasable);
+        emit Released(receiver, amount);
     }
 
-    function distributeYield(address user1, address user2) public {
+    /**
+     * Let the sender get is yield and choose how he want to distribute them
+     */
+    function distributeYield(address user1, address user2) public onlySender {
         // claim yield and distribute
-        CapazCommon.Escrow memory esc = es();
+        CapazCommon.Escrow memory escrow = getEscrow();
         require(
-            block.timestamp >= escrowEndTimestamp(esc),
+            block.timestamp >= escrowEndTimestamp(escrow),
             "CapazEscrow: Escrow has not ended yet"
         );
         require(!isYieldClaimed, "CapazEscrow: Yield already claimed");
+
+        //!TODO first release the remaining funds
 
         //!TODO claim yield and distribute
         if (user1 == user2) {
@@ -66,26 +86,38 @@ contract CapazEscrow is Ownable {
         emit YieldDistributed(user1, user2, amount);
     }
 
-    function es() public view returns (CapazCommon.Escrow memory) {
+    /**
+     * Get the escrow configuration linked to this instance
+     */
+    function getEscrow() public view returns (CapazCommon.Escrow memory) {
         return escrowFactory.getEscrow(tokenId);
     }
 
-    function escrowLenght(CapazCommon.Escrow memory _es)
+    /**
+     * Get the total duration of the escrow
+     */
+    function escrowLenght(CapazCommon.Escrow memory _escrow)
         public
         pure
         returns (uint256)
     {
-        return _es.periods * _es.periodDuration;
+        return _escrow.periods * _escrow.periodDuration;
     }
 
-    function escrowEndTimestamp(CapazCommon.Escrow memory _es)
+    /**
+     * Get the timestamt of the last period
+     */
+    function escrowEndTimestamp(CapazCommon.Escrow memory _escrow)
         public
         pure
         returns (uint256)
     {
-        return _es.startTime + escrowLenght(_es);
+        return _escrow.startTime + escrowLenght(_escrow);
     }
 
+    /**
+     * Checker to ensure that the caller is the sender of the escrow
+     */
     modifier onlySender() {
         require(
             msg.sender == escrowFactory.getEscrow(tokenId).sender,
@@ -94,19 +126,40 @@ contract CapazEscrow is Ownable {
         _;
     }
 
+    /**
+     * Checker to ensure that the caller is the receiver of the escrow
+     */
     modifier onlyReceiver() {
         require(
             msg.sender == escrowFactory.getEscrow(tokenId).receiver,
-            "CapazEscrow: Only sender can call this function"
+            "CapazEscrow: Only receiver can call this function"
         );
         _;
     }
 
+    /**
+     * Emit when the contract is created
+     * @param sender Address of the sender of the escrow
+     * @param receiver Address of the receiver of the escrow
+     * @param escrow the complete escrow configuration
+     */
     event SetUp(
         address indexed sender,
         address indexed receiver,
         CapazCommon.Escrow escrow
     );
+
+    /**
+     * Emit when funds are released to the receiver
+     * @param receiver Address of the receiver of the escrow
+     * @param amount total token released
+     */
     event Released(address receiver, uint256 amount);
+
+    /**
+     * Emit when yields are distributed
+     * @param user1 Address of first user to share the yield
+     * @param user2 Address of second user to share the yield
+     */
     event YieldDistributed(address user1, address user2, uint256 amount);
 }

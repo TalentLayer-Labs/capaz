@@ -1,10 +1,17 @@
 import { ethers } from 'hardhat'
 
+const wETHAddress = '0x7ceB23fD6bC0adD59E62ac25578270cFf1b9f619' //polygon mainnet weth address
+
 async function main() {
   // Deploy CapazEscrowFactory Contract
   const CapazEscrowFactory = await ethers.getContractFactory('CapazEscrowFactory')
   const capazEscrowFactory = await CapazEscrowFactory.deploy()
   console.log('CapazEscrowFactory deployed to:', capazEscrowFactory.address)
+
+  // Deploy CapazWETHAdapter Contract
+  const CapazWETHAdapter = await ethers.getContractFactory('CapazWETHAdapter')
+  const capazWETHAdapter = await CapazWETHAdapter.deploy(capazEscrowFactory.address, wETHAddress)
+  console.log('CapazWETHAdapter deployed to:', capazWETHAdapter.address)
 
   // Deploy SimpleERC20 Contract
   const CapazERC20 = await ethers.getContractFactory('CapazERC20')

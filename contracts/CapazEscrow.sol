@@ -51,7 +51,7 @@ contract CapazEscrow is Ownable {
     /**
      * Let the receiver release the avaiable funds
      */
-    function release() public onlyReceiver {
+    function release() public returns (uint256) {
         CapazCommon.Escrow memory escrow = getEscrow();
         address receiver = escrow.receiver;
         uint256 amount = releasableAmount();
@@ -60,6 +60,7 @@ contract CapazEscrow is Ownable {
         claimedAmount += amount;
 
         emit Released(receiver, amount);
+        return amount;
     }
 
     /**
@@ -122,17 +123,6 @@ contract CapazEscrow is Ownable {
         require(
             msg.sender == escrowFactory.getEscrow(tokenId).sender,
             "CapazEscrow: Only sender can call this function"
-        );
-        _;
-    }
-
-    /**
-     * Checker to ensure that the caller is the receiver of the escrow
-     */
-    modifier onlyReceiver() {
-        require(
-            msg.sender == escrowFactory.getEscrow(tokenId).receiver,
-            "CapazEscrow: Only receiver can call this function"
         );
         _;
     }

@@ -15,7 +15,8 @@ async function main() {
   console.log('CapazEscrowFactory deployed to:', capazEscrowFactory.address)
 
   // Setup strategy pools
-  capazEscrowFactory.setStrategy(1, aaveStrategy.address)
+  const tx = await capazEscrowFactory.setStrategy(1, aaveStrategy.address)
+  await tx.wait()
 
   // Deploy CapazWETHAdapter Contract
   const CapazWETHAdapter = await ethers.getContractFactory('CapazWETHAdapter')

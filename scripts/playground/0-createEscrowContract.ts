@@ -6,8 +6,8 @@ async function main() {
   const [alice, bob, carol, dave] = await ethers.getSigners()
 
   //Deployed contract addresses
-  const capazERC20LocalAddress = '0x48C45A025D154b40AffB41bc3bDEecb689edE7E6'
-  const capazEscrowFactoryLocalAddress = '0xA463D7A8DBF8Ca2Ab9dC9D404Fb710527Ac3C3A7'
+  const capazERC20LocalAddress = process.env.CAPAZ_ERC20_ADDRESS!
+  const capazEscrowFactoryLocalAddress = process.env.CAPAZ_ESCROW_FACTORY_ADDRESS!
 
   // We get an instance of the CapazEscrowFactory contract
   const CapazEscrowFactoryContract = await ethers.getContractAt('CapazEscrowFactory', capazEscrowFactoryLocalAddress)
@@ -15,49 +15,69 @@ async function main() {
   // We get an instance of the CapazERC20 contract
   const CapazERC20 = await ethers.getContractAt('CapazERC20', capazERC20LocalAddress)
 
+  // get the wallet alice balance
+  let aliceBalance = await CapazERC20.balanceOf(alice.address)
+  console.log('Alice balance: ', aliceBalance)
+
   // alice send token to Bob
-  const aliceTransfer = await CapazERC20.connect(alice).transfer(bob.address, 1000)
+  const aliceTransfer = await CapazERC20.connect(alice).transfer(bob.address, ethers.utils.parseEther('10'))
   aliceTransfer.wait()
+  // get the wallet bob balance
+  let bobBalance = await CapazERC20.balanceOf(bob.address)
+  console.log('Bob balance: ', bobBalance)
 
   //Alice and approves CapazEscrowFactory to spend 100 tokens
-  const aliceApprove = await CapazERC20.connect(alice).approve(capazEscrowFactoryLocalAddress, 100)
+  const aliceApprove = await CapazERC20.connect(alice).approve(
+    capazEscrowFactoryLocalAddress,
+    ethers.utils.parseEther('1'),
+  )
   await aliceApprove.wait()
-  const bobApprove = await CapazERC20.connect(bob).approve(capazEscrowFactoryLocalAddress, 100)
+
+  const bobApprove = await CapazERC20.connect(bob).approve(capazEscrowFactoryLocalAddress, ethers.utils.parseEther('1'))
   await bobApprove.wait()
 
   //Escrow will check how many token Alice and Bob gave him permission to spend
   const aliceAllowance = await CapazERC20.allowance(alice.address, capazEscrowFactoryLocalAddress)
+  console.log('Alice allowance: ', aliceAllowance.toString())
+
   const bobAllowance = await CapazERC20.allowance(bob.address, capazEscrowFactoryLocalAddress)
+  console.log('Bob allowance: ', bobAllowance.toString())
 
   // get balance from Alice and Bob Wallet
-  const aliceBalance = await CapazERC20.balanceOf(alice.address)
+  aliceBalance = await CapazERC20.balanceOf(alice.address)
   console.log('Alice Balance: ', aliceBalance.toString())
 
-  const bobBalance = await CapazERC20.balanceOf(bob.address)
+  bobBalance = await CapazERC20.balanceOf(bob.address)
   console.log('Bob Balance: ', bobBalance.toString())
 
-  // Escrow will send the allow token in his account
+  const startTime = Math.floor(new Date().getTime() / 1000 + 20) // now + 20 seconds
+  console.log('Start time: ', startTime)
+
+  const amount = ethers.utils.parseEther('0.2')
+  console.log('Amount: ', amount.toString())
+
+  // We mint a new escrow contract from CapazEscrowFactory
   const aliceMintData = await CapazEscrowFactoryContract.mint({
     sender: alice.address,
     receiver: carol.address,
-    tokenAddress: '0x48C45A025D154b40AffB41bc3bDEecb689edE7E6',
-    totalAmount: 100,
-    startTime: 1668035169,
-    periodDuration: 600,
-    periods: 10,
+    tokenAddress: process.env.CAPAZ_ERC20_ADDRESS,
+    totalAmount: amount,
+    startTime,
+    periodDuration: 3600,
+    periods: 5,
     yieldStrategyId: 2,
     escrowAddress: '0x0000000000000000000000000000000000000000',
   })
   aliceMintData.wait()
 
-  // Escrow will send the allow token in his account
+  // We mint a new escrow contract from CapazEscrowFactory
   const bobMintData = await CapazEscrowFactoryContract.mint({
     sender: bob.address,
     receiver: dave.address,
-    tokenAddress: '0x48C45A025D154b40AffB41bc3bDEecb689edE7E6',
-    totalAmount: 100,
-    startTime: 1668035169,
-    periodDuration: 500,
+    tokenAddress: process.env.CAPAZ_ERC20_ADDRESS,
+    totalAmount: amount,
+    startTime,
+    periodDuration: 10,
     periods: 5,
     yieldStrategyId: 3,
     escrowAddress: '0x0000000000000000000000000000000000000000',

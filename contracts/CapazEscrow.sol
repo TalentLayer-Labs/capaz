@@ -128,6 +128,8 @@ contract CapazEscrow is Ownable, CapazCommon {
             IERC20(escrow.tokenAddress).transfer(user2, balance - half);
         }
         uint256 amount;
+
+        isYieldClaimed = true;
         emit YieldDistributed(user1, user2, amount);
     }
 

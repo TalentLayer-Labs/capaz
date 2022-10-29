@@ -252,9 +252,10 @@ contract CapazEscrowFactory is ERC721, ERC2981, Ownable, CapazCommon {
             "CapazEscrowFactory: startTime must be greater than current time"
         );
 
+        // Check strategy is either 0 (no strategy) or a valid strategy
         address strategy = getStrategy(_escrow.yieldStrategyId);
         require(
-            strategy != address(0),
+            _escrow.yieldStrategyId == 0 || strategy != address(0),
             "CapazEscrowFactory: strategy must be a valid strategy"
         );
         _;

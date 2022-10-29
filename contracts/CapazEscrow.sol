@@ -19,23 +19,32 @@ contract CapazEscrow is Ownable {
     uint256 tokenId;
     uint256 claimedAmount;
     bool isYieldClaimed;
-    IStrategy strategy; 
+    IStrategy strategy;
+
+    mapping(uint256 => address) public strategyPools; // strategy id to pool address
+
+    constructor() {
+        // Initialize strategy pools
+        strategyPools[1] = 0xf066918bB3870C1f2280f6F5A062B56408400F05; // AAVE Pool
+    }
 
     /**
      * Function called when the contract instance is cloned
      * @param _tokenId The tokenId to setup
      */
     function setup(uint256 _tokenId) public onlyOwner {
-        CapazCommon.Escrow memory escrow = getEscrow();
         tokenId = _tokenId;
         escrowFactory = ICapazEscrowFactory(owner());
+        CapazCommon.Escrow memory escrow = getEscrow();
 
-        //!TODO Handle strategies mapping and handle adding a new one
-        //!TODO deposit funds into strategy
-        address token = escrow.tokenAddress;
-
-        // TODO: Handle strategy selection
+        //!TODO Handle strategies mapping handle adding a new one
         strategy = new AaveStrategy();
+
+        address token = escrow.tokenAddress;
+        uint256 totalAmount = escrow.totalAmount;
+        address pool = strategyPools[escrow.yieldStrategyId];
+
+        strategy.deposit(pool, token, totalAmount);
 
         emit SetUp(escrow.sender, escrow.receiver, escrow);
     }

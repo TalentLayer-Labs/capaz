@@ -29,7 +29,7 @@ contract CapazEscrowFactory is ERC721, ERC2981, Ownable, CapazCommon {
     Counters.Counter private _tokenIdCounter;
 
     // Strategy id to pool address
-    mapping(CapazCommon.Strategy => address) public strategyPools;
+    mapping(Strategy => address) public strategyPools;
 
     /**
      * Allows a user to mint a new escrow payment
@@ -149,7 +149,7 @@ contract CapazEscrowFactory is ERC721, ERC2981, Ownable, CapazCommon {
      * Get the strategy pool for a given strategy id
      * @param strategyId strategy id
      */
-    function getStrategyPool(CapazCommon.Strategy strategyId)
+    function getStrategyPool(Strategy strategyId)
         public
         view
         returns (address)
@@ -163,7 +163,7 @@ contract CapazEscrowFactory is ERC721, ERC2981, Ownable, CapazCommon {
      * @param strategyId the strategy id
      * @param pool the address of the pool
      */
-    function setStrategyPool(CapazCommon.Strategy strategyId, address pool) public onlyOwner {
+    function setStrategyPool(Strategy strategyId, address pool) public onlyOwner {
         strategyPools[strategyId] = pool;
     }
 

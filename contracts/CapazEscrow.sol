@@ -31,11 +31,11 @@ contract CapazEscrow is Ownable, CapazCommon {
         escrowFactory = ICapazEscrowFactory(owner());
         Escrow memory escrow = getEscrow();
 
-        CapazCommon.Strategy strategyId = escrow.yieldStrategyId;
+        Strategy strategyId = escrow.yieldStrategyId;
 
         // Check if a strategy is set
-        if (strategyId != CapazCommon.Strategy.None) {
-            if (strategyId == CapazCommon.Strategy.Aave) {
+        if (strategyId != Strategy.None) {
+            if (strategyId == Strategy.Aave) {
                 strategy = new AaveStrategy();
             } else {
                 revert("Strategy not supported");
@@ -73,7 +73,7 @@ contract CapazEscrow is Ownable, CapazCommon {
      * Let the receiver release the avaiable funds
      */
     function release() public returns (uint256){ 
-        CapazCommon.Escrow memory escrow = getEscrow();
+        Escrow memory escrow = getEscrow();
         address receiver = escrow.receiver;
         uint256 amount = releasableAmount();
         require(amount > 0, "You don't have any funds to release");

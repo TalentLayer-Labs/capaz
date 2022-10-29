@@ -21,12 +21,6 @@ contract CapazEscrow is Ownable {
     bool isYieldClaimed;
     IStrategy strategy;
 
-    mapping(uint256 => address) public strategyPools; // strategy id to pool address
-
-    constructor() {
-        // Initialize strategy pools
-        strategyPools[1] = 0xf066918bB3870C1f2280f6F5A062B56408400F05; // AAVE Pool
-    }
 
     /**
      * Function called when the contract instance is cloned
@@ -47,7 +41,7 @@ contract CapazEscrow is Ownable {
         IERC20(token).approve(address(strategy), totalAmount);
 
         // Deposit token to strategy pool
-        address pool = strategyPools[escrow.yieldStrategyId];
+        address pool = escrowFactory.getStrategyPool(escrow.yieldStrategyId);
         strategy.deposit(pool, token, totalAmount);
 
         emit SetUp(escrow.sender, escrow.receiver, escrow);

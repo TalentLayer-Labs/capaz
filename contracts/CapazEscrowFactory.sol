@@ -28,12 +28,18 @@ contract CapazEscrowFactory is ERC721, ERC2981, Ownable {
     // Counter of nft
     Counters.Counter private _tokenIdCounter;
 
+    // Strategy id to pool address
+    mapping(uint256 => address) public strategyPools;
+
     /**
      * Allows a user to mint a new escrow payment
      * Fees defined to the deployer - 0,5%
      */
     constructor() ERC721("Capaz Escrow Tokens", "CET") {
         setRoyalties(msg.sender, 50);
+
+        // Initialize strategy pools
+        strategyPools[1] = 0xf066918bB3870C1f2280f6F5A062B56408400F05; // AAVE Pool
     }
 
     /**
@@ -108,6 +114,18 @@ contract CapazEscrowFactory is ERC721, ERC2981, Ownable {
         returns (CapazCommon.Escrow memory)
     {
         return escrows[tokenId];
+    }
+
+    /**
+     * Get the strategy pool for a given strategy id
+     * @param strategyId strategy id
+     */
+    function getStrategyPool(uint256 strategyId)
+        public
+        view
+        returns (address)
+    {
+        return strategyPools[strategyId];
     }
 
     /**

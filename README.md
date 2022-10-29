@@ -1,15 +1,6 @@
-# Basic Sample Hardhat Project
+# CAPAZ
 
-This project demonstrates a basic Hardhat use case. It comes with a sample contract, a test for that contract, a sample script that deploys that contract, and an example of a task implementation, which simply lists the available accounts.
+## Contracts addresses on Goerli
 
-Try running some of the following tasks:
-
-```shell
-npx hardhat accounts
-npx hardhat compile
-npx hardhat clean
-npx hardhat test
-npx hardhat node
-node scripts/sample-script.js
-npx hardhat help
-```
+CapazEscrowFactory deployed to: 0xb335BA326FCF998B4073Ee7E14B91d9A50e3B8A4
+capazERC20 deployed to: 0x76ce920b752C4a04c1a193dc2EFF9C1A8b018BC6

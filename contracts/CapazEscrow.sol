@@ -31,25 +31,26 @@ contract CapazEscrow is Ownable {
         escrowFactory = ICapazEscrowFactory(owner());
         CapazCommon.Escrow memory escrow = getEscrow();
 
-        //!TODO Handle strategies mapping handle adding a new one
         CapazCommon.Strategy strategyId = escrow.yieldStrategyId;
-        if (strategyId == CapazCommon.Strategy.Aave) {
-            strategy = new AaveStrategy();
-        } else {
-            revert("Strategy not supported");
-        }
 
-        strategy = new AaveStrategy();
+        // Check if a strategy is set
+        if (strategyId != CapazCommon.Strategy.None) {
+            if (strategyId == CapazCommon.Strategy.Aave) {
+                strategy = new AaveStrategy();
+            } else {
+                revert("Strategy not supported");
+            }
 
-        address token = escrow.tokenAddress;
-        uint256 totalAmount = escrow.totalAmount;
+            address token = escrow.tokenAddress;
+            uint256 totalAmount = escrow.totalAmount;
 
-        // Approve strategy to use token
-        IERC20(token).approve(address(strategy), totalAmount);
+            // Approve strategy to use token
+            IERC20(token).approve(address(strategy), totalAmount);
 
-        // Deposit token to strategy pool
-        address pool = escrowFactory.getStrategyPool(escrow.yieldStrategyId);
-        strategy.deposit(pool, token, totalAmount);
+            // Deposit token to strategy pool
+            address pool = escrowFactory.getStrategyPool(escrow.yieldStrategyId);
+            strategy.deposit(pool, token, totalAmount);
+        } 
 
         emit SetUp(escrow.sender, escrow.receiver, escrow);
     }

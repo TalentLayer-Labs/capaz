@@ -121,7 +121,12 @@ export default function SendPayment() {
           <h1 className='text-2xl font-semibold text-gray-900'>Send Payment</h1>
         </div>
         <div className='mx-auto xl:w-8/12 px-4 sm:px-6 md:px-8'>
-          <div className='py-4'>
+          <form
+            className='py-4'
+            onSubmit={e => {
+              e.preventDefault();
+              handleClick?.();
+            }}>
             <div>
               {/* Receiver wallet */}
               <input
@@ -351,12 +356,38 @@ export default function SendPayment() {
             </div>
             <div className='flex justify-center my-6'>
               <button
-                className='rounded-full  p-3 w-full sm:w-56   bg-gradient-to-r from-sky-600  to-teal-300 text-white text-lg font-semibold'
+                className='rounded-full flex align-center justify-center  p-3 w-full sm:w-56   bg-gradient-to-r from-sky-600  to-teal-300 text-white text-lg font-semibold'
                 onClick={handleClick}>
-                Send Payment
+                <span>Send Payment</span>
+                {approveTx.isLoading || executeTx.isLoading ? (
+                  <div className='loader'>
+                    <svg
+                      version='1.1'
+                      id='loader-1'
+                      x='0px'
+                      y='0px'
+                      width='30px'
+                      height='30px'
+                      viewBox='0 0 50 50'>
+                      <path
+                        fill='#000'
+                        d='M43.935,25.145c0-10.318-8.364-18.683-18.683-18.683c-10.318,0-18.683,8.365-18.683,18.683h4.068c0-8.071,6.543-14.615,14.615-14.615c8.072,0,14.615,6.543,14.615,14.615H43.935z'>
+                        <animateTransform
+                          attributeType='xml'
+                          attributeName='transform'
+                          type='rotate'
+                          from='0 25 25'
+                          to='360 25 25'
+                          dur='0.6s'
+                          repeatCount='indefinite'
+                        />
+                      </path>
+                    </svg>
+                  </div>
+                ) : null}
               </button>
             </div>
-          </div>
+          </form>
         </div>
       </div>
     </main>

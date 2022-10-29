@@ -20,9 +20,8 @@ function Dashboard() {
         <div className='flex flex-1 flex-col md:pl-64'>
           <Header />
           <Routes>
-            <Route path='/' element={<HomePayments />} />
             <Route path='/home' element={<HomePayments />} />
-            <Route path='/sendPayment' element={<SendPayment />} />
+            <Route path='/send-payment' element={<SendPayment />} />
           </Routes>
         </div>
       </div>

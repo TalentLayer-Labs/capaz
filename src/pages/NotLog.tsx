@@ -11,7 +11,7 @@ function NotLog() {
   console.log(account);
 
   if (account.isConnected) {
-    navigate('/dashboard');
+    navigate('/dashboard/home');
   }
 
   return (

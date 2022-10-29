@@ -9,13 +9,11 @@ export default function Sidebar() {
       name: 'Home',
       href: '/dashboard/home',
       icon: HomeIcon,
-      current: currentLocation.pathname === '/dashboard/home',
     },
     {
       name: 'Send payment',
-      href: '/dashboard/sendPayment',
+      href: '/dashboard/send-payment',
       icon: BanknotesIcon,
-      current: currentLocation.pathname === '/dashboard/sendPayment',
     },
   ]);
 

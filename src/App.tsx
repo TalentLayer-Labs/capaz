@@ -7,6 +7,7 @@ import type { ConfigOptions } from '@web3modal/core';
 import Home from './pages/Home';
 import Dashboard from './pages/Dashboard';
 import NotLog from './pages/NotLog';
+import { chains } from '@web3modal/ethereum';
 
 const config: ConfigOptions = {
   projectId: `${import.meta.env.VITE_WALLECT_CONNECT_PROJECT_ID}`,
@@ -14,6 +15,7 @@ const config: ConfigOptions = {
   accentColor: 'default',
   ethereum: {
     appName: 'web3-boilerplate',
+    chains: [chains.mainnet, chains.goerli],
   },
 };
 

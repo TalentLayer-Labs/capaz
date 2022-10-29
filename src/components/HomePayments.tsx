@@ -1,6 +1,12 @@
 import { Menu } from '@headlessui/react';
+import { useBalance } from '@web3modal/react';
 
 export default function HomePayments() {
+  const { data, error, isLoading, refetch } = useBalance({
+    addressOrName: '0x20015a0d2650bA427665Ea73784B6498CC05E851', // The address or ENS name of the account to query
+    watch: true, // Watches and refreshes data for new blocks.
+    token: '0x76ce920b752C4a04c1a193dc2EFF9C1A8b018BC6', // CPZ is the token symbol
+  });
   function classNames(...classes: any) {
     return classes.filter(Boolean).join(' ');
   }
@@ -10,6 +16,17 @@ export default function HomePayments() {
       <div className='py-6 w-full'>
         <div className='mx-auto xl:w-8/12 px-4 sm:px-6 md:px-8'>
           <h1 className='text-2xl font-semibold text-gray-900'>Dashboard</h1>
+        </div>
+        <div className='mx-auto xl:w-8/12 px-4 sm:px-6 md:px-8'>
+          <ul>
+            {!error && !isLoading && data && (
+              <li>
+                <span>{`Balance : ${isLoading ? 'Loading...' : data.formatted.split('.')[0]} ${isLoading ? '' : data.symbol}`}</span>
+              </li>
+            )}
+            {error && <li>{error.message}</li>}
+          </ul>
+          <button className='text-xs underline' onClick={async () => refetch()}>Refetch balance</button>
         </div>
         <div className='mx-auto px-4 sm:px-6 md:px-8'>
           <div className='py-4'>

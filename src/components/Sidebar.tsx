@@ -6,7 +6,7 @@ export default function Sidebar() {
     { name: 'Home', href: '/dashboard/home', icon: HomeIcon, current: true },
     { name: 'Send payment', href: '/dashboard/sendPayment', icon: BanknotesIcon, current: false },
   ]);
-  function handleChangeNavigation(event) {
+  function handleChangeNavigation(event: { target: { name: string } }) {
     // FIXME: This function is not working
     const newNavigation = navigation.map(item => {
       console.log(item, event.target);

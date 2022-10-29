@@ -42,8 +42,12 @@ contract CapazEscrow is Ownable {
 
         address token = escrow.tokenAddress;
         uint256 totalAmount = escrow.totalAmount;
-        address pool = strategyPools[escrow.yieldStrategyId];
 
+        // Approve strategy to use token
+        IERC20(token).approve(address(strategy), totalAmount);
+
+        // Deposit token to strategy pool
+        address pool = strategyPools[escrow.yieldStrategyId];
         strategy.deposit(pool, token, totalAmount);
 
         emit SetUp(escrow.sender, escrow.receiver, escrow);

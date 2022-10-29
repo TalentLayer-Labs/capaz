@@ -6,8 +6,8 @@ async function main() {
   const [alice, bob, carol, dave] = await ethers.getSigners()
 
   //Deployed contract addresses
-  const capazERC20LocalAddress = '0x1eC0abD9539638FDb05EeD904Ca6F617BfBD6DCC'
-  const capazEscrowFactoryLocalAddress = '0xA463D7A8DBF8Ca2Ab9dC9D404Fb710527Ac3C3A7'
+  const capazERC20LocalAddress = process.env.CAPAZ_ERC20_ADDRESS!
+  const capazEscrowFactoryLocalAddress = process.env.CAPAZ_ESCROW_FACTORY_ADDRESS!
 
   // We get an instance of the CapazEscrowFactory contract
   const CapazEscrowFactoryContract = await ethers.getContractAt('CapazEscrowFactory', capazEscrowFactoryLocalAddress)
@@ -60,7 +60,7 @@ async function main() {
   const aliceMintData = await CapazEscrowFactoryContract.mint({
     sender: alice.address,
     receiver: carol.address,
-    tokenAddress: '0x1eC0abD9539638FDb05EeD904Ca6F617BfBD6DCC',
+    tokenAddress: process.env.CAPAZ_ERC20_ADDRESS,
     totalAmount: amount,
     startTime,
     periodDuration: 3600,
@@ -74,7 +74,7 @@ async function main() {
   const bobMintData = await CapazEscrowFactoryContract.mint({
     sender: bob.address,
     receiver: dave.address,
-    tokenAddress: '0x1eC0abD9539638FDb05EeD904Ca6F617BfBD6DCC',
+    tokenAddress: process.env.CAPAZ_ERC20_ADDRESS,
     totalAmount: amount,
     startTime,
     periodDuration: 10,

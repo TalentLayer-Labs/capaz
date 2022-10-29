@@ -23,17 +23,29 @@ contract AaveStrategy is IStrategy, Ownable {
             IERC20(token).approve(pool, type(uint256).max);
         }
 
+        console.log("Depositing to pool: ", pool);
+        console.log("Token: ", token);
+        console.log("Amount: ", amount);
         // Supply to AAVE
-        IPool(pool).supply(token, amount, address(this), 0);
+        // IPool(pool).supply(token, amount, address(this), 0);
     }
 
     function claim(address pool, address token, uint256 amount, address user) external onlyOwner {
+        console.log("Claiming from pool: ", pool);
+        console.log("Token: ", token);
+        console.log("Amount: ", amount);
+        console.log("User: ", user);
+
         // Withdraw from AAVE to the user
-        IPool(pool).withdraw(token, amount, user);
+        // IPool(pool).withdraw(token, amount, user);
     }
 
     function claimAll(address pool, address token, address user) external onlyOwner {
+        console.log("Claiming all from pool: ", pool);
+        console.log("Token: ", token);
+        console.log("User: ", user);
+
         // Withdraw from AAVE to the user
-        IPool(pool).withdraw(token, type(uint256).max, user);
+        // IPool(pool).withdraw(token, type(uint256).max, user);
     }
 }

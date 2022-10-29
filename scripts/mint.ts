@@ -29,7 +29,7 @@ async function main() {
     tokenAddress: simpleERC20.address,
     totalAmount: amount,
     startTime,
-    periodDuration: 2,
+    periodDuration: 1,
     periods: 10,
     yieldStrategyId: 1,
     escrowAddress: '0x0000000000000000000000000000000000000000',

@@ -7,7 +7,7 @@ import {IERC20} from "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 import {ERC20} from "@openzeppelin/contracts/token/ERC20/ERC20.sol";
 import {Base64} from "@openzeppelin/contracts/utils/Base64.sol";
 import {Strings} from "@openzeppelin/contracts/utils/Strings.sol";
-import "@openzeppelin/contracts/access/Ownable.sol";
+import {Ownable} from "@openzeppelin/contracts/access/Ownable.sol";
 
 import {ICapazEscrow} from "./interfaces/ICapazEscrow.sol";
 import {CapazEscrow} from "./CapazEscrow.sol";
@@ -18,12 +18,12 @@ import {ERC2981} from "./EIP2981/ERC2981.sol";
  * @title CapazEscrowFactory
  * @author Capaz Team @ ETHLisbon Hackathon
  */
-contract CapazEscrowFactory is ERC721, ERC2981, Ownable {
+contract CapazEscrowFactory is ERC721, ERC2981, Ownable, CapazCommon {
     using Counters for Counters.Counter;
     using Strings for uint256;
 
     /// tokenId to Escrow mapping
-    mapping(uint256 => CapazCommon.Escrow) public escrows;
+    mapping(uint256 => Escrow) public escrows;
 
     // Counter of nft
     Counters.Counter private _tokenIdCounter;
@@ -43,7 +43,7 @@ contract CapazEscrowFactory is ERC721, ERC2981, Ownable {
      * Allows a user to mint a new escrow payment
      * @param _escrow The escrow configuration
      */
-    function mint(CapazCommon.Escrow memory _escrow)
+    function mint(Escrow memory _escrow)
         public
         onlyValidEscrow(_escrow)
         returns (uint256)
@@ -105,11 +105,7 @@ contract CapazEscrowFactory is ERC721, ERC2981, Ownable {
      * Get the escrow configuration for a given tokenId
      * @param tokenId nft id
      */
-    function getEscrow(uint256 tokenId)
-        public
-        view
-        returns (CapazCommon.Escrow memory)
-    {
+    function getEscrow(uint256 tokenId) public view returns (Escrow memory) {
         return escrows[tokenId];
     }
 
@@ -180,7 +176,7 @@ contract CapazEscrowFactory is ERC721, ERC2981, Ownable {
         view
         returns (string memory)
     {
-        CapazCommon.Escrow memory escrow = getEscrow(tokenId);
+        Escrow memory escrow = getEscrow(tokenId);
         string memory tokenSymbol = ERC20(escrow.tokenAddress).symbol();
         string memory escrowValue = appendString(
             escrow.totalAmount.toString(),
@@ -238,7 +234,7 @@ contract CapazEscrowFactory is ERC721, ERC2981, Ownable {
     /**
      * Checker to ensure that the escrow configuration is valid
      */
-    modifier onlyValidEscrow(CapazCommon.Escrow memory _escrow) {
+    modifier onlyValidEscrow(Escrow memory _escrow) {
         require(
             _escrow.totalAmount > 0,
             "CapazEscrowFactory: totalAmount must be greater than 0"
@@ -267,7 +263,7 @@ contract CapazEscrowFactory is ERC721, ERC2981, Ownable {
     event EscrowCreated(
         address indexed sender,
         address indexed receiver,
-        CapazCommon.Escrow escrow
+        Escrow escrow
     );
 
     /**

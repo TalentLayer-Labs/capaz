@@ -3,11 +3,11 @@ pragma solidity ^0.8.10;
 
 import "@openzeppelin/contracts/token/ERC20/ERC20.sol";
 
-contract SimpleERC20 is ERC20 {
+contract CapazERC20 is ERC20 {
     address public owner;
 
-    constructor() ERC20("SimpleERC20", "SERC20") {
-        _mint(msg.sender, 10000);
+    constructor() ERC20("Capaz", "CPZ") {
+        _mint(msg.sender, 10000 * 10**18);
         owner = msg.sender;
     }
 

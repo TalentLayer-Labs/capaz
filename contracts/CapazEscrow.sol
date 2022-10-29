@@ -23,9 +23,9 @@ contract CapazEscrow is Ownable {
      * @param _tokenId The tokenId to setup
      */
     function setup(uint256 _tokenId) public onlyOwner {
-        CapazCommon.Escrow memory escrow = getEscrow();
         tokenId = _tokenId;
         escrowFactory = ICapazEscrowFactory(owner());
+        CapazCommon.Escrow memory escrow = getEscrow();
 
         //!TODO Handle strategies mapping and handle adding a new one
         //!TODO deposit funds into strategy

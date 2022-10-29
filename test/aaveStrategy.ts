@@ -2,9 +2,14 @@ import { SignerWithAddress } from '@nomiclabs/hardhat-ethers/signers'
 import { expect } from 'chai'
 import { BigNumber, Contract } from 'ethers'
 import { ethers } from 'hardhat'
-import { AAVE_POOL_ADDRESS, AAVE_STRATEGY_ADDRESS, TOKEN_ADDRESS } from '../constants/addresses'
+import { AAVE_STRATEGY_ADDRESS, TOKEN_ADDRESS } from '../constants/addresses'
 import { AaveStrategy } from '../types/contracts/AaveStrategy'
-import { getAavePoolContract, getAaveStrategyContract, getTokenContract } from '../utils/contracts'
+import {
+  getAavePoolContract,
+  getAaveStrategyContract,
+  getTokenContract,
+  getTokenContractAtAddress,
+} from '../utils/contracts'
 
 describe('AAVE Strategy', () => {
   let aaveStrategy: AaveStrategy
@@ -12,13 +17,21 @@ describe('AAVE Strategy', () => {
   let usdcContract: Contract
   let aavePool: Contract
 
-  before(async () => {
+  before(async function () {
+    this.timeout(5 * 60 * 1000)
+
     const accounts = await ethers.getSigners()
     user = accounts[0]
 
     aaveStrategy = await getAaveStrategyContract()
     usdcContract = await getTokenContract(user)
     aavePool = await getAavePoolContract(user)
+
+    const aTokenAddress = await aaveStrategy.getYieldTokenFromUnderlying(TOKEN_ADDRESS)
+    const aTokenContract = getTokenContractAtAddress(aTokenAddress, user)
+
+    const aTokenTx = await aTokenContract.approve(AAVE_STRATEGY_ADDRESS, 1000000000)
+    await aTokenTx.wait()
   })
 
   describe('when a deposit is done', async () => {
@@ -31,20 +44,20 @@ describe('AAVE Strategy', () => {
       this.timeout(5 * 60 * 1000)
 
       userBalance = await usdcContract.balanceOf(user.address)
-      aaveAccountData = await aavePool.getUserAccountData(AAVE_STRATEGY_ADDRESS)
+      aaveAccountData = await aavePool.getUserAccountData(user.address)
 
       // Approve spending of tokens
       const approveTx = await usdcContract.approve(AAVE_STRATEGY_ADDRESS, depositAmount)
       await approveTx.wait()
 
       // Supply to Aave
-      const depositTx = await aaveStrategy.deposit(AAVE_POOL_ADDRESS, TOKEN_ADDRESS, depositAmount)
+      const depositTx = await aaveStrategy.deposit(TOKEN_ADDRESS, depositAmount)
       await depositTx.wait()
     })
 
-    it('increases AaveStrategy contract collateral balance on AAVE', async () => {
+    it('increases user contract collateral balance on AAVE', async () => {
       // Get AAVE account data
-      const updatedAaveAccountData = await aavePool.getUserAccountData(AAVE_STRATEGY_ADDRESS)
+      const updatedAaveAccountData = await aavePool.getUserAccountData(user.address)
 
       expect(updatedAaveAccountData.totalCollateralBase - aaveAccountData.totalCollateralBase).to.be.greaterThanOrEqual(
         depositAmount * 100,
@@ -55,6 +68,8 @@ describe('AAVE Strategy', () => {
       const updatedUserBalance = await usdcContract.balanceOf(user.address)
       expect(updatedUserBalance).to.eq(userBalance.sub(depositAmount))
     })
+
+    // TODO: test user aToken balance is increased
   })
 
   describe('when a claim is done', async () => {
@@ -68,16 +83,16 @@ describe('AAVE Strategy', () => {
       this.timeout(5 * 60 * 1000)
 
       receiverBalance = await usdcContract.balanceOf(receiver)
-      aaveAccountData = await aavePool.getUserAccountData(AAVE_STRATEGY_ADDRESS)
+      aaveAccountData = await aavePool.getUserAccountData(user.address)
 
       // Claim the deposit from AAVE
-      const tx = await aaveStrategy.claim(AAVE_POOL_ADDRESS, TOKEN_ADDRESS, claimAmount, receiver)
+      const tx = await aaveStrategy.claim(TOKEN_ADDRESS, claimAmount, receiver)
       await tx.wait()
     })
 
     it('decreases AaveStrategy contract collateral balance on AAVE', async () => {
       // Get AAVE account data
-      const updatedAaveAccountData = await aavePool.getUserAccountData(AAVE_STRATEGY_ADDRESS)
+      const updatedAaveAccountData = await aavePool.getUserAccountData(user.address)
 
       expect(aaveAccountData.totalCollateralBase - updatedAaveAccountData.totalCollateralBase).to.be.lessThanOrEqual(
         claimAmount * 100,
@@ -89,6 +104,8 @@ describe('AAVE Strategy', () => {
       const updatedReceiverBalance = await usdcContract.balanceOf(receiver)
       expect(updatedReceiverBalance).to.eq(receiverBalance.add(claimAmount))
     })
+
+    // TODO: test user aToken balance is decreased
   })
 
   describe('when a full claim is done', async () => {
@@ -102,18 +119,18 @@ describe('AAVE Strategy', () => {
 
       receiverBalance = await usdcContract.balanceOf(receiver)
 
-      aaveAccountData = await aavePool.getUserAccountData(AAVE_STRATEGY_ADDRESS)
+      aaveAccountData = await aavePool.getUserAccountData(user.address)
 
       console.log('Collateral balance: ', aaveAccountData.totalCollateralBase)
 
       // Claim the deposit from AAVE
-      const tx = await aaveStrategy.claimAll(AAVE_POOL_ADDRESS, TOKEN_ADDRESS, receiver)
+      const tx = await aaveStrategy.claimAll(TOKEN_ADDRESS, receiver)
       await tx.wait()
     })
 
     it('sets AaveStrategy contract collateral balance on AAVE to 0', async () => {
       // Get AAVE account data
-      const updatedAaveAccountData = await aavePool.getUserAccountData(AAVE_STRATEGY_ADDRESS)
+      const updatedAaveAccountData = await aavePool.getUserAccountData(user.address)
 
       expect(updatedAaveAccountData.totalCollateralBase).to.be.eq(0)
     })
@@ -126,5 +143,7 @@ describe('AAVE Strategy', () => {
         receiverBalance.add(aaveAccountData.totalCollateralBase / 100),
       )
     })
+
+    // TODO: test user aToken balance is decreased
   })
 })

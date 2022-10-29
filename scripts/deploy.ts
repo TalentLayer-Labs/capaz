@@ -4,13 +4,18 @@ import { AAVE_POOL_ADDRESS } from '../constants/addresses'
 const wETHAddress = '0x7ceB23fD6bC0adD59E62ac25578270cFf1b9f619' //polygon mainnet weth address
 
 async function main() {
+  // Deploy AAVE Strategy Contract
+  const AaveStrategy = await ethers.getContractFactory('AaveStrategy')
+  const aaveStrategy = await AaveStrategy.deploy(AAVE_POOL_ADDRESS)
+  console.log('AaveStrategy deployed to:', aaveStrategy.address)
+
   // Deploy CapazEscrowFactory Contract
   const CapazEscrowFactory = await ethers.getContractFactory('CapazEscrowFactory')
   const capazEscrowFactory = await CapazEscrowFactory.deploy()
   console.log('CapazEscrowFactory deployed to:', capazEscrowFactory.address)
 
   // Setup strategy pools
-  capazEscrowFactory.setStrategyPool(1, AAVE_POOL_ADDRESS)
+  capazEscrowFactory.setStrategy(1, aaveStrategy.address)
 
   // Deploy CapazWETHAdapter Contract
   const CapazWETHAdapter = await ethers.getContractFactory('CapazWETHAdapter')

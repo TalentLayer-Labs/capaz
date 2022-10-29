@@ -1,7 +1,7 @@
 import { ethers } from 'hardhat'
 
-import { AAVE_STRATEGY_ADDRESS } from '../../constants/addresses'
-import { getTokenContract } from '../../utils/contracts'
+import { AAVE_STRATEGY_ADDRESS, TOKEN_ADDRESS } from '../../constants/addresses'
+import { getAaveStrategyContract, getTokenContract, getTokenContractAtAddress } from '../../utils/contracts'
 
 async function main() {
   // Deploy contract
@@ -9,10 +9,17 @@ async function main() {
 
   console.log('Using address: ', accounts[0].address)
 
-  const usdcContract = getTokenContract()
-  const allowance = await usdcContract.allowance(accounts[0].address, AAVE_STRATEGY_ADDRESS)
+  const tokenContract = getTokenContract(accounts[0])
+  const allowance = await tokenContract.allowance(accounts[0].address, AAVE_STRATEGY_ADDRESS)
 
-  console.log('Allowance: ', allowance.toString())
+  const aaveStrategy = await getAaveStrategyContract()
+  const aTokenAddress = await aaveStrategy.getYieldTokenFromUnderlying(TOKEN_ADDRESS)
+  const aTokenContract = getTokenContractAtAddress(aTokenAddress, accounts[0])
+
+  const yieldTokenAllowance = await aTokenContract.allowance(accounts[0].address, AAVE_STRATEGY_ADDRESS)
+
+  console.log('Token Allowance: ', allowance.toString())
+  console.log('Yield token Allowance: ', yieldTokenAllowance.toString())
 }
 
 // We recommend this pattern to be able to use async/await everywhere

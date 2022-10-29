@@ -20,3 +20,7 @@ export const getTokenContract = (account?: SignerWithAddress) => {
 export const getAavePoolContract = (account?: SignerWithAddress) => {
   return new Contract(AAVE_POOL_ADDRESS, AavePoolAbi.abi, account)
 }
+
+export const getTokenContractAtAddress = (address: string, account?: SignerWithAddress) => {
+  return new Contract(address, ERC20Abi.abi, account)
+}

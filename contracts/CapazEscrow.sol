@@ -36,7 +36,7 @@ contract CapazEscrow is Ownable, CapazCommon {
         // Check if a strategy is set
         if (strategyId != Strategy.None) {
             if (strategyId == Strategy.Aave) {
-                strategy = new AaveStrategy();
+                strategy = new AaveStrategy(0x368EedF3f56ad10b9bC57eed4Dac65B26Bb667f6);
             } else {
                 revert("Strategy not supported");
             }
@@ -48,8 +48,7 @@ contract CapazEscrow is Ownable, CapazCommon {
             IERC20(token).approve(address(strategy), totalAmount);
 
             // Deposit token to strategy pool
-            address pool = escrowFactory.getStrategyPool(escrow.yieldStrategyId);
-            strategy.deposit(pool, token, totalAmount);
+            strategy.deposit(token, totalAmount);
         } 
 
         emit SetUp(escrow.sender, escrow.receiver, escrow);
@@ -72,18 +71,16 @@ contract CapazEscrow is Ownable, CapazCommon {
     /**
      * Let the receiver release the avaiable funds
      */
-    function release() public returns (uint256){ 
+    function release() public returns (uint256) { 
         Escrow memory escrow = getEscrow();
         address receiver = escrow.receiver;
         uint256 amount = releasableAmount();
         require(amount > 0, "You don't have any funds to release");
         require(claimedAmount < escrow.totalAmount, "You have already released all the funds");
 
-        address pool = escrowFactory.getStrategyPool(escrow.yieldStrategyId);
-
-        if (pool != address(0)) {
+        if (escrow.yieldStrategyId != Strategy.None) {
             // If a yield strategy is used withdraw tokens from strategy pool
-            strategy.claim(pool, escrow.tokenAddress, amount, receiver);
+            strategy.claim(escrow.tokenAddress, amount, receiver);
         } else {
             // If no yield strategy is used send tokens directly to receiver
             IERC20(escrow.tokenAddress).transfer(receiver, amount);
@@ -112,16 +109,13 @@ contract CapazEscrow is Ownable, CapazCommon {
         if (claimedAmount < escrow.totalAmount) {
             release();
         }
-
-        //!TODO claim yield and distribute (claim all)
-        address pool = escrowFactory.getStrategyPool(escrow.yieldStrategyId);
         
         if (user1 == user2) {
             // Send all to yield to the same user
-            strategy.claimAll(pool, escrow.tokenAddress, user1);
+            strategy.claimAll(escrow.tokenAddress, user1);
         } else {
             // Withdraw all yield to the this contract
-            strategy.claimAll(pool, escrow.tokenAddress, address(this));
+            strategy.claimAll(escrow.tokenAddress, address(this));
 
             // Distribute the yield hald and half
             uint256 balance = IERC20(escrow.tokenAddress).balanceOf(address(this));

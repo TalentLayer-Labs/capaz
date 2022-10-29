@@ -113,7 +113,9 @@ contract CapazEscrow is Ownable {
 
         //!TODO claim yield and distribute (claim all)
         if (user1 == user2) {
-            // send all to same user
+            // send all to yield to the same user
+            address pool = escrowFactory.getStrategyPool(escrow.yieldStrategyId);
+            strategy.claimAll(pool, escrow.tokenAddress, user1);
         } else {
             // send half to each user
         }

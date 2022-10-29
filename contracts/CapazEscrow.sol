@@ -32,6 +32,13 @@ contract CapazEscrow is Ownable {
         CapazCommon.Escrow memory escrow = getEscrow();
 
         //!TODO Handle strategies mapping handle adding a new one
+        CapazCommon.Strategy strategyId = escrow.yieldStrategyId;
+        if (strategyId == CapazCommon.Strategy.Aave) {
+            strategy = new AaveStrategy();
+        } else {
+            revert("Strategy not supported");
+        }
+
         strategy = new AaveStrategy();
 
         address token = escrow.tokenAddress;
@@ -88,7 +95,7 @@ contract CapazEscrow is Ownable {
         require(!isYieldClaimed, "CapazEscrow: Yield already claimed");
 
         //!TODO first release the remaining funds
-
+        
         //!TODO claim yield and distribute
         if (user1 == user2) {
             // send all to same user

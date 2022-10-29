@@ -9,21 +9,6 @@ export default function HomePayments() {
         <div className='mx-auto xl:w-8/12 px-4 sm:px-6 md:px-8'>
           <h1 className='text-2xl font-semibold text-gray-900'>Dashboard</h1>
         </div>
-        <div className='mx-auto xl:w-8/12 px-4 sm:px-6 md:px-8'>
-          <ul>
-            {!error && !isLoading && data && (
-              <li>
-                <span>{`Balance : ${isLoading ? 'Loading...' : data.formatted.split('.')[0]} ${
-                  isLoading ? '' : data.symbol
-                }`}</span>
-              </li>
-            )}
-            {error && <li>{error.message}</li>}
-          </ul>
-          <button className='text-xs underline' onClick={async () => refetch()}>
-            Refetch balance
-          </button>
-        </div>
 
         <div className='mx-auto px-4 sm:px-6 md:px-8'>
           <div className='py-4'>

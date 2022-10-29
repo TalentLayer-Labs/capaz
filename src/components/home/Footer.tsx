@@ -64,7 +64,7 @@ const navigation = [
 
 export default function Footer() {
   return (
-    <footer className='bg-slate-100'>
+    <footer className='bg-slate-100 mt-32'>
       <div className='mx-auto max-w-7xl py-12 px-4 sm:px-6 md:flex md:items-center md:justify-between lg:px-8'>
         <div className='flex justify-center space-x-6 md:order-2'>
           {navigation.map(item => (
@@ -75,9 +75,7 @@ export default function Footer() {
           ))}
         </div>
         <div className='mt-8 md:order-1 md:mt-0'>
-          <p className='text-center text-base text-gray-400'>
-            &copy; 2022 Web 3 Boiler Plate, Inc. All rights reserved.
-          </p>
+          <p className='text-center text-base text-gray-400'>&copy; 2022 Capaz</p>
         </div>
       </div>
     </footer>

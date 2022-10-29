@@ -46,27 +46,23 @@ function Menu() {
   const { account, isReady } = useAccount();
   const navigate = useNavigate();
 
-  if (account.isConnected === true) {
-    navigate('/dashboard');
-  }
-
   return (
     <div className='bg-white'>
       <header>
         <Popover className='relative bg-slate-100'>
           <div className='mx-auto flex max-w-7xl items-center justify-between px-4 py-6 sm:px-6 md:justify-start md:space-x-10 lg:px-8'>
             <div className='flex justify-start lg:w-0 lg:flex-1'>
-              <a href='/src/pages'>
-                <span className='sr-only'>Your Company</span>
+              <a href='/'>
+                <span className='sr-only'>Capaz</span>
                 <img
                   className='h-8 w-auto sm:h-10'
-                  src='https://tailwindui.com/img/logos/mark.svg?from-color=purple&from-shade=600&to-color=indigo&to-shade=600&toShade=600'
+                  src='https://tailwindui.com/img/logos/mark.svg?from-color=rose&from-shade=600&to-color=rose&to-shade=500&toShade=600'
                   alt=''
                 />
               </a>
             </div>
             <div className='-my-2 -mr-2 md:hidden'>
-              <Popover.Button className='inline-flex items-center justify-center rounded-md bg-white p-2 text-gray-400 hover:bg-gray-100 hover:text-gray-500 focus:outline-none focus:ring-2 focus:ring-inset focus:ring-indigo-500'>
+              <Popover.Button className='inline-flex items-center justify-center rounded-md bg-white p-2 text-gray-400 hover:bg-gray-100 hover:text-gray-500 focus:outline-none focus:ring-2 focus:ring-inset focus:ring-rose-500'>
                 <span className='sr-only'>Open menu</span>
                 <Bars3Icon className='h-6 w-6' aria-hidden='true' />
               </Popover.Button>
@@ -97,12 +93,12 @@ function Menu() {
                     <div>
                       <img
                         className='h-8 w-auto'
-                        src='https://tailwindui.com/img/logos/mark.svg?from-color=purple&from-shade=600&to-color=indigo&to-shade=600&toShade=600'
-                        alt='Your Company'
+                        src='https://tailwindui.com/img/logos/mark.svg?from-color=rose&from-shade=600&to-color=rose&to-shade=700&toShade=600'
+                        alt='Capaz'
                       />
                     </div>
                     <div className='-mr-2'>
-                      <Popover.Button className='inline-flex items-center justify-center rounded-md bg-white p-2 text-gray-400 hover:bg-gray-100 hover:text-gray-500 focus:outline-none focus:ring-2 focus:ring-inset focus:ring-indigo-500'>
+                      <Popover.Button className='inline-flex items-center justify-center rounded-md bg-white p-2 text-gray-400 hover:bg-gray-100 hover:text-gray-500 focus:outline-none focus:ring-2 focus:ring-inset focus:ring-rose-500'>
                         <span className='sr-only'>Close menu</span>
                         <XMarkIcon className='h-6 w-6' aria-hidden='true' />
                       </Popover.Button>
@@ -145,7 +141,7 @@ function Menu() {
                           key={item.name}
                           to={item.href}
                           className='-m-3 flex items-center rounded-lg p-3 hover:bg-gray-50'>
-                          <div className='flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-md bg-gradient-to-r from-purple-600 to-indigo-600 text-white'>
+                          <div className='flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-md bg-gradient-to-r from-purple-600 to-rose-600 text-white'>
                             <item.icon className='h-6 w-6' aria-hidden='true' />
                           </div>
                           <div className='ml-4 text-base font-medium text-gray-900'>

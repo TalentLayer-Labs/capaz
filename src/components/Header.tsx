@@ -1,15 +1,17 @@
 import { Menu, Transition } from '@headlessui/react';
-import { Bars3BottomLeftIcon } from '@heroicons/react/24/outline';
+import { Bars3BottomLeftIcon, ChevronDownIcon } from '@heroicons/react/24/outline';
 import { truncateAddress } from '../utils';
-import { ConnectButton, useAccount, useDisconnect } from '@web3modal/react';
+import { ConnectButton, useAccount, useDisconnect, useNetwork } from '@web3modal/react';
 import { Fragment, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import NetworkLink from './NetworkLink';
 
 export default function Header() {
   const { account } = useAccount();
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const navigate = useNavigate();
   const disconnect = useDisconnect();
+  const { network } = useNetwork();
 
   function classNames(...classes: any) {
     return classes.filter(Boolean).join(' ');
@@ -26,24 +28,62 @@ export default function Header() {
       </button>
       <div className='flex flex-1 justify-between px-4'>
         <div className='flex flex-1'></div>
-        <div className='ml-4 flex items-center md:ml-6'>
-          {account.isConnected === true ? (
-            <p>{truncateAddress(account.address)}</p>
-          ) : (
-            <ConnectButton />
-          )}
+        <Menu as='div' className='relative inline-block text-left mt-3'>
+          <div>
+            <Menu.Button className='inline-flex w-full justify-center rounded-md border border-gray-300 bg-white px-4 py-2 text-sm font-medium text-gray-700 shadow-sm hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 focus:ring-offset-gray-100'>
+              {network?.chain?.name}
+              <ChevronDownIcon className='-mr-1 ml-2 h-5 w-5' aria-hidden='true' />
+            </Menu.Button>
+          </div>
 
+          <Transition
+            as={Fragment}
+            enter='transition ease-out duration-100'
+            enterFrom='transform opacity-0 scale-95'
+            enterTo='transform opacity-100 scale-100'
+            leave='transition ease-in duration-75'
+            leaveFrom='transform opacity-100 scale-100'
+            leaveTo='transform opacity-0 scale-95'>
+            <Menu.Items className='absolute right-0 z-10 mt-2 w-56 origin-top-right divide-y divide-gray-100 rounded-md bg-white shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none'>
+              <div className='py-1'>
+                <Menu.Item>
+                  <NetworkLink chaindId={1} chainName='Ethereum' />
+                </Menu.Item>
+                <Menu.Item>
+                  <NetworkLink chaindId={5} chainName='Goerli' />
+                </Menu.Item>
+              </div>
+            </Menu.Items>
+          </Transition>
+        </Menu>
+        <div className='ml-4 flex items-center md:ml-6'>
           {/* Profile dropdown */}
           <Menu as='div' className='relative ml-3'>
-            <div>
-              <Menu.Button className='flex max-w-xs items-center rounded-full bg-white text-sm focus:outline-none focus:ring-2 focus:ring-rose-500 focus:ring-offset-2'>
-                <span className='sr-only'>Open user menu</span>
-                <img
-                  className='h-8 w-8 rounded-full'
-                  src='https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80'
-                  alt=''
-                />
-              </Menu.Button>
+            <div className='flex items-center'>
+              <div>
+                <Menu.Button className='flex max-w-xs items-center rounded-full bg-white text-sm focus:outline-none focus:ring-2 focus:ring-rose-500 focus:ring-offset-2'>
+                  <span className='sr-only'>Open user menu</span>
+                  <img
+                    className='h-8 w-8 rounded-full'
+                    src='https://imageio.forbes.com/specials-images/imageserve/6170e01f8d7639b95a7f2eeb/Sotheby-s-NFT-Natively-Digital-1-2-sale-Bored-Ape-Yacht-Club--8817-by-Yuga-Labs/0x0.png?format=png&width=960'
+                    alt=''
+                  />
+                </Menu.Button>
+              </div>
+              {account.isConnected === true ? (
+                <Menu.Button className='ml-3 text-left'>
+                  <p
+                    className='text-sm font-medium text-gray-700 group-hover:text-gray-900'
+                    style={{ marginBottom: '-3px' }}>
+                    {truncateAddress(account.address)}
+                  </p>
+                  <p className='text-xs font-medium text-gray-500 group-hover:text-gray-700'>
+                    More
+                  </p>
+                </Menu.Button>
+              ) : (
+                <ConnectButton />
+              )}
             </div>
             <Transition
               as={Fragment}

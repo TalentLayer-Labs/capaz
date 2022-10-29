@@ -23,7 +23,9 @@
   },
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "solhint": "solhint --fix contracts/**/*.sol"
+    "solhint": "solhint --fix contracts/**/*.sol",
+    "deploy": "npx hardhat run scripts/deploy.ts --network localhost",
+    "zero": "npx hardhat run scripts/playground/0-createEscrowContrat.ts --network localhost"
   },
   "dependencies": {
     "@openzeppelin/contracts": "^4.7.3",

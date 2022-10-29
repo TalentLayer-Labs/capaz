@@ -129,6 +129,67 @@ contract CapazEscrowFactory is ERC721, ERC2981, Ownable {
     }
 
     /**
+     * Get the dynamic token URI
+     * @param tokenId NFT id
+     */
+    function tokenURI(uint256 tokenId)
+        public
+        view
+        virtual
+        override(ERC721A)
+        returns (string memory)
+    {
+        return _buildTokenURI(tokenId);
+    }
+
+    /**
+     * return metadata json with escrow info & a dynamic SVG
+     * @param tokenId NFT id
+     */
+    function _buildTokenURI(uint256 tokenId)
+        internal
+        view
+        returns (string memory)
+    {
+        CapazCommon.Escrow memory escrow = getEscrow(tokenId);
+        string tokenSymbol = IERC20(escrow.tokenAddress).symbol();
+
+        bytes memory image = abi.encodePacked(
+            "data:image/svg+xml;base64,",
+            Base64.encode(
+                bytes(
+                    abi.encodePacked(
+                        '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 900 900" xmlns="http://www.w3.org/2000/svg"><defs><filter id="A"><feFlood flood-opacity="0"/><feBlend in="SourceGraphic"/><feGaussianBlur stdDeviation="189"/></filter></defs><path fill="#60f" d="M0 0h900v900H0z"/><g filter="url(#A)"><circle cx="469" cy="489" r="420" fill="#4facf7"/><circle cx="353" cy="137" r="420" fill="#60f"/><g fill="#4facf7"><circle cx="708" cy="201" r="420"/><circle cx="276" cy="580" r="420"/></g><circle cx="681" cy="835" r="420" fill="#60f"/><circle cx="105" cy="146" r="420" fill="#4facf7"/></g><text x="30" y="70" fill="#fff">Capaz Escrow</text><text x="30" y="700" fill="#fff">',
+                        escrow.totalAmount + " " + tokenSymbol,
+                        "</text></svg>"
+                    )
+                )
+            )
+        );
+        return
+            string(
+                abi.encodePacked(
+                    "data:application/json;base64,",
+                    Base64.encode(
+                        bytes(
+                            abi.encodePacked(
+                                '{"sender":"',
+                                escrow.sender,
+                                '{"receiver":"',
+                                escrow.receiver,
+                                '{"totalAmount":"',
+                                escrow.totalAmount + tokenSymbol,
+                                '", "image":"',
+                                image,
+                                unicode'", "description": "Capaz Escrow"}'
+                            )
+                        )
+                    )
+                )
+            );
+    }
+
+    /**
      * Checker to ensure that the escrow configuration is valid
      */
     modifier onlyValidEscrow(CapazCommon.Escrow memory _escrow) {

@@ -12,11 +12,7 @@ contract AaveStrategy is IStrategy {
     /**
      * @dev Sender should first approve this contract to spend the amount of tokens to be deposited
      */
-    function deposit(
-        address pool,
-        address token,
-        uint256 amount
-    ) external {
+    function deposit(address pool, address token, uint256 amount) external {
         // Send tokens to this contract
         IERC20(token).transferFrom(msg.sender, address(this), amount);
 

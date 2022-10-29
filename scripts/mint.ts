@@ -11,8 +11,8 @@ async function main() {
   const capazEscrowFactory = CapazEscrowFactory.attach('0x07B9837e81b917451690f2eF4752AC5F1434450B')
 
   // Get token contract
-  const SimpleERC20 = await ethers.getContractFactory('SimpleERC20')
-  const simpleERC20 = SimpleERC20.attach('0xC1ee53801a6350311a5942da3084aD500cA30620')
+  const SimpleERC20 = await ethers.getContractFactory('CapazERC20')
+  const simpleERC20 = SimpleERC20.attach('0x58f7Fc8d443507B9A14A0Fe33330F07c85b474e9')
 
   // Approve tokens
   const amount = 10000

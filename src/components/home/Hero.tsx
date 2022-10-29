@@ -1,44 +1,73 @@
+import { ChevronRightIcon, StarIcon } from '@heroicons/react/24/outline';
 import { Link } from 'react-router-dom';
 
 export default function Hero() {
   return (
-    <div className='bg-white'>
-      {/* Hero section */}
-      <div className='relative'>
-        <div className='absolute inset-x-0 bottom-0 h-1/2 bg-white' />
-        <div className='mx-auto py-10 max-w-7xl sm:px-6 lg:px-8'>
-          <div className='relative shadow-xl sm:overflow-hidden sm:rounded-2xl'>
-            <div className='absolute inset-0'>
-              <img
-                className='h-full w-full object-cover'
-                src='https://images.unsplash.com/photo-1521737852567-6949f3f9f2b5?ixid=MXwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHw%3D&ixlib=rb-1.2.1&auto=format&fit=crop&w=2830&q=80&sat=-100'
-                alt='People working on laptops'
-              />
-              <div className='absolute inset-0 bg-gradient-to-r from-purple-800 to-indigo-700 mix-blend-multiply' />
-            </div>
-            <div className='relative px-4 py-16 sm:px-6 sm:py-24 lg:py-32 lg:px-8'>
-              <h1 className='text-center text-4xl font-bold tracking-tight sm:text-5xl lg:text-6xl'>
-                <span className='block text-white'>Launch your Dapp in one click</span>
-                <span className='block text-indigo-200'>web3-boilerplate</span>
-              </h1>
-              <p className='mx-auto mt-6 max-w-lg text-center text-xl text-indigo-200 sm:max-w-3xl'>
-                Please read the boilerplate documentation
+    <div className='overflow-hidden pt-8 sm:pt-12 lg:relative lg:py-48'>
+      <div className='mx-auto max-w-md px-4 sm:max-w-3xl sm:px-6 lg:grid lg:max-w-7xl lg:grid-cols-2 lg:gap-24 lg:px-8'>
+        <div>
+          <div className='mt-20'>
+            <div className='mt-6 sm:max-w-xl'>
+              <h1 className='text-4xl font-bold tracking-tight text-gray-900 sm:text-5xl'>Capaz</h1>
+              <p className='mt-6 text-xl text-gray-500'>
+                An easy streaming payment protocol with yields
               </p>
-              <div className='mx-auto mt-10 max-w-sm sm:flex sm:max-w-none sm:justify-center'>
-                <div className='space-y-4 sm:mx-auto sm:inline-grid sm:grid-cols-2 sm:gap-5 sm:space-y-0'>
-                  <Link
-                    to='/dashboard'
-                    className='flex items-center justify-center rounded-md border border-transparent bg-white px-4 py-3 text-base font-medium text-indigo-700 shadow-sm hover:bg-indigo-50 sm:px-8'>
-                    Dashboard
-                  </Link>
-                  <a
-                    href='https://github.com/0xRomain/web3-boilerplate'
-                    className='flex items-center justify-center rounded-md border border-transparent bg-indigo-500 bg-opacity-60 px-4 py-3 text-base font-medium text-white shadow-sm hover:bg-opacity-70 sm:px-8'>
-                    Github
-                  </a>
-                </div>
+            </div>
+            <div className='mx-auto mt-10 max-w-sm sm:max-w-none'>
+              <div className='space-y-4 sm:mx-auto sm:inline-grid sm:grid-cols-2 sm:gap-5 sm:space-y-0'>
+                <Link
+                  to='/dashboard'
+                  className='flex items-center justify-center rounded-md border border-transparent bg-rose-500 px-4 py-3 text-base font-medium text-white shadow-sm hover:bg-opacity-80 sm:px-8'>
+                  Send a payment
+                </Link>
+                <a
+                  href='https://github.com/orgs/Capaz-Crypto/repositories'
+                  className='flex items-center justify-center rounded-md border border-transparent bg-white px-4 py-3 text-base font-medium text-rose-500 shadow-sm hover:bg-opacity-70 sm:px-8'>
+                  Github
+                </a>
               </div>
             </div>
+          </div>
+        </div>
+      </div>
+
+      <div className='sm:mx-auto sm:max-w-3xl sm:px-6'>
+        <div className='py-12 sm:relative sm:mt-12 sm:py-16 lg:absolute lg:inset-y-0 lg:right-0 lg:w-1/2'>
+          <div className='hidden sm:block'>
+            <div className='absolute inset-y-0 left-1/2 w-screen rounded-l-3xl bg-gray-50 lg:left-80 lg:right-0 lg:w-full' />
+            <svg
+              className='absolute top-8 right-1/2 -mr-3 lg:left-0 lg:m-0'
+              width={404}
+              height={392}
+              fill='none'
+              viewBox='0 0 404 392'>
+              <defs>
+                <pattern
+                  id='837c3e70-6c3a-44e6-8854-cc48c737b659'
+                  x={0}
+                  y={0}
+                  width={20}
+                  height={20}
+                  patternUnits='userSpaceOnUse'>
+                  <rect
+                    x={0}
+                    y={0}
+                    width={4}
+                    height={4}
+                    className='text-gray-200'
+                    fill='currentColor'
+                  />
+                </pattern>
+              </defs>
+              <rect width={404} height={392} fill='url(#837c3e70-6c3a-44e6-8854-cc48c737b659)' />
+            </svg>
+          </div>
+          <div className='relative -mr-40 pl-4 sm:mx-auto sm:max-w-3xl sm:px-0 lg:h-full lg:max-w-none lg:pl-12'>
+            <img
+              className='w-full rounded-md shadow-xl ring-1 ring-black ring-opacity-5 lg:h-full lg:w-auto lg:max-w-none'
+              src='https://tailwindui.com/img/component-images/task-app-rose.jpg'
+              alt=''
+            />
           </div>
         </div>
       </div>

@@ -16,12 +16,12 @@ async function main() {
   const tokenContract = getTokenContract(accounts[0])
 
   // Approve tokens
-  const amount = 10000000
+  const amount = 100000000 // 100 tokens
 
   const approveTx = await tokenContract.approve(capazEscrowFactory.address, amount)
   await approveTx.wait()
 
-  const startTime = Math.floor(new Date().getTime() / 1000 + 60) // now + 1 minute
+  const startTime = Math.floor(new Date().getTime() / 1000 + 120) // now + 2 minutes
 
   // Create a new escrow
   const mintTx = await capazEscrowFactory.mint({
@@ -30,7 +30,7 @@ async function main() {
     tokenAddress: tokenContract.address,
     totalAmount: amount,
     startTime,
-    periodDuration: 15,
+    periodDuration: 60, // every minute
     periods: 10,
     yieldStrategyId: 1,
     escrowAddress: '0x0000000000000000000000000000000000000000',

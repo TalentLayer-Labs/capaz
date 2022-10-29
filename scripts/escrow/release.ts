@@ -15,7 +15,7 @@ async function main() {
   const tokenId = 0
   const escrow = await capazEscrowFactory.getEscrow(tokenId)
   const CapazEscrow = await ethers.getContractFactory('CapazEscrow')
-  const capazEscrow = CapazEscrow.attach(escrow.escrowAddress)
+  const capazEscrow = CapazEscrow.attach(escrow.escrowAddress).connect(accounts[1]) // connect to receiver
 
   // Release tokens
   const releaseTx = await capazEscrow.release()

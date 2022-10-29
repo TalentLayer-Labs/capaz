@@ -106,7 +106,10 @@ contract CapazEscrow is Ownable {
         );
         require(!isYieldClaimed, "CapazEscrow: Yield already claimed");
 
-        //!TODO first release the remaining funds (call release in case some funds are remaining)
+        // Release any remaining funds, if there are any
+        if (claimedAmount < escrow.totalAmount) {
+            release();
+        }
 
         //!TODO claim yield and distribute (claim all)
         if (user1 == user2) {

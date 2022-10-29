@@ -117,18 +117,6 @@ contract CapazEscrowFactory is ERC721, ERC2981, Ownable {
     }
 
     /**
-     * Get the strategy pool for a given strategy id
-     * @param strategyId strategy id
-     */
-    function getStrategyPool(uint256 strategyId)
-        public
-        view
-        returns (address)
-    {
-        return strategyPools[strategyId];
-    }
-
-    /**
      * @dev See {IERC165-supportsInterface}.
      */
     function supportsInterface(bytes4 interfaceId)
@@ -162,6 +150,28 @@ contract CapazEscrowFactory is ERC721, ERC2981, Ownable {
         returns (string memory)
     {
         return _buildTokenURI(tokenId);
+    }
+
+    /**
+     * Get the strategy pool for a given strategy id
+     * @param strategyId strategy id
+     */
+    function getStrategyPool(uint256 strategyId)
+        public
+        view
+        returns (address)
+    {
+        return strategyPools[strategyId];
+    }
+
+    /**
+     * Sets a new strategy pool or updates an existing one
+     * 
+     * @param strategyId the strategy id
+     * @param pool the address of the pool
+     */
+    function setStrategyPool(uint256 strategyId, address pool) public onlyOwner {
+        strategyPools[strategyId] = pool;
     }
 
     /**

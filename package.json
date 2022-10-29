@@ -22,21 +22,10 @@
     "typescript": "^4.7.4"
   },
   "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
     "solhint": "solhint --fix contracts/**/*.sol",
-    "deploy": "hardhat run scripts/deploy.ts --network localhost",
-    "deploy-escrow": "hardhat run scripts/escrow/deploy.ts --network localhost",
-    "setup-escrow": "hardhat run scripts/escrow/setup.ts",
-    "deploy:goerli": "hardhat run scripts/aaveStrategy/deploy.ts --network goerli",
-    "supply": "hardhat run scripts/aaveStrategy/supply.ts --network goerli",
-    "mint": "hardhat run scripts/mint.ts --network localhost",
-    "release": "hardhat run scripts/release.ts --network localhost",
-    "distribute-yield": "hardhat run scripts/distribute-yield.ts --network localhost",
-    "withdraw": "hardhat run scripts/aaveStrategy/withdraw.ts --network goerli",
-    "withdraw-all": "hardhat run scripts/aaveStrategy/withdraw-all.ts --network goerli",
-    "aave-info": "hardhat run scripts/aaveStrategy/get-aave-info.ts --network goerli",
-    "chain": "hardhat node",
-    "compile": "hardhat compile",
-    "test": "hardhat test --network goerli"
+    "deploy": "npx hardhat run scripts/deploy.ts --network localhost",
+    "zero": "npx hardhat run scripts/playground/0-createEscrowContrat.ts --network localhost"
   },
   "dependencies": {
     "@openzeppelin/contracts": "^4.7.3",

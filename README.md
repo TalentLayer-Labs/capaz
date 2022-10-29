@@ -17,3 +17,8 @@ Please add the deployed contracts addresses in your .env file
 -`npm run zero`(will run the playground script 0-createEscrowContract.ts)
 
 -`npm run one`(will run the playground script 1-claim.ts)
+
+
+## Verify your contract on etherscan
+
+`npx hardhat verify --network goerli <contract network addresses>`

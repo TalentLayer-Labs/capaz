@@ -11,13 +11,13 @@ async function main() {
   const capazEscrowFactory = CapazEscrowFactory.attach('0x07B9837e81b917451690f2eF4752AC5F1434450B')
 
   // Get token contract
-  const SimpleERC20 = await ethers.getContractFactory('CapazERC20')
-  const simpleERC20 = SimpleERC20.attach('0x58f7Fc8d443507B9A14A0Fe33330F07c85b474e9')
+  const CapazERC20 = await ethers.getContractFactory('CapazERC20')
+  const capazERC20 = CapazERC20.attach('0x58f7Fc8d443507B9A14A0Fe33330F07c85b474e9')
 
   // Approve tokens
   const amount = 10000
 
-  const approveTx = await simpleERC20.approve(capazEscrowFactory.address, amount)
+  const approveTx = await capazERC20.approve(capazEscrowFactory.address, amount)
   await approveTx.wait()
 
   const startTime = Math.floor(new Date().getTime() / 1000 + 5) // now + 5 seconds
@@ -26,7 +26,7 @@ async function main() {
   const mintTx = await capazEscrowFactory.mint({
     sender: accounts[0].address,
     receiver: accounts[1].address,
-    tokenAddress: simpleERC20.address,
+    tokenAddress: capazERC20.address,
     totalAmount: amount,
     startTime,
     periodDuration: 1,

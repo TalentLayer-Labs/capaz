@@ -58,12 +58,16 @@ contract CapazEscrow is Ownable, CapazCommon {
      */
     function releasableAmount() public view returns (uint256) {
         Escrow memory escrow = getEscrow();
+        if (block.timestamp <= escrow.startTime) {
+            return 0;
+        }
         uint256 periods = escrow.periods;
         uint256 periodsPassed = Math.min(
             (block.timestamp - escrow.startTime) / escrow.periodDuration,
             periods
         );
-        uint256 releasable = (periodsPassed * escrow.totalAmount) / periods;
+        uint256 releasable = (periodsPassed * (escrow.totalAmount / periods)) -
+            claimedAmount;
         return releasable;
     }
 

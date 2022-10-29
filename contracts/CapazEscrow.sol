@@ -39,12 +39,12 @@ contract CapazEscrow is Ownable, CapazCommon {
      */
     function releasableAmount() public view returns (uint256) {
         Escrow memory escrow = getEscrow();
+        if (block.timestamp < escrow.startTime) {
+            return block.timestamp;
+        }
         uint256 periods = escrow.periods;
-        uint256 periodsPassed = Math.min(
-            (block.timestamp - escrow.startTime) / escrow.periodDuration,
-            periods
-        );
-        uint256 releasable = (periodsPassed * escrow.totalAmount) / periods;
+        uint256 periodsPassed = Math.min((block.timestamp - escrow.startTime) / escrow.periodDuration, periods);
+        uint256 releasable = (periodsPassed * (escrow.totalAmount / periods)) - claimedAmount;
         return releasable;
     }
 
@@ -69,10 +69,7 @@ contract CapazEscrow is Ownable, CapazCommon {
     function distributeYield(address user1, address user2) public onlySender {
         // claim yield and distribute
         Escrow memory escrow = getEscrow();
-        require(
-            block.timestamp >= escrowEndTimestamp(escrow),
-            "CapazEscrow: Escrow has not ended yet"
-        );
+        require(block.timestamp >= escrowEndTimestamp(escrow), "CapazEscrow: Escrow has not ended yet");
         require(!isYieldClaimed, "CapazEscrow: Yield already claimed");
 
         //!TODO first release the remaining funds
@@ -104,11 +101,7 @@ contract CapazEscrow is Ownable, CapazCommon {
     /**
      * Get the timestamt of the last period
      */
-    function escrowEndTimestamp(Escrow memory _escrow)
-        public
-        pure
-        returns (uint256)
-    {
+    function escrowEndTimestamp(Escrow memory _escrow) public pure returns (uint256) {
         return _escrow.startTime + escrowLenght(_escrow);
     }
 
@@ -129,11 +122,7 @@ contract CapazEscrow is Ownable, CapazCommon {
      * @param receiver Address of the receiver of the escrow
      * @param escrow the complete escrow configuration
      */
-    event SetUp(
-        address indexed sender,
-        address indexed receiver,
-        Escrow escrow
-    );
+    event SetUp(address indexed sender, address indexed receiver, Escrow escrow);
 
     /**
      * Emit when funds are released to the receiver

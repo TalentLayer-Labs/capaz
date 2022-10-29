@@ -50,9 +50,10 @@ async function main() {
   bobBalance = await CapazERC20.balanceOf(bob.address)
   console.log('Bob Balance: ', bobBalance.toString())
 
-  const startTime = Math.floor(new Date().getTime() / 1000 + 2000) // now + 20 seconds
+  const startTime = Math.floor(new Date().getTime() / 1000 + 20) // now + 20 seconds
+  console.log('Start time: ', startTime)
 
-  const amount = ethers.utils.parseEther('1')
+  const amount = ethers.utils.parseEther('0.2')
   console.log('Amount: ', amount.toString())
 
   // We mint a new escrow contract from CapazEscrowFactory
@@ -62,8 +63,8 @@ async function main() {
     tokenAddress: '0x1eC0abD9539638FDb05EeD904Ca6F617BfBD6DCC',
     totalAmount: amount,
     startTime,
-    periodDuration: 5,
-    periods: 100,
+    periodDuration: 3600,
+    periods: 5,
     yieldStrategyId: 2,
     escrowAddress: '0x0000000000000000000000000000000000000000',
   })
@@ -76,8 +77,8 @@ async function main() {
     tokenAddress: '0x1eC0abD9539638FDb05EeD904Ca6F617BfBD6DCC',
     totalAmount: amount,
     startTime,
-    periodDuration: 5,
-    periods: 2,
+    periodDuration: 10,
+    periods: 5,
     yieldStrategyId: 3,
     escrowAddress: '0x0000000000000000000000000000000000000000',
   })

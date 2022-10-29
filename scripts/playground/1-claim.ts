@@ -33,15 +33,17 @@ async function main() {
   const carolBalanceBeforeClaim = await CapazERC20.balanceOf(carol.address)
   console.log('Carol balance before claim: ', carolBalanceBeforeClaim)
 
+  // suppose the current block has a timestamp of 01:00 PM
+  await hre.network.provider.send('evm_increaseTime', [3000])
+  await hre.network.provider.send('evm_mine') // this one will
+
   // find how much they can claim
-  //!WARNING can't make it work
-  // const carolClaimable = carolEscrowContract.releasableAmount()
-  // console.log('Carol claimable: ', carolClaimable)
+  const carolClaimable = await carolEscrowContract.releasableAmount()
+  console.log('Carol claimable: ', carolClaimable)
 
   // Release tokens
-  //!WARNING can't make it work
-  // const releaseTx = await carolEscrowContract.release()
-  // await releaseTx.wait()
+  const releaseTx = await carolEscrowContract.release()
+  await releaseTx.wait()
 
   // Carol balance account after claim
   const carolBalanceafterClaim = await CapazERC20.balanceOf(carol.address)

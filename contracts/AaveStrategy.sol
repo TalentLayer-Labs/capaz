@@ -12,11 +12,14 @@ contract AaveStrategy {
      * @param pool AAVE pool proxy address
      * @param token token address
      * @param amount amount to deposit
+     * 
+     * @dev Sender should first approve this contract to spend the amount of tokens to be deposited
      */
     function deposit(address pool, address token, uint256 amount) external {
         // Send tokens to this contract
         IERC20(token).transferFrom(msg.sender, address(this), amount);
 
+        // Approve AAVE pool to spend any amount of tokens
         if (IERC20(token).allowance(address(this), pool) < amount) {
             IERC20(token).approve(pool, type(uint256).max);
         }

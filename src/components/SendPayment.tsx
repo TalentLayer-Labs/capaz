@@ -1,12 +1,16 @@
 import { Combobox, Transition } from '@headlessui/react';
 import { CheckIcon, ChevronUpDownIcon } from '@heroicons/react/20/solid';
 import { Fragment, useState } from 'react';
+import { useContractWrite, useToken } from '@web3modal/react';
+import { tokenAddressCTZ, tokenAddressEscrowFactory } from '../utils/index';
+import CapazEscrowFactory from '../contracts/CapazEscrowFactory.json';
+import SimpleERC20 from '../contracts/SimpleERC20.json';
 
 export default function SendPayment() {
   const [query, setQuery] = useState('');
   const [estimatedGain, setEstimatedGain] = useState({
     amount: 0,
-    currency: 'USDC',
+    currency: 'CPZ',
     frequency: 0,
     frequencyUnit: 'year',
     yieldApy: 3,
@@ -53,7 +57,6 @@ export default function SendPayment() {
       }
     }
   }
-
   const frequencyUnit = [
     { id: 1, name: 'second' },
     { id: 2, name: 'minute' },
@@ -69,20 +72,56 @@ export default function SendPayment() {
   const [selectedYieldPlatform, setSelectedYieldPlatform] = useState(yieldPlatform[0]);
 
   const tokens = [
+    { id: 0, name: 'CPZ' },
     { id: 1, name: 'USDC' },
     { id: 2, name: 'USDT' },
     { id: 3, name: 'BUSD' },
   ];
   const [selectedToken, setSelectedToken] = useState(tokens[0]);
-  const filteredToken =
-    query === ''
-      ? tokens
-      : tokens.filter(token =>
-          token.name
-            .toLowerCase()
-            .replace(/\s+/g, '')
-            .includes(query.toLowerCase().replace(/\s+/g, '')),
-        );
+
+  // This ask the user to allow the future transaction
+  function approve() {
+    const {
+      data: dataToken,
+      error: errorToken,
+      isLoading: isLoadingToken,
+      refetch,
+    } = useToken({
+      address: tokenAddressCTZ,
+    });
+
+    const { data, error, isLoading, write } = useContractWrite({
+      address: tokenAddressCTZ,
+      abi: SimpleERC20.abi,
+      functionName: 'approve',
+      args: [tokenAddressEscrowFactory, 100],
+    });
+  }
+
+  // This launch the transaction
+  const { data, error, isLoading, write } = useContractWrite({
+    address: tokenAddressEscrowFactory,
+    abi: CapazEscrowFactory.abi,
+    functionName: 'mint',
+    args: [
+      {
+        sender: '0x20015a0d2650bA427665Ea73784B6498CC05E851',
+        receiver: '0x5497Cfe8748e61b3d444c3aEb4B579a516A88117',
+        tokenAddress: tokenAddressCTZ,
+        capazERC20LocalAddress: '0x48C45A025D154b40AffB41bc3bDEecb689edE7E6',
+        totalAmount: 3,
+        startTime: 1668035169,
+        periodDuration: 600,
+        periods: 10,
+        yieldStrategyId: 2,
+        escrowAddress: '0x0000000000000000000000000000000000000000',
+      },
+    ],
+  });
+
+  async function handleClick() {
+    write();
+  }
 
   return (
     <main>
@@ -96,6 +135,7 @@ export default function SendPayment() {
             <div>
               {/* Receiver wallet */}
               <input
+                id='receiverAddress'
                 type='text'
                 className='focus:outline-none border-b w-full pb-2 border-sky-400 placeholder-gray-500'
                 placeholder='Receiver wallet address'
@@ -123,12 +163,12 @@ export default function SendPayment() {
                       leaveTo='opacity-0'
                       afterLeave={() => setQuery('')}>
                       <Combobox.Options className='absolute mt-1 max-h-60 w-full overflow-auto rounded-md bg-white py-1 text-base shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none sm:text-sm'>
-                        {filteredToken.length === 0 && query !== '' ? (
+                        {tokens.length === 0 && query !== '' ? (
                           <div className='relative cursor-default select-none py-2 px-4 text-gray-700'>
                             Nothing found.
                           </div>
                         ) : (
-                          filteredToken.map(token => (
+                          tokens.map(token => (
                             <Combobox.Option
                               key={token.id}
                               className={({ active }) =>
@@ -319,7 +359,9 @@ export default function SendPayment() {
               <div className='px-3 text-gray-500'>I accept terms & conditions</div>
             </div>
             <div className='flex justify-center my-6'>
-              <button className=' rounded-full  p-3 w-full sm:w-56   bg-gradient-to-r from-sky-600  to-teal-300 text-white text-lg font-semibold '>
+              <button
+                className='rounded-full  p-3 w-full sm:w-56   bg-gradient-to-r from-sky-600  to-teal-300 text-white text-lg font-semibold'
+                onClick={handleClick}>
                 Send Payment
               </button>
             </div>

@@ -23,9 +23,11 @@
   },
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
+    "verify": "npx hardhat verify --network goerli ......",
     "solhint": "solhint --fix contracts/**/*.sol",
     "deploy": "npx hardhat run scripts/deploy.ts --network localhost",
-    "zero": "npx hardhat run scripts/playground/0-createEscrowContrat.ts --network localhost"
+    "zero": "npx hardhat run scripts/playground/0-createEscrowContract.ts --network localhost",
+    "one": "npx hardhat run scripts/playground/1-claim.ts --network localhost"
   },
   "dependencies": {
     "@openzeppelin/contracts": "^4.7.3",

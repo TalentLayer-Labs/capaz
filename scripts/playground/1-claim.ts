@@ -34,17 +34,18 @@ async function main() {
   console.log('Carol balance before claim: ', carolBalanceBeforeClaim)
 
   // find how much they can claim
-  //!WARNING releasableAmount dont work
-  // const carolClaimable = await carolEscrowContract.releasableAmount()
+  //!WARNING can't make it work
+  // const carolClaimable = carolEscrowContract.releasableAmount()
   // console.log('Carol claimable: ', carolClaimable)
 
   // Release tokens
+  //!WARNING can't make it work
   // const releaseTx = await carolEscrowContract.release()
   // await releaseTx.wait()
 
   // Carol balance account after claim
-  // const carolBalanceafterClaim = await CapazERC20.balanceOf(carol.address)
-  // console.log('Carol balance before claim: ', carolBalanceafterClaim)
+  const carolBalanceafterClaim = await CapazERC20.balanceOf(carol.address)
+  console.log('Carol after  claim: ', carolBalanceafterClaim)
 }
 
 // We recommend this pattern to be able to use async/await everywhere

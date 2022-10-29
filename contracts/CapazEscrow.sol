@@ -72,12 +72,24 @@ contract CapazEscrow is Ownable {
     /**
      * Let the receiver release the avaiable funds
      */
-    function release() public onlyReceiver {
+    function release() public onlyReceiver {   // TODO: make it callable by sender as well
         CapazCommon.Escrow memory escrow = getEscrow();
         address receiver = escrow.receiver;
         uint256 amount = releasableAmount();
         require(amount > 0, "You don't have any funds to release");
-        IERC20(escrow.tokenAddress).transfer(receiver, amount);
+
+       
+       // TODO: handle claim (handle the case where there is no strategy)
+        address pool = escrowFactory.getStrategyPool(escrow.yieldStrategyId);
+
+        if (pool != address(0)) {
+            // If a yield strategy is used withdraw tokens from strategy pool
+            strategy.claim(pool, escrow.tokenAddress, amount, receiver);
+        } else {
+            // If no yield strategy is used send tokens directly to receiver
+            IERC20(escrow.tokenAddress).transfer(receiver, amount);
+        }
+
         claimedAmount += amount;
 
         emit Released(receiver, amount);
@@ -95,9 +107,9 @@ contract CapazEscrow is Ownable {
         );
         require(!isYieldClaimed, "CapazEscrow: Yield already claimed");
 
-        //!TODO first release the remaining funds
-        
-        //!TODO claim yield and distribute
+        //!TODO first release the remaining funds (call release in case some funds are remaining)
+
+        //!TODO claim yield and distribute (claim all)
         if (user1 == user2) {
             // send all to same user
         } else {

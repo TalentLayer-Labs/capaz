@@ -2,7 +2,7 @@ import { Fragment } from 'react';
 import { Popover, Transition } from '@headlessui/react';
 import { ConnectButton, useAccount } from '@web3modal/react';
 import { truncateAddress } from '../../utils';
-import {Link, useNavigate} from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import {
   Bars3Icon,
   ChatBubbleBottomCenterTextIcon,

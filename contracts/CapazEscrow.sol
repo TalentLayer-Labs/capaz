@@ -72,11 +72,12 @@ contract CapazEscrow is Ownable {
     /**
      * Let the receiver release the avaiable funds
      */
-    function release() public onlySenderOrReceiver {
+    function release() public onlySenderOrReceiver { 
         CapazCommon.Escrow memory escrow = getEscrow();
         address receiver = escrow.receiver;
         uint256 amount = releasableAmount();
         require(amount > 0, "You don't have any funds to release");
+        require(claimedAmount < escrow.totalAmount, "You have already released all the funds");
 
         address pool = escrowFactory.getStrategyPool(escrow.yieldStrategyId);
 

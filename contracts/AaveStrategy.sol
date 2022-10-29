@@ -26,7 +26,7 @@ contract AaveStrategy is IStrategy, Ownable {
     /**
      * @dev Sender should first approve this contract to spend the amount of tokens to be deposited
      */
-    function deposit(address token, uint256 amount) external onlyOwner {
+    function deposit(address token, uint256 amount) external {
         // Send tokens to this contract
         IERC20(token).transferFrom(msg.sender, address(this), amount);
 
@@ -48,7 +48,7 @@ contract AaveStrategy is IStrategy, Ownable {
     /**
      * @dev Sender should first approve this contract to spend the amount of aTokens to be used for withdraw
      */
-    function claim(address token, uint256 amount, address user) external onlyOwner {
+    function claim(address token, uint256 amount, address user) external {
         // Get aToken address from underlying token address
         IERC20 aToken = IERC20(getYieldTokenFromUnderlying(token));
 
@@ -62,7 +62,7 @@ contract AaveStrategy is IStrategy, Ownable {
     /**
      * @dev Sender should first approve this contract to spend its entire amount of aTokens
      */
-    function claimAll(address token, address user) external onlyOwner {
+    function claimAll(address token, address user) external {
         // Get aToken address from underlying token address
         IERC20 aToken = IERC20(getYieldTokenFromUnderlying(token));
 

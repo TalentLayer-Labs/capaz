@@ -22,16 +22,8 @@ abstract contract ERC2981 is ERC165, IERC2981 {
         _royalties = RoyaltyInfo(recipient, uint24(value));
     }
 
-    function supportsInterface(bytes4 interfaceId)
-        public
-        view
-        virtual
-        override
-        returns (bool)
-    {
-        return
-            interfaceId == type(IERC2981).interfaceId ||
-            super.supportsInterface(interfaceId);
+    function supportsInterface(bytes4 interfaceId) public view virtual override returns (bool) {
+        return interfaceId == type(IERC2981).interfaceId || super.supportsInterface(interfaceId);
     }
 
     function royaltyInfo(uint256, uint256 value)

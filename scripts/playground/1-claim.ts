@@ -15,26 +15,36 @@ async function main() {
   // We get an instance of the CapazERC20 contract
   const CapazERC20 = await ethers.getContractAt('CapazERC20', capazERC20LocalAddress)
 
-  // We ll find the Carol escrow contract address
+  // We ll find the Carol and Dave escrow contract address
   const carolEscrowConfiguration = await CapazEscrowFactoryContract.getEscrow(0)
   const carolEscrowContractaddress = carolEscrowConfiguration.escrowAddress
   console.log(carolEscrowContractaddress)
 
+  const daveEscrowConfiguration = await CapazEscrowFactoryContract.getEscrow(1)
+  const daveEscrowContractaddress = daveEscrowConfiguration.escrowAddress
+  console.log(daveEscrowContractaddress)
+
   // Let's find the whole contract instance attached to tgis address
   const EscrowInstance = await ethers.getContractFactory('CapazEscrow')
   const carolEscrowContract = EscrowInstance.attach(carolEscrowContractaddress).connect(carol)
+  // console.log(carolEscrowContract)
+
+  // Carol balance account before claim
+  const carolBalanceBeforeClaim = await CapazERC20.balanceOf(carol.address)
+  console.log('Carol balance before claim: ', carolBalanceBeforeClaim)
+
+  // find how much they can claim
+  //!WARNING releasableAmount dont work
+  // const carolClaimable = await carolEscrowContract.releasableAmount()
+  // console.log('Carol claimable: ', carolClaimable)
 
   // Release tokens
   // const releaseTx = await carolEscrowContract.release()
   // await releaseTx.wait()
 
-  // find how much they can claim
-  const carolClaimable = await carolEscrowContract.releasableAmount()
-  console.log('Carol claimable: ', carolClaimable)
-
-  // Carol balance account before claim
-  const carolBalanceBeforeClaim = await CapazERC20.balanceOf(carol.address)
-  console.log('Carol balance before claim: ', carolBalanceBeforeClaim)
+  // Carol balance account after claim
+  // const carolBalanceafterClaim = await CapazERC20.balanceOf(carol.address)
+  // console.log('Carol balance before claim: ', carolBalanceafterClaim)
 }
 
 // We recommend this pattern to be able to use async/await everywhere

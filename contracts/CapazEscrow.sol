@@ -19,8 +19,6 @@ contract CapazEscrow is Ownable, CapazCommon {
     uint256 tokenId;
     uint256 claimedAmount;
     bool isYieldClaimed;
-    IStrategy strategy;
-
 
     /**
      * Function called when the contract instance is cloned
@@ -31,21 +29,22 @@ contract CapazEscrow is Ownable, CapazCommon {
         escrowFactory = ICapazEscrowFactory(owner());
         Escrow memory escrow = getEscrow();
 
-        Strategy strategyId = escrow.yieldStrategyId;
+        uint256 strategyId = escrow.yieldStrategyId;
 
         // Check if a strategy is set
-        if (strategyId != Strategy.None) {
-            if (strategyId == Strategy.Aave) {
-                strategy = new AaveStrategy(0x368EedF3f56ad10b9bC57eed4Dac65B26Bb667f6);
-            } else {
-                revert("Strategy not supported");
-            }
+        if (strategyId != 0) {
+            // Get strategy
+            IStrategy strategy = getStrategy();
 
             address token = escrow.tokenAddress;
             uint256 totalAmount = escrow.totalAmount;
 
             // Approve strategy to use token
             IERC20(token).approve(address(strategy), totalAmount);
+
+            // Approve strategy to use yieldToken (needed for claim)
+            address yieldToken = strategy.getYieldTokenFromUnderlying(escrow.tokenAddress);
+            IERC20(yieldToken).approve(address(strategy), type(uint256).max);
 
             // Deposit token to strategy pool
             strategy.deposit(token, totalAmount);
@@ -78,7 +77,12 @@ contract CapazEscrow is Ownable, CapazCommon {
         require(amount > 0, "You don't have any funds to release");
         require(claimedAmount < escrow.totalAmount, "You have already released all the funds");
 
-        if (escrow.yieldStrategyId != Strategy.None) {
+        uint256 strategyId = escrow.yieldStrategyId;
+        
+        if (strategyId != 0) {
+            // Get strategy
+            IStrategy strategy = getStrategy();
+
             // If a yield strategy is used withdraw tokens from strategy pool
             strategy.claim(escrow.tokenAddress, amount, receiver);
         } else {
@@ -97,8 +101,8 @@ contract CapazEscrow is Ownable, CapazCommon {
      * Let the sender get is yield and choose how he want to distribute them
      */
     function distributeYield(address user1, address user2) public onlySender {
-        // claim yield and distribute
         Escrow memory escrow = getEscrow();
+        require(escrow.yieldStrategyId != 0, "No yield strategy set");
         require(
             block.timestamp >= escrowEndTimestamp(escrow),
             "CapazEscrow: Escrow has not ended yet"
@@ -109,7 +113,10 @@ contract CapazEscrow is Ownable, CapazCommon {
         if (claimedAmount < escrow.totalAmount) {
             release();
         }
-        
+
+        // Get strategy
+        IStrategy strategy = getStrategy();
+
         if (user1 == user2) {
             // Send all to yield to the same user
             strategy.claimAll(escrow.tokenAddress, user1);
@@ -132,6 +139,15 @@ contract CapazEscrow is Ownable, CapazCommon {
      */
     function getEscrow() public view returns (Escrow memory) {
         return escrowFactory.getEscrow(tokenId);
+    }
+
+    /**
+     * Get the strategy used by the escrow
+     */
+    function getStrategy() public view returns (IStrategy) {
+        Escrow memory escrow = getEscrow();
+        uint256 strategyId = escrow.yieldStrategyId;
+        return IStrategy(escrowFactory.getStrategy(strategyId));
     }
 
     /**

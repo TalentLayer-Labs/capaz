@@ -26,4 +26,10 @@ interface IStrategy {
      * @param user address of the user who should receive the withdrawn tokens
      */
     function claimAll(address token, address user) external;
+
+    /**
+     * Returns the amount of the strategy yield token given the underlying token
+     * @param token the underlying token
+     */
+    function getYieldTokenFromUnderlying(address token) external view returns (address) ;
 }

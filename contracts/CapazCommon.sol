@@ -6,12 +6,6 @@ pragma solidity ^0.8.10;
  * @author Capaz Team @ ETHLisbon Hackathon
  */
 contract CapazCommon {
-    /// @notice The different strategies available
-    enum Strategy {
-        None,
-        Aave
-    }
-
     /// @notice Shared Escrow informations
     /// @param sender the sender of the funds
     /// @param receiver the receiver of the funds
@@ -30,7 +24,7 @@ contract CapazCommon {
         uint256 startTime;
         uint256 periodDuration;
         uint256 periods;
-        Strategy yieldStrategyId;
+        uint256 yieldStrategyId;
         address escrowAddress;
     }
 }

@@ -28,6 +28,9 @@ contract CapazEscrowFactory is ERC721, ERC2981, Ownable, CapazCommon {
     // Counter of nft
     Counters.Counter private _tokenIdCounter;
 
+    // Strategy id to strategy contract address
+    mapping(uint256 => address) public strategies;
+
     /**
      * Allows a user to mint a new escrow payment
      * Fees defined to the deployer - 0,5%
@@ -129,6 +132,28 @@ contract CapazEscrowFactory is ERC721, ERC2981, Ownable, CapazCommon {
     }
 
     /**
+     * Sets or updates the strategy contract address
+     * 
+     * @param strategyId strategy id
+     * @param strategyAddress strategy contract address
+     */
+    function setStrategy(uint256 strategyId, address strategyAddress)
+        public
+        onlyOwner
+    {
+        require(strategyId != 0, "Strategy id cannot be 0, reserved for none strategy");
+        strategies[strategyId] = strategyAddress;
+    }
+
+    /**
+     * Get the strategy contract address for a given strategy id
+     * @param strategyId strategy id
+     */
+    function getStrategy(uint256 strategyId) public view returns (address) {
+        return strategies[strategyId];
+    }
+
+    /**
      * Get the dynamic token URI
      * @param tokenId NFT id
      */
@@ -225,6 +250,12 @@ contract CapazEscrowFactory is ERC721, ERC2981, Ownable, CapazCommon {
         require(
             _escrow.startTime > block.timestamp,
             "CapazEscrowFactory: startTime must be greater than current time"
+        );
+
+        address strategy = getStrategy(_escrow.yieldStrategyId);
+        require(
+            strategy != address(0),
+            "CapazEscrowFactory: strategy must be a valid strategy"
         );
         _;
     }

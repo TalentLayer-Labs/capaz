@@ -1,22 +1,34 @@
+import { Fragment, useState } from 'react';
 import { Combobox, Transition } from '@headlessui/react';
 import { CheckIcon, ChevronUpDownIcon } from '@heroicons/react/20/solid';
-import { Fragment, useState } from 'react';
-import { useContractWrite, useToken } from '@web3modal/react';
-import { tokenAddressCTZ, tokenAddressEscrowFactory } from '../utils/index';
+import { useAccount, useContractWrite } from '@web3modal/react';
+import { tokenAddressEscrowFactory, periodDuration, tokens, yieldStrategy } from '../utils/index';
 import CapazEscrowFactory from '../contracts/CapazEscrowFactory.json';
 import SimpleERC20 from '../contracts/SimpleERC20.json';
 
 export default function SendPayment() {
+  let isApproved = false;
+  let isExecuted = false;
+  const { account, isReady } = useAccount();
   const [query, setQuery] = useState('');
+  const [selectedToken, setSelectedToken] = useState(tokens[0]);
+  const [amount, setAmount] = useState(0);
+  const [frequency, setFrequency] = useState(0);
+  const [selectedYieldPlatform, setSelectedYieldPlatform] = useState(yieldStrategy[0]);
+  const [selectedSelector, setSelectedSelector] = useState(periodDuration[5]);
+  const [receiverAddress, setReceiverAddress] = useState(
+    '0x0000000000000000000000000000000000000000',
+  );
   const [estimatedGain, setEstimatedGain] = useState({
     amount: 0,
     currency: 'CPZ',
     frequency: 0,
-    frequencyUnit: 'year',
+    periodDuration: 'year',
     yieldApy: 3,
     total: '0',
   });
-  function handleChangeEstimatedGain(event) {
+
+  function handleChangeEstimatedGain(event: Event) {
     switch (event.target.id) {
       case 'amount': {
         const total = event.target.value * (1 + estimatedGain.yieldApy) * 0.01;
@@ -41,11 +53,11 @@ export default function SendPayment() {
         });
         break;
       }
-      case 'frequencyUnit': {
+      case 'periodDuration': {
         const total = estimatedGain.amount * (1 + estimatedGain.yieldApy) * 0.01;
         setEstimatedGain({
           ...estimatedGain,
-          frequencyUnit: event.target.value,
+          periodDuration: event.target.value,
           total: total.toFixed(2),
         });
         break;
@@ -57,70 +69,48 @@ export default function SendPayment() {
       }
     }
   }
-  const frequencyUnit = [
-    { id: 1, name: 'second' },
-    { id: 2, name: 'minute' },
-    { id: 3, name: 'hour' },
-    { id: 4, name: 'day' },
-    { id: 5, name: 'week' },
-    { id: 6, name: 'month' },
-    { id: 7, name: 'year' },
-  ];
-  const [selectedSelector, setSelectedSelector] = useState(frequencyUnit[5]);
 
-  const yieldPlatform = [{ id: 1, name: 'Aave', apy: 5.43 }];
-  const [selectedYieldPlatform, setSelectedYieldPlatform] = useState(yieldPlatform[0]);
+  const approveTx = useContractWrite({
+    address: selectedToken.address,
+    abi: SimpleERC20.abi,
+    functionName: 'approve',
+    args: [tokenAddressEscrowFactory, amount * 100],
+  });
 
-  const tokens = [
-    { id: 0, name: 'CPZ' },
-    { id: 1, name: 'USDC' },
-    { id: 2, name: 'USDT' },
-    { id: 3, name: 'BUSD' },
-  ];
-  const [selectedToken, setSelectedToken] = useState(tokens[0]);
-
-  // This ask the user to allow the future transaction
-  function approve() {
-    const {
-      data: dataToken,
-      error: errorToken,
-      isLoading: isLoadingToken,
-      refetch,
-    } = useToken({
-      address: tokenAddressCTZ,
-    });
-
-    const { data, error, isLoading, write } = useContractWrite({
-      address: tokenAddressCTZ,
-      abi: SimpleERC20.abi,
-      functionName: 'approve',
-      args: [tokenAddressEscrowFactory, 100],
-    });
-  }
-
-  // This launch the transaction
-  const { data, error, isLoading, write } = useContractWrite({
+  const executeTx = useContractWrite({
     address: tokenAddressEscrowFactory,
     abi: CapazEscrowFactory.abi,
     functionName: 'mint',
     args: [
       {
-        sender: '0x20015a0d2650bA427665Ea73784B6498CC05E851',
-        receiver: '0x5497Cfe8748e61b3d444c3aEb4B579a516A88117',
-        tokenAddress: tokenAddressCTZ,
+        sender: `${isReady ? account.address : null}`,
+        receiver: receiverAddress,
+        tokenAddress: selectedToken.address,
         capazERC20LocalAddress: '0x48C45A025D154b40AffB41bc3bDEecb689edE7E6',
-        totalAmount: 3,
-        startTime: 1668035169,
-        periodDuration: 600,
-        periods: 10,
-        yieldStrategyId: 2,
+        totalAmount: amount * 100,
+        startTime: getTimestampInSeconds(),
+        periodDuration: selectedSelector.value,
+        periods: frequency,
+        yieldStrategyId: selectedYieldPlatform.id,
         escrowAddress: '0x0000000000000000000000000000000000000000',
       },
     ],
   });
 
-  async function handleClick() {
-    write();
+  function getTimestampInSeconds() {
+    return Math.floor(Date.now() / 1000);
+  }
+  function handleClick() {
+    console.log('handleClick');
+
+    if (!isApproved && !isExecuted) {
+      approveTx.write().then(() => {
+        isApproved = true;
+        executeTx.write().then(() => {
+          isExecuted = true;
+        });
+      });
+    }
   }
 
   return (
@@ -139,6 +129,7 @@ export default function SendPayment() {
                 type='text'
                 className='focus:outline-none border-b w-full pb-2 border-sky-400 placeholder-gray-500'
                 placeholder='Receiver wallet address'
+                onChange={event => setReceiverAddress(event.target.value)}
               />
             </div>
             <div className='flex'>
@@ -209,7 +200,7 @@ export default function SendPayment() {
                 type='number'
                 className='focus:outline-none border-b w-full pb-2 border-sky-400 placeholder-gray-500 my-8'
                 placeholder='Amount'
-                onChange={handleChangeEstimatedGain}
+                onChange={event => setAmount(event.target.value)}
               />
             </div>
             <div className='flex'>
@@ -218,7 +209,7 @@ export default function SendPayment() {
                 type='number'
                 className='focus:outline-none border-b w-full pb-2 border-sky-400 placeholder-gray-500 my-8 mr-8'
                 placeholder='Frequency'
-                onChange={handleChangeEstimatedGain}
+                onChange={event => setFrequency(event.target.value)}
               />
               {/* Frequency selector */}
               <div className='my-8 w-72 mr-8'>
@@ -230,7 +221,7 @@ export default function SendPayment() {
                         displayValue={selectedSelector => selectedSelector.name}
                         onChange={event => {
                           setQuery(event.target.value);
-                          handleChangeEstimatedGain();
+                          handleChangeEstimatedGain(event);
                         }}
                       />
                       <Combobox.Button className='absolute inset-y-0 right-0 flex items-center pr-2'>
@@ -244,27 +235,27 @@ export default function SendPayment() {
                       leaveTo='opacity-0'
                       afterLeave={() => setQuery('')}>
                       <Combobox.Options className='absolute mt-1 max-h-60 w-full overflow-auto rounded-md bg-white py-1 text-base shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none sm:text-sm'>
-                        {frequencyUnit.length === 0 && query !== '' ? (
+                        {periodDuration.length === 0 && query !== '' ? (
                           <div className='relative cursor-default select-none py-2 px-4 text-gray-700'>
                             Nothing found.
                           </div>
                         ) : (
-                          frequencyUnit.map(frequencyUnit => (
+                          periodDuration.map(periodDuration => (
                             <Combobox.Option
-                              key={frequencyUnit.id}
+                              key={periodDuration.id}
                               className={({ active }) =>
                                 `relative cursor-default select-none py-2 pl-10 pr-4 ${
                                   active ? 'bg-teal-600 text-white' : 'text-gray-900'
                                 }`
                               }
-                              value={frequencyUnit}>
+                              value={periodDuration}>
                               {({ selected, active }) => (
                                 <>
                                   <span
                                     className={`block truncate ${
                                       selected ? 'font-medium' : 'font-normal'
                                     }`}>
-                                    {frequencyUnit.name}
+                                    {periodDuration.name}
                                   </span>
                                   {selected ? (
                                     <span
@@ -288,15 +279,15 @@ export default function SendPayment() {
             <div className='flex'>
               {/* Yield selector */}
               <div className='my-8 w-72 mr-8'>
-                <Combobox value={yieldPlatform} onChange={setSelectedYieldPlatform}>
+                <Combobox value={selectedYieldPlatform.name} onChange={setSelectedYieldPlatform}>
                   <div className='relative mt-1'>
                     <div className='relative w-full cursor-default overflow-hidden rounded-lg bg-white text-left shadow-md focus:outline-none focus-visible:ring-2 focus-visible:ring-white focus-visible:ring-opacity-75 focus-visible:ring-offset-2 focus-visible:ring-offset-teal-300 sm:text-sm'>
                       <Combobox.Input
                         className='w-full border-none py-2 pl-3 pr-10 text-sm leading-5 text-gray-900 focus:ring-0'
-                        displayValue={yieldPlatform => selectedYieldPlatform.name}
+                        displayValue={yieldStrategy => selectedYieldPlatform.name}
                         onChange={event => {
                           setQuery(event.target.value);
-                          handleChangeEstimatedGain();
+                          handleChangeEstimatedGain(event);
                         }}
                       />
                       <Combobox.Button className='absolute inset-y-0 right-0 flex items-center pr-2'>
@@ -310,27 +301,27 @@ export default function SendPayment() {
                       leaveTo='opacity-0'
                       afterLeave={() => setQuery('')}>
                       <Combobox.Options className='absolute mt-1 max-h-60 w-full overflow-auto rounded-md bg-white py-1 text-base shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none sm:text-sm'>
-                        {yieldPlatform.length === 0 && query !== '' ? (
+                        {yieldStrategy.length === 0 && query !== '' ? (
                           <div className='relative cursor-default select-none py-2 px-4 text-gray-700'>
                             Nothing found.
                           </div>
                         ) : (
-                          yieldPlatform.map(yieldPlatform => (
+                          yieldStrategy.map(yieldStrategy => (
                             <Combobox.Option
-                              key={yieldPlatform.id}
+                              key={yieldStrategy.id}
                               className={({ active }) =>
                                 `relative cursor-default select-none py-2 pl-10 pr-4 ${
                                   active ? 'bg-teal-600 text-white' : 'text-gray-900'
                                 }`
                               }
-                              value={yieldPlatform}>
+                              value={yieldStrategy}>
                               {({ selected, active }) => (
                                 <>
                                   <span
                                     className={`block truncate ${
                                       selected ? 'font-medium' : 'font-normal'
                                     }`}>
-                                    {yieldPlatform.name}
+                                    {yieldStrategy.name}
                                   </span>
                                   {selected ? (
                                     <span

@@ -4,6 +4,9 @@ pragma solidity ^0.8.10;
 import {ERC721} from "@openzeppelin/contracts/token/ERC721/ERC721.sol";
 import {Counters} from "@openzeppelin/contracts/utils/Counters.sol";
 import {IERC20} from "@openzeppelin/contracts/token/ERC20/IERC20.sol";
+import {ERC20} from "@openzeppelin/contracts/token/ERC20/ERC20.sol";
+import {Base64} from "@openzeppelin/contracts/utils/Base64.sol";
+import {Strings} from "@openzeppelin/contracts/utils/Strings.sol";
 import "@openzeppelin/contracts/access/Ownable.sol";
 
 import {ICapazEscrow} from "./interfaces/ICapazEscrow.sol";
@@ -17,6 +20,7 @@ import {ERC2981} from "./EIP2981/ERC2981.sol";
  */
 contract CapazEscrowFactory is ERC721, ERC2981, Ownable {
     using Counters for Counters.Counter;
+    using Strings for uint256;
 
     /// tokenId to Escrow mapping
     mapping(uint256 => CapazCommon.Escrow) public escrows;
@@ -136,7 +140,7 @@ contract CapazEscrowFactory is ERC721, ERC2981, Ownable {
         public
         view
         virtual
-        override(ERC721A)
+        override(ERC721)
         returns (string memory)
     {
         return _buildTokenURI(tokenId);
@@ -152,7 +156,12 @@ contract CapazEscrowFactory is ERC721, ERC2981, Ownable {
         returns (string memory)
     {
         CapazCommon.Escrow memory escrow = getEscrow(tokenId);
-        string tokenSymbol = IERC20(escrow.tokenAddress).symbol();
+        string memory tokenSymbol = ERC20(escrow.tokenAddress).symbol();
+        string memory escrowValue = appendString(
+            escrow.totalAmount.toString(),
+            " ",
+            tokenSymbol
+        );
 
         bytes memory image = abi.encodePacked(
             "data:image/svg+xml;base64,",
@@ -160,7 +169,7 @@ contract CapazEscrowFactory is ERC721, ERC2981, Ownable {
                 bytes(
                     abi.encodePacked(
                         '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 900 900" xmlns="http://www.w3.org/2000/svg"><defs><filter id="A"><feFlood flood-opacity="0"/><feBlend in="SourceGraphic"/><feGaussianBlur stdDeviation="189"/></filter></defs><path fill="#60f" d="M0 0h900v900H0z"/><g filter="url(#A)"><circle cx="469" cy="489" r="420" fill="#4facf7"/><circle cx="353" cy="137" r="420" fill="#60f"/><g fill="#4facf7"><circle cx="708" cy="201" r="420"/><circle cx="276" cy="580" r="420"/></g><circle cx="681" cy="835" r="420" fill="#60f"/><circle cx="105" cy="146" r="420" fill="#4facf7"/></g><text x="30" y="70" fill="#fff">Capaz Escrow</text><text x="30" y="700" fill="#fff">',
-                        escrow.totalAmount + " " + tokenSymbol,
+                        escrowValue,
                         "</text></svg>"
                     )
                 )
@@ -178,7 +187,7 @@ contract CapazEscrowFactory is ERC721, ERC2981, Ownable {
                                 '{"receiver":"',
                                 escrow.receiver,
                                 '{"totalAmount":"',
-                                escrow.totalAmount + tokenSymbol,
+                                escrowValue,
                                 '", "image":"',
                                 image,
                                 unicode'", "description": "Capaz Escrow"}'
@@ -187,6 +196,18 @@ contract CapazEscrowFactory is ERC721, ERC2981, Ownable {
                     )
                 )
             );
+    }
+
+    /**
+     * concat 3 strings together
+     * Notes: as we use solidity 8.10 due to aeve we can't use string.concat function
+     */
+    function appendString(
+        string memory _a,
+        string memory _b,
+        string memory _c
+    ) internal pure returns (string memory) {
+        return string(abi.encodePacked(_a, _b, _c));
     }
 
     /**

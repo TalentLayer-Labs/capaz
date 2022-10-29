@@ -354,9 +354,9 @@ export default function SendPayment() {
               <input type='checkbox' className='border-sky-400 ' value='' />
               <div className='px-3 text-gray-500'>I accept terms & conditions</div>
             </div>
-            <div className='flex justify-center my-6'>
+            <div className='flex justify-center my-6 flex-col align-center mx-auto'>
               <button
-                className='rounded-full flex align-center justify-center  p-3 w-full sm:w-56   bg-gradient-to-r from-sky-600  to-teal-300 text-white text-lg font-semibold'
+                className='rounded-full text-center flex align-center justify-center  p-3 w-full sm:w-56   bg-gradient-to-r from-sky-600  to-teal-300 text-white text-lg font-semibold'
                 onClick={handleClick}>
                 <span>Send Payment</span>
                 {approveTx.isLoading || executeTx.isLoading ? (
@@ -386,6 +386,17 @@ export default function SendPayment() {
                   </div>
                 ) : null}
               </button>
+              {/* display errors in jsx */}
+              {approveTx.error && (
+                <div className='text-red-500 text-sm font-semibold text-center'>
+                  {approveTx.error.message.split(' (')[0]}
+                </div>
+              )}
+              {executeTx.error && (
+                <div className='text-red-500 text-sm font-semibold text-center'>
+                  {executeTx.error.message.split(' (')[0]}
+                </div>
+              )}
             </div>
           </form>
         </div>

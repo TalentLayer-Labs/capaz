@@ -6,7 +6,9 @@ import {Math} from "@openzeppelin/contracts/utils/math/Math.sol";
 import {IERC20} from "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 
 import {ICapazEscrowFactory} from "./interfaces/ICapazEscrowFactory.sol";
+import {IStrategy} from "./interfaces/IStrategy.sol";
 import {CapazCommon} from "./CapazCommon.sol";
+import {AaveStrategy} from "./AaveStrategy.sol";
 
 /**
  * @title CapazEscrow
@@ -17,6 +19,7 @@ contract CapazEscrow is Ownable {
     uint256 tokenId;
     uint256 claimedAmount;
     bool isYieldClaimed;
+    IStrategy strategy; 
 
     /**
      * Function called when the contract instance is cloned
@@ -30,6 +33,9 @@ contract CapazEscrow is Ownable {
         //!TODO Handle strategies mapping and handle adding a new one
         //!TODO deposit funds into strategy
         address token = escrow.tokenAddress;
+
+        // TODO: Handle strategy selection
+        strategy = new AaveStrategy();
 
         emit SetUp(escrow.sender, escrow.receiver, escrow);
     }

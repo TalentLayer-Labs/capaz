@@ -1,7 +1,7 @@
 import { ethers } from 'hardhat'
 
-import { AAVE_POOL_ADDRESS, TOKEN_ADDRESS } from '../../constants/addresses'
-import { getAaveStrategyContract } from '../../utils/contracts'
+import { AAVE_STRATEGY_ADDRESS, TOKEN_ADDRESS } from '../../constants/addresses'
+import { getAaveStrategyContract, getTokenContractAtAddress } from '../../utils/contracts'
 
 async function main() {
   // Deploy contract
@@ -13,13 +13,14 @@ async function main() {
 
   const aaveStrategy = await getAaveStrategyContract()
 
+  const aUsdcAddress = await aaveStrategy.getYieldTokenFromUnderlying(TOKEN_ADDRESS)
+  const aUsdcContract = getTokenContractAtAddress(aUsdcAddress, accounts[0])
+
+  const approveTx = await aUsdcContract.approve(AAVE_STRATEGY_ADDRESS, amount)
+  await approveTx.wait()
+
   // Withdraw from AAVE
-  const tx = await aaveStrategy.claim(
-    AAVE_POOL_ADDRESS,
-    TOKEN_ADDRESS,
-    amount,
-    '0x0Ba0C3E897fA7Ee61d177b392bf88A2AEc747fE8',
-  )
+  const tx = await aaveStrategy.claim(TOKEN_ADDRESS, amount, '0x8d960334c2ef30f425b395c1506ef7c5783789f3')
   await tx.wait()
 
   console.log('Txn hash: ', tx.hash)

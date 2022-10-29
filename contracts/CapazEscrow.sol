@@ -6,7 +6,9 @@ import {Math} from "@openzeppelin/contracts/utils/math/Math.sol";
 import {IERC20} from "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 
 import {ICapazEscrowFactory} from "./interfaces/ICapazEscrowFactory.sol";
+import {IStrategy} from "./interfaces/IStrategy.sol";
 import {CapazCommon} from "./CapazCommon.sol";
+import {AaveStrategy} from "./AaveStrategy.sol";
 
 /**
  * @title CapazEscrow
@@ -27,9 +29,26 @@ contract CapazEscrow is Ownable, CapazCommon {
         escrowFactory = ICapazEscrowFactory(owner());
         Escrow memory escrow = getEscrow();
 
-        //!TODO Handle strategies mapping and handle adding a new one
-        //!TODO deposit funds into strategy
-        address token = escrow.tokenAddress;
+        uint256 strategyId = escrow.yieldStrategyId;
+
+        // Check if a strategy is set
+        if (strategyId != 0) {
+            // Get strategy
+            IStrategy strategy = getStrategy();
+
+            address token = escrow.tokenAddress;
+            uint256 totalAmount = escrow.totalAmount;
+
+            // Approve strategy to use token
+            IERC20(token).approve(address(strategy), totalAmount);
+
+            // Approve strategy to use yieldToken (needed for claim)
+            address yieldToken = strategy.getYieldTokenFromUnderlying(escrow.tokenAddress);
+            IERC20(yieldToken).approve(address(strategy), type(uint256).max);
+
+            // Deposit token to strategy pool
+            strategy.deposit(token, totalAmount);
+        } 
 
         emit SetUp(escrow.sender, escrow.receiver, escrow);
     }
@@ -51,15 +70,30 @@ contract CapazEscrow is Ownable, CapazCommon {
     /**
      * Let the receiver release the avaiable funds
      */
-    function release() public returns (uint256) {
+    function release() public returns (uint256) { 
         Escrow memory escrow = getEscrow();
         address receiver = escrow.receiver;
         uint256 amount = releasableAmount();
         require(amount > 0, "You don't have any funds to release");
-        IERC20(escrow.tokenAddress).transfer(receiver, amount);
+        require(claimedAmount < escrow.totalAmount, "You have already released all the funds");
+
+        uint256 strategyId = escrow.yieldStrategyId;
+        
+        if (strategyId != 0) {
+            // Get strategy
+            IStrategy strategy = getStrategy();
+
+            // If a yield strategy is used withdraw tokens from strategy pool
+            strategy.claim(escrow.tokenAddress, amount, receiver);
+        } else {
+            // If no yield strategy is used send tokens directly to receiver
+            IERC20(escrow.tokenAddress).transfer(receiver, amount);
+        }
+
         claimedAmount += amount;
 
         emit Released(receiver, amount);
+
         return amount;
     }
 
@@ -67,18 +101,31 @@ contract CapazEscrow is Ownable, CapazCommon {
      * Let the sender get is yield and choose how he want to distribute them
      */
     function distributeYield(address user1, address user2) public onlySender {
-        // claim yield and distribute
         Escrow memory escrow = getEscrow();
+        require(escrow.yieldStrategyId != 0, "No yield strategy set");
         require(block.timestamp >= escrowEndTimestamp(escrow), "CapazEscrow: Escrow has not ended yet");
         require(!isYieldClaimed, "CapazEscrow: Yield already claimed");
 
-        //!TODO first release the remaining funds
+        // Release any remaining funds, if there are any
+        if (claimedAmount < escrow.totalAmount) {
+            release();
+        }
 
-        //!TODO claim yield and distribute
+        // Get strategy
+        IStrategy strategy = getStrategy();
+
         if (user1 == user2) {
-            // send all to same user
+            // Send all to yield to the same user
+            strategy.claimAll(escrow.tokenAddress, user1);
         } else {
-            // send half to each user
+            // Withdraw all yield to the this contract
+            strategy.claimAll(escrow.tokenAddress, address(this));
+
+            // Distribute the yield hald and half
+            uint256 balance = IERC20(escrow.tokenAddress).balanceOf(address(this));
+            uint256 half = balance / 2;
+            IERC20(escrow.tokenAddress).transfer(user1, half);
+            IERC20(escrow.tokenAddress).transfer(user2, balance - half);
         }
         uint256 amount;
         emit YieldDistributed(user1, user2, amount);
@@ -89,6 +136,15 @@ contract CapazEscrow is Ownable, CapazCommon {
      */
     function getEscrow() public view returns (Escrow memory) {
         return escrowFactory.getEscrow(tokenId);
+    }
+
+    /**
+     * Get the strategy used by the escrow
+     */
+    function getStrategy() public view returns (IStrategy) {
+        Escrow memory escrow = getEscrow();
+        uint256 strategyId = escrow.yieldStrategyId;
+        return IStrategy(escrowFactory.getStrategy(strategyId));
     }
 
     /**

@@ -1,5 +1,7 @@
 import { ethers } from 'hardhat'
-import { AAVE_POOL_ADDRESS } from '../../constants/addresses'
+import { TOKEN_ADDRESS } from '../../constants/addresses'
+
+import { getAaveStrategyContract } from '../../utils/contracts'
 
 async function main() {
   // Deploy contract
@@ -7,12 +9,10 @@ async function main() {
 
   console.log('Using address: ', accounts[0].address)
 
-  const AaveStrategy = await ethers.getContractFactory('AaveStrategy')
-  const aaveStrategy = await AaveStrategy.deploy(AAVE_POOL_ADDRESS)
+  const aaveStrategy = await getAaveStrategyContract()
+  const aToken = aaveStrategy.getYieldTokenFromUnderlying(TOKEN_ADDRESS)
 
-  await aaveStrategy.deployed()
-
-  console.log('Deployed AaveStrategy at:', aaveStrategy.address)
+  console.log('Account data: ', aToken)
 }
 
 // We recommend this pattern to be able to use async/await everywhere

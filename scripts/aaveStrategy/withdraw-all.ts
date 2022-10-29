@@ -1,6 +1,6 @@
 import { ethers } from 'hardhat'
 
-import { AAVE_POOL_ADDRESS, TOKEN_ADDRESS } from '../../constants/addresses'
+import { TOKEN_ADDRESS } from '../../constants/addresses'
 import { getAaveStrategyContract } from '../../utils/contracts'
 
 async function main() {
@@ -12,7 +12,7 @@ async function main() {
   const aaveStrategy = await getAaveStrategyContract()
 
   // Withdraw all from AAVE
-  const tx = await aaveStrategy.claimAll(AAVE_POOL_ADDRESS, TOKEN_ADDRESS, '0x0Ba0C3E897fA7Ee61d177b392bf88A2AEc747fE8')
+  const tx = await aaveStrategy.claimAll(TOKEN_ADDRESS, '0x0Ba0C3E897fA7Ee61d177b392bf88A2AEc747fE8')
   await tx.wait()
 
   console.log('Txn hash: ', tx.hash)

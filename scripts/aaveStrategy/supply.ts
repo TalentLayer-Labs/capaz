@@ -1,6 +1,6 @@
 import { ethers } from 'hardhat'
 
-import { AAVE_POOL_ADDRESS, AAVE_STRATEGY_ADDRESS, TOKEN_ADDRESS } from '../../constants/addresses'
+import { AAVE_STRATEGY_ADDRESS, TOKEN_ADDRESS } from '../../constants/addresses'
 import { getAaveStrategyContract, getTokenContract } from '../../utils/contracts'
 
 async function main() {
@@ -18,7 +18,7 @@ async function main() {
   await approveTx.wait()
 
   // Supply to Aave
-  const depositTx = await aaveStrategy.deposit(AAVE_POOL_ADDRESS, TOKEN_ADDRESS, amount)
+  const depositTx = await aaveStrategy.deposit(TOKEN_ADDRESS, amount)
   await depositTx.wait()
 
   console.log('Txn hash: ', depositTx.hash)

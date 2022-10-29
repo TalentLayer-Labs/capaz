@@ -1,23 +1,24 @@
 import { BanknotesIcon, HomeIcon } from '@heroicons/react/24/outline';
-import React from 'react';
-import { Link, NavLink, useLocation } from 'react-router-dom';
+import { useBlockNumber, useNetwork } from '@web3modal/react';
+import React, { Fragment } from 'react';
+import { NavLink } from 'react-router-dom';
+
+const navigation = [
+  {
+    name: 'Home',
+    href: '/dashboard/home',
+    icon: HomeIcon,
+  },
+  {
+    name: 'Send payment',
+    href: '/dashboard/send-payment',
+    icon: BanknotesIcon,
+  },
+];
 
 export default function Sidebar() {
-  const currentLocation = useLocation();
-  const [navigation, setNavigation] = React.useState([
-    {
-      name: 'Home',
-      href: '/dashboard/home',
-      icon: HomeIcon,
-      current: currentLocation.pathname === '/dashboard/home',
-    },
-    {
-      name: 'Send payment',
-      href: '/dashboard/sendPayment',
-      icon: BanknotesIcon,
-      current: currentLocation.pathname === '/dashboard/sendPayment',
-    },
-  ]);
+  const { data: blockNumber } = useBlockNumber({ watch: true });
+  const { network } = useNetwork();
 
   return (
     <div className='hidden md:fixed md:inset-y-0 md:flex md:w-64 md:flex-col'>
@@ -49,6 +50,34 @@ export default function Sidebar() {
             ))}
           </nav>
         </div>
+      </div>
+      <div className='flex flex-shrink-0 p-4'>
+        <a href='' className='group block w-full flex-shrink-0'>
+          <div className='flex items-center'>
+            <div className=''>
+              <a
+                href={`https://${
+                  network?.chain?.name == 'Ethereum' ? 'www' : network?.chain?.name.toLowerCase()
+                }.etherscan.io/block/${blockNumber}`}
+                target='_blank'
+                className='text-xs font-medium text-gray-500 flex items-center'>
+                <span
+                  style={{
+                    width: '8px',
+                    height: '8px',
+                    minHeight: '8px',
+                    minWidth: '8px',
+                    borderRadius: '50%',
+                    position: 'relative',
+                    marginRight: '4px',
+                    backgroundColor: 'rgb(118, 209, 145)',
+                    transition: 'background-color 250ms ease 0s',
+                  }}></span>
+                {blockNumber}
+              </a>
+            </div>
+          </div>
+        </a>
       </div>
     </div>
   );

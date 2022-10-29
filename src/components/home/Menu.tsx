@@ -46,10 +46,6 @@ function Menu() {
   const { account, isReady } = useAccount();
   const navigate = useNavigate();
 
-  if (account.isConnected === true) {
-    navigate('/dashboard');
-  }
-
   return (
     <div className='bg-white'>
       <header>

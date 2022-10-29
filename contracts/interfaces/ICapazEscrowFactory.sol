@@ -9,7 +9,7 @@ interface ICapazEscrowFactory {
         view
         returns (CapazCommon.Escrow memory);
 
-    function getStrategyPool(uint256 strategyId)
+    function getStrategyPool(CapazCommon.Strategy strategyId)
         external
         view
         returns (address);

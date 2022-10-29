@@ -1,4 +1,5 @@
 import { ethers } from 'hardhat'
+import { AAVE_POOL_ADDRESS } from '../../constants/addresses'
 
 async function main() {
   // Deploy contract
@@ -10,6 +11,10 @@ async function main() {
   const CapazEscrowFactory = await ethers.getContractFactory('CapazEscrowFactory')
   const capazEscrowFactory = await CapazEscrowFactory.deploy()
 
+  // Setup strategy pools
+  capazEscrowFactory.setStrategyPool(1, AAVE_POOL_ADDRESS)
+
+  // Deploy example token
   const SimpleToken = await ethers.getContractFactory('SimpleERC20')
   const simpleToken = await SimpleToken.deploy()
 

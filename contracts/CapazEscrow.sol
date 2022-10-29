@@ -12,7 +12,7 @@ import {CapazCommon} from "./CapazCommon.sol";
  * @title CapazEscrow
  * @author Capaz Team @ ETHLisbon Hackathon
  */
-contract CapazEscrow is Ownable {
+contract CapazEscrow is Ownable, CapazCommon {
     ICapazEscrowFactory escrowFactory;
     uint256 tokenId;
     uint256 claimedAmount;
@@ -25,7 +25,7 @@ contract CapazEscrow is Ownable {
     function setup(uint256 _tokenId) public onlyOwner {
         tokenId = _tokenId;
         escrowFactory = ICapazEscrowFactory(owner());
-        CapazCommon.Escrow memory escrow = getEscrow();
+        Escrow memory escrow = getEscrow();
 
         //!TODO Handle strategies mapping and handle adding a new one
         //!TODO deposit funds into strategy
@@ -38,7 +38,7 @@ contract CapazEscrow is Ownable {
      * Get the total amount of token that the receiver can claimed
      */
     function releasableAmount() public view returns (uint256) {
-        CapazCommon.Escrow memory escrow = getEscrow();
+        Escrow memory escrow = getEscrow();
         uint256 periods = escrow.periods;
         uint256 periodsPassed = Math.min(
             (block.timestamp - escrow.startTime) / escrow.periodDuration,
@@ -52,7 +52,7 @@ contract CapazEscrow is Ownable {
      * Let the receiver release the avaiable funds
      */
     function release() public returns (uint256) {
-        CapazCommon.Escrow memory escrow = getEscrow();
+        Escrow memory escrow = getEscrow();
         address receiver = escrow.receiver;
         uint256 amount = releasableAmount();
         require(amount > 0, "You don't have any funds to release");
@@ -68,7 +68,7 @@ contract CapazEscrow is Ownable {
      */
     function distributeYield(address user1, address user2) public onlySender {
         // claim yield and distribute
-        CapazCommon.Escrow memory escrow = getEscrow();
+        Escrow memory escrow = getEscrow();
         require(
             block.timestamp >= escrowEndTimestamp(escrow),
             "CapazEscrow: Escrow has not ended yet"
@@ -90,25 +90,21 @@ contract CapazEscrow is Ownable {
     /**
      * Get the escrow configuration linked to this instance
      */
-    function getEscrow() public view returns (CapazCommon.Escrow memory) {
+    function getEscrow() public view returns (Escrow memory) {
         return escrowFactory.getEscrow(tokenId);
     }
 
     /**
      * Get the total duration of the escrow
      */
-    function escrowLenght(CapazCommon.Escrow memory _escrow)
-        public
-        pure
-        returns (uint256)
-    {
+    function escrowLenght(Escrow memory _escrow) public pure returns (uint256) {
         return _escrow.periods * _escrow.periodDuration;
     }
 
     /**
      * Get the timestamt of the last period
      */
-    function escrowEndTimestamp(CapazCommon.Escrow memory _escrow)
+    function escrowEndTimestamp(Escrow memory _escrow)
         public
         pure
         returns (uint256)
@@ -136,7 +132,7 @@ contract CapazEscrow is Ownable {
     event SetUp(
         address indexed sender,
         address indexed receiver,
-        CapazCommon.Escrow escrow
+        Escrow escrow
     );
 
     /**

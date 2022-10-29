@@ -1,4 +1,4 @@
-import { useAccount } from '@web3modal/react';
+import { useAccount, useContractRead } from '@web3modal/react';
 import { Route, useNavigate, Routes } from 'react-router-dom';
 import HomePayments from '../components/HomePayments';
 import Header from '../components/Header';
@@ -8,11 +8,7 @@ import useConfig from '../hooks/useConfig';
 
 function Dashboard() {
   const { account } = useAccount();
-  const config = useConfig();
-
   const navigate = useNavigate();
-
-  console.log(config?.escrowFactoryAddress);
 
   if (account.isConnected === false) {
     navigate('/notlog');

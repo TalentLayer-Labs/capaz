@@ -1,4 +1,4 @@
-enum Network {
+export enum Network {
   LOCAL = 0,
   MAINNET = 1,
   GOERLI = 5,
@@ -6,7 +6,7 @@ enum Network {
 
 export type Config = {
   networkId: Network;
-  escrowFactoryAddress?: string;
+  escrowFactoryAddress: string;
 };
 
 export const maxDecimals = {
@@ -19,8 +19,8 @@ const mainnet = {
 };
 
 const goerli = {
-  networkId: Network.MAINNET,
-  escrowFactoryAddress: '0x6FD4EB990eD2E7bb2b1203E7f728e29904A4d5A4',
+  networkId: Network.GOERLI,
+  escrowFactoryAddress: '0x356b0EE59feB848F0b7Eb29480835fD5c6D0C79a',
 };
 
 const local = {

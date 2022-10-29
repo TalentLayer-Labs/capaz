@@ -4,10 +4,15 @@ import HomePayments from '../components/HomePayments';
 import Header from '../components/Header';
 import Sidebar from '../components/Sidebar';
 import SendPayment from '../components/SendPayment';
+import useConfig from '../hooks/useConfig';
 
 function Dashboard() {
   const { account } = useAccount();
+  const config = useConfig();
+
   const navigate = useNavigate();
+
+  console.log(config?.escrowFactoryAddress);
 
   if (account.isConnected === false) {
     navigate('/notlog');

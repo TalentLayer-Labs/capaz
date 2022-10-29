@@ -1,5 +1,5 @@
-import Menu from '../components/Menu';
-import Footer from '../components/Footer';
+import Menu from '../components/home/Menu';
+import Footer from '../components/home/Footer';
 import { XCircleIcon } from '@heroicons/react/20/solid';
 import { useNavigate } from 'react-router-dom';
 import { useAccount, Web3Modal } from '@web3modal/react';

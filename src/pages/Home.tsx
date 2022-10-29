@@ -1,8 +1,8 @@
-import Hero from '../components/Hero';
-import Logo from '../components/Logo';
-import Content from '../components/Content';
-import Footer from '../components/Footer';
-import Menu from '../components/Menu';
+import Hero from '../components/home/Hero';
+import Logo from '../components/home/Logo';
+import Content from '../components/home/Content';
+import Footer from '../components/home/Footer';
+import Menu from '../components/home/Menu';
 
 function Home() {
   return (

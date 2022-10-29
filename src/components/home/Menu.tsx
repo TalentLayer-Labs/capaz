@@ -1,7 +1,7 @@
 import { Fragment } from 'react';
 import { Popover, Transition } from '@headlessui/react';
 import { ConnectButton, useAccount } from '@web3modal/react';
-import { truncateAddress } from '../utils';
+import { truncateAddress } from '../../utils';
 import {Link, useNavigate} from 'react-router-dom';
 import {
   Bars3Icon,
@@ -42,9 +42,6 @@ const tools = [
   },
 ];
 
-function classNames(...classes: any) {
-  return classes.filter(Boolean).join(' ');
-}
 function Menu() {
   const { account, isReady } = useAccount();
   const navigate = useNavigate();
@@ -59,7 +56,7 @@ function Menu() {
         <Popover className='relative bg-slate-100'>
           <div className='mx-auto flex max-w-7xl items-center justify-between px-4 py-6 sm:px-6 md:justify-start md:space-x-10 lg:px-8'>
             <div className='flex justify-start lg:w-0 lg:flex-1'>
-              <a href='/'>
+              <a href='/src/pages'>
                 <span className='sr-only'>Your Company</span>
                 <img
                   className='h-8 w-auto sm:h-10'
@@ -114,24 +111,24 @@ function Menu() {
                   <div className='py-6 px-5'>
                     <div className='grid grid-cols-2 gap-4'>
                       <a
-                        href='#'
+                        href='src/components/home/Menu#'
                         className='text-base font-medium text-gray-900 hover:text-gray-700'>
                         Home
                       </a>
                       <a
-                        href='#'
+                        href='src/components/home/Menu#'
                         className='text-base font-medium text-gray-900 hover:text-gray-700'>
                         About
                       </a>
                       <a
-                        href='#'
+                        href='src/components/home/Menu#'
                         className='text-base font-medium text-gray-900 hover:text-gray-700'>
                         Dashboard
                       </a>
                     </div>
                     <div className='mt-6'>
                       <a
-                        href='#'
+                        href='src/components/home/Menu#'
                         className='flex w-full items-center justify-center rounded-md border border-transparent bg-gradient-to-r'>
                         {account.isConnected === true ? (
                           <p>{account.address}</p>

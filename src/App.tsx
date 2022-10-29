@@ -5,8 +5,6 @@ import { Route, Routes } from 'react-router-dom';
 import { useAccount, Web3Modal } from '@web3modal/react';
 import type { ConfigOptions } from '@web3modal/core';
 import Home from './pages/Home';
-import About from './pages/About';
-import Services from './pages/Services';
 import Dashboard from './pages/Dashboard';
 import NotLog from './pages/NotLog';
 
@@ -26,8 +24,7 @@ function App() {
     <>
       <Routes>
         <Route path='/' element={<Home />} />
-        <Route path='dashboard' key='dashboard-home' element={<Dashboard />} />
-        <Route path='dashboard#sendPayment' key='dashboard-sendPayment' element={<Dashboard />} />
+        <Route path='dashboard/*' element={<Dashboard />} />
         <Route path='notlog' element={<NotLog />} />
       </Routes>
       <Web3Modal config={config} />

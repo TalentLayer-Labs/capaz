@@ -114,11 +114,20 @@ contract CapazEscrow is Ownable, CapazCommon {
         }
 
         //!TODO claim yield and distribute (claim all)
+        address pool = escrowFactory.getStrategyPool(escrow.yieldStrategyId);
+        
         if (user1 == user2) {
-            // send all to yield to the same user
-            address pool = escrowFactory.getStrategyPool(escrow.yieldStrategyId);
+            // Send all to yield to the same user
             strategy.claimAll(pool, escrow.tokenAddress, user1);
         } else {
+            // Withdraw all yield to the this contract
+            strategy.claimAll(pool, escrow.tokenAddress, address(this));
+
+            // Distribute the yield hald and half
+            uint256 balance = IERC20(escrow.tokenAddress).balanceOf(address(this));
+            uint256 half = balance / 2;
+            IERC20(escrow.tokenAddress).transfer(user1, half);
+            IERC20(escrow.tokenAddress).transfer(user2, balance - half);
         }
         uint256 amount;
         emit YieldDistributed(user1, user2, amount);

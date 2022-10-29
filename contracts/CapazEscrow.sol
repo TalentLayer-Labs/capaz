@@ -72,7 +72,7 @@ contract CapazEscrow is Ownable, CapazCommon {
     /**
      * Let the receiver release the avaiable funds
      */
-    function release() public { 
+    function release() public returns (uint256){ 
         CapazCommon.Escrow memory escrow = getEscrow();
         address receiver = escrow.receiver;
         uint256 amount = releasableAmount();
@@ -92,6 +92,7 @@ contract CapazEscrow is Ownable, CapazCommon {
         claimedAmount += amount;
 
         emit Released(receiver, amount);
+
         return amount;
     }
 

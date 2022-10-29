@@ -1,6 +1,6 @@
 import { ethers } from 'hardhat'
 
-import { AAVE_STRATEGY_ADDRESS, TOKEN_ADDRESS } from '../../constants/addresses'
+import { AAVE_STRATEGY_ADDRESS } from '../../constants/addresses'
 import { getTokenContract } from '../../utils/contracts'
 
 async function main() {

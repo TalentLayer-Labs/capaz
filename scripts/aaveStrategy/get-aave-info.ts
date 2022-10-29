@@ -1,6 +1,5 @@
 import { ethers } from 'hardhat'
 
-import { AAVE_STRATEGY_ADDRESS } from '../../constants/addresses'
 import { getAavePoolContract } from '../../utils/contracts'
 
 async function main() {
@@ -11,8 +10,7 @@ async function main() {
 
   const aavePool = getAavePoolContract(accounts[0])
 
-  // const accountData = await aavePool.getUserAccountData(accounts[0].address);
-  const accountData = await aavePool.getUserAccountData(AAVE_STRATEGY_ADDRESS)
+  const accountData = await aavePool.getUserAccountData(accounts[0].address)
 
   console.log('Account data: ', accountData)
 }

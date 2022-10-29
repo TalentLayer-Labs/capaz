@@ -1,4 +1,5 @@
 import { ethers } from 'hardhat'
+import { AAVE_POOL_ADDRESS } from '../../constants/addresses'
 
 async function main() {
   // Deploy contract
@@ -7,7 +8,7 @@ async function main() {
   console.log('Using address: ', accounts[0].address)
 
   const AaveStrategy = await ethers.getContractFactory('AaveStrategy')
-  const aaveStrategy = await AaveStrategy.deploy()
+  const aaveStrategy = await AaveStrategy.deploy(AAVE_POOL_ADDRESS)
 
   await aaveStrategy.deployed()
 

@@ -1,4 +1,6 @@
 import { ethers } from 'hardhat'
+import { CAPAZ_ESCROW_FACTORY_ADDRESS } from '../../constants/addresses'
+import { getTokenContract } from '../../utils/contracts'
 
 async function main() {
   // Deploy contract
@@ -8,28 +10,27 @@ async function main() {
 
   // Get escrow factory contract
   const CapazEscrowFactory = await ethers.getContractFactory('CapazEscrowFactory')
-  const capazEscrowFactory = CapazEscrowFactory.attach('0x07B9837e81b917451690f2eF4752AC5F1434450B')
+  const capazEscrowFactory = CapazEscrowFactory.attach(CAPAZ_ESCROW_FACTORY_ADDRESS)
 
   // Get token contract
-  const CapazERC20 = await ethers.getContractFactory('CapazERC20')
-  const capazERC20 = CapazERC20.attach('0x58f7Fc8d443507B9A14A0Fe33330F07c85b474e9')
+  const tokenContract = getTokenContract(accounts[0])
 
   // Approve tokens
-  const amount = 10000
+  const amount = 10000000
 
-  const approveTx = await capazERC20.approve(capazEscrowFactory.address, amount)
+  const approveTx = await tokenContract.approve(capazEscrowFactory.address, amount)
   await approveTx.wait()
 
-  const startTime = Math.floor(new Date().getTime() / 1000 + 5) // now + 5 seconds
+  const startTime = Math.floor(new Date().getTime() / 1000 + 60) // now + 1 minute
 
   // Create a new escrow
   const mintTx = await capazEscrowFactory.mint({
     sender: accounts[0].address,
     receiver: accounts[1].address,
-    tokenAddress: capazERC20.address,
+    tokenAddress: tokenContract.address,
     totalAmount: amount,
     startTime,
-    periodDuration: 1,
+    periodDuration: 15,
     periods: 10,
     yieldStrategyId: 1,
     escrowAddress: '0x0000000000000000000000000000000000000000',

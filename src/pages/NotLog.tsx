@@ -7,7 +7,7 @@ function NotLog() {
   const navigate = useNavigate();
   const { account } = useAccount();
 
-  if (account.isConnected !== undefined) {
+  if (account.isConnected === true) {
     navigate('/dashboard/home');
   }
 

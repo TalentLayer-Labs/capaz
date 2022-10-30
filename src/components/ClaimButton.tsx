@@ -1,5 +1,5 @@
 import { useContractWrite } from '@web3modal/react';
-import CapazEscrow from '../../contracts/CapazEscrow.json';
+import CapazEscrow from '../contracts/CapazEscrow.json';
 
 function ClaimButton({ escrowAddress }: { escrowAddress: string }) {
   const { data, error, isLoading, write } = useContractWrite({

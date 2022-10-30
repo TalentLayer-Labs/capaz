@@ -52,6 +52,12 @@ export default function Header() {
                 <Menu.Item>
                   <NetworkLink chaindId={5} chainName='Goerli' />
                 </Menu.Item>
+                {/* .If it's an dev env we display localhost network */}
+                {import.meta.env.DEV && (
+                <Menu.Item>
+                  <NetworkLink chaindId={1137} chainName='Localhost' />
+                </Menu.Item>
+                )}
               </div>
             </Menu.Items>
           </Transition>

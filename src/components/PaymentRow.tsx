@@ -1,6 +1,9 @@
 import { Payment } from '../types';
 import { ethers } from 'ethers';
 import { formatDate } from '../utils/dates';
+import ClaimButton from './ClaimButton';
+import ReleasableAmount from './ReleasableAmount';
+import DistributeYieldButton from './DistributeYieldButton';
 import { periodDuration, yieldStrategy } from '../utils';
 import { useAccount, useToken } from '@web3modal/react';
 
@@ -50,7 +53,15 @@ function PaymentRow({ payment }: { payment: Payment }) {
         {getStrategyName(payment.yieldStrategyId.toNumber())}
       </td>
       <td className='border-t-0 px-6 align-center border-l-0 border-r-0 text-xs whitespace-nowrap p-4'>
-        -
+        <ReleasableAmount escrowAddress={payment.escrowAddress} />
+      </td>
+      <td className='border-t-0 px-6 align-center border-l-0 border-r-0 text-xs whitespace-nowrap p-4'>
+        {payment.receiver == account.address && (
+          <ClaimButton escrowAddress={payment.escrowAddress} />
+        )}
+        {payment.sender == account.address && payment.yieldStrategyId.toNumber() > 0 && (
+          <DistributeYieldButton escrowAddress={payment.escrowAddress} />
+        )}
       </td>
     </tr>
   );

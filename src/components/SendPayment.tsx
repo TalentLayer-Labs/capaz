@@ -17,7 +17,7 @@ export default function SendPayment() {
   const { account, isReady } = useAccount();
   const [query, setQuery] = useState('');
   const [selectedToken, setSelectedToken] = useState<string | null>(null);
-  const [amount, setAmount] = useState(100);
+  const [amount, setAmount] = useState(0);
   const [period, setPeriod] = useState(0);
   const [selectedYieldPlatform, setSelectedYieldPlatform] = useState(yieldStrategy[1]);
   const [selectedSelector, setSelectedSelector] = useState(periodDuration[5]);
@@ -335,7 +335,7 @@ export default function SendPayment() {
                       </div>
                       <div className='my-8 text-gray-600 pt-3 text-sm'>
                         {`${selectedYieldPlatform.apy} % APY | Estimated gain : ${Number(
-                          amount * 1.05 - amount,
+                          (amount * 1.0543 - amount) * Math.max(100 - period / 100, 40),
                         ).toFixed(2)} $`}
                       </div>
                     </div>

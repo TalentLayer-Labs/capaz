@@ -20,7 +20,7 @@ export default function Header() {
     case 5:
       return 'Goerli';
     case 80001:
-      return 'Mumbai';s
+      return 'Mumbai';
     case 338:
       return 'Cronos testnet';
     default:

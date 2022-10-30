@@ -1,7 +1,8 @@
 import { Payment } from '../types';
 import { ethers } from 'ethers';
 import { formatDate } from '../utils/dates';
-import { periodDuration, tokens, yieldStrategy } from '../utils';
+import { periodDuration, yieldStrategy } from '../utils';
+import { useToken } from '@web3modal/react';
 
 function getPeriodName(seconds: number) {
   for (const period of periodDuration) {
@@ -11,19 +12,19 @@ function getPeriodName(seconds: number) {
   return 'years';
 }
 
-function getTokenName(tokenAddress: string) {
-  return tokens.find(token => token.address === tokenAddress)?.name;
-}
-
 function getStrategyName(strategyId: number) {
   return yieldStrategy.find(strategy => strategy.id === strategyId)?.name;
 }
 
 function PaymentRow({ payment }: { payment: Payment }) {
+  const { data } = useToken({
+    address: payment.tokenAddress,
+  });
+
   return (
     <tr>
       <th className='border-t-0 px-6 align-middle border-l-0 border-r-0 text-xs whitespace-nowrap p-4 text-left text-blueGray-700 '>
-        {getTokenName(payment.tokenAddress)}
+        {data?.symbol}
       </th>
       <td className='border-t-0 px-6 align-middle border-l-0 border-r-0 text-xs whitespace-nowrap p-4 '>
         {ethers.utils.formatUnits(payment.totalAmount.toString(), 6)}

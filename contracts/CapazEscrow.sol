@@ -18,7 +18,7 @@ contract CapazEscrow is Ownable, CapazCommon {
     ICapazEscrowFactory escrowFactory;
     uint256 tokenId;
     uint256 claimedAmount;
-    bool isYieldClaimed;
+    bool public isYieldClaimed;
 
     /**
      * Function called when the contract instance is cloned

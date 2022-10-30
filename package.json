@@ -1,6 +1,7 @@
 {
   "name": "hardhat-project",
   "devDependencies": {
+    "@cronos-labs/hardhat-cronoscan": "^0.0.4",
     "@nomicfoundation/hardhat-network-helpers": "^1.0.3",
     "@nomicfoundation/hardhat-toolbox": "^1.0.2",
     "@nomiclabs/hardhat-ethers": "^2.2.1",
@@ -30,9 +31,9 @@
     "one": "npx hardhat run scripts/playground/1-claim.ts --network localhost"
   },
   "dependencies": {
+    "@aave/core-v3": "^1.16.2",
     "@openzeppelin/contracts": "^4.7.3",
     "dotenv": "^16.0.1",
-    "hardhat-contract-sizer": "^2.6.1",
-    "@aave/core-v3": "^1.16.2"
+    "hardhat-contract-sizer": "^2.6.1"
   }
 }

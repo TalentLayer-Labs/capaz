@@ -1,5 +1,6 @@
 import { Menu } from '@headlessui/react';
 import { useBalance } from '@web3modal/react';
+import ClaimButton from './buttons/ClaimButton';
 
 export default function HomePayments() {
   return (
@@ -70,6 +71,7 @@ export default function HomePayments() {
                   </table>
                 </div>
               </div>
+              <ClaimButton />
             </div>
           </div>
         </div>

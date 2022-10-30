@@ -15,41 +15,12 @@ export default function SendPayment() {
   const [selectedToken, setSelectedToken] = useState(tokens[0]);
   const [amount, setAmount] = useState(0);
   const [period, setPeriod] = useState(0);
-  const [selectedYieldPlatform, setSelectedYieldPlatform] = useState(yieldStrategy[0]);
+  const [selectedYieldPlatform, setSelectedYieldPlatform] = useState(yieldStrategy[1]);
   const [selectedSelector, setSelectedSelector] = useState(periodDuration[5]);
   const [approveTxHasLoaded, setApproveTxHasLoaded] = useState(false);
   const [receiverAddress, setReceiverAddress] = useState(
     '0x0000000000000000000000000000000000000000',
   );
-  const [estimatedGain, setEstimatedGain] = useState({
-    amount: 0,
-    currency: 'CPZ',
-    period: 0,
-    periodDuration: 'year',
-    yieldApy: 3,
-    total: '0',
-  });
-
-  // TODO: Update the function to calculate the estimated gain
-  function handleChangeEstimatedGain(event: Event) {
-    switch (event.target.id) {
-      case 'amount': {
-        const amount = event.target.value;
-        const totalPD = (amount * (1 + estimatedGain.yieldApy / 100)) / 365;
-        const periodNumber = Number(period);
-        const length = period * (selectedSelector.value / (3600 * 24));
-        const total = totalPD * length;
-        console.log(total, totalPD, length, periodNumber, selectedSelector.value);
-        setEstimatedGain({ ...estimatedGain, amount: event.target.value, total: total.toFixed(2) });
-        break;
-      }
-      default: {
-        const total = 0; // TODO: calculate total
-        setEstimatedGain({ ...estimatedGain, total: total.toFixed(2) });
-        break;
-      }
-    }
-  }
 
   const config = useConfig();
 
@@ -198,7 +169,6 @@ export default function SendPayment() {
                 placeholder='Amount'
                 onChange={event => {
                   setAmount(event.target.value);
-                  handleChangeEstimatedGain(event);
                 }}
               />
             </div>
@@ -222,7 +192,6 @@ export default function SendPayment() {
                         displayValue={selectedSelector => selectedSelector.name}
                         onChange={event => {
                           setQuery(event.target.value);
-                          handleChangeEstimatedGain(event);
                         }}
                       />
                       <Combobox.Button className='absolute inset-y-0 right-0 flex items-center pr-2'>
@@ -289,7 +258,6 @@ export default function SendPayment() {
                         displayValue={yieldStrategy => selectedYieldPlatform.name}
                         onChange={event => {
                           setQuery(event.target.value);
-                          handleChangeEstimatedGain(event);
                         }}
                       />
                       <Combobox.Button className='absolute inset-y-0 right-0 flex items-center pr-2'>
@@ -344,7 +312,7 @@ export default function SendPayment() {
                 </Combobox>
               </div>
               <div className='my-8'>
-                {`${selectedYieldPlatform.apy} % APY | Estimated gain : ${estimatedGain.total} $`}
+                {`${selectedYieldPlatform.apy} % APY | Estimated gain : ${amount * 1.05} $`}
               </div>
             </div>
 

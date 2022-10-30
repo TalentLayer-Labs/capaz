@@ -20,7 +20,7 @@ const mainnet = {
 
 const goerli = {
   networkId: Network.GOERLI,
-  escrowFactoryAddress: '0x356b0EE59feB848F0b7Eb29480835fD5c6D0C79a',
+  escrowFactoryAddress: '0x20c1Dec4ca935c5848B0F8Ea963713d8F3594c02',
 };
 
 const local = {

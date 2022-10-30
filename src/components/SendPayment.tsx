@@ -1,23 +1,37 @@
 // @ts-nocheck
+import { Fragment, useState } from 'react';
 import { Combobox, Transition } from '@headlessui/react';
 import { CheckIcon, ChevronUpDownIcon } from '@heroicons/react/20/solid';
-import { Fragment, useState } from 'react';
-import { useContractWrite, useToken } from '@web3modal/react';
-import { tokenAddressCTZ, tokenAddressEscrowFactory } from '../utils/index';
+import { useAccount, useContractWrite } from '@web3modal/react';
+import { periodDuration, tokens, yieldStrategy } from '../utils/index';
 import CapazEscrowFactory from '../contracts/CapazEscrowFactory.json';
 import SimpleERC20 from '../contracts/SimpleERC20.json';
+import useConfig from '../hooks/useConfig';
 
 export default function SendPayment() {
+  const { account, isReady } = useAccount();
   const [query, setQuery] = useState('');
+  const [selectedToken, setSelectedToken] = useState(tokens[0]);
+  const [amount, setAmount] = useState(0);
+  const [frequency, setFrequency] = useState(0);
+  const [selectedYieldPlatform, setSelectedYieldPlatform] = useState(yieldStrategy[0]);
+  const [selectedSelector, setSelectedSelector] = useState(periodDuration[5]);
+  const [approveTxIsLoading, setApproveTxIsLoading] = useState(false);
+  const [approveTxHasLoaded, setApproveTxHasLoaded] = useState(false);
+  const [receiverAddress, setReceiverAddress] = useState(
+    '0x0000000000000000000000000000000000000000',
+  );
   const [estimatedGain, setEstimatedGain] = useState({
     amount: 0,
     currency: 'CPZ',
     frequency: 0,
-    frequencyUnit: 'year',
+    periodDuration: 'year',
     yieldApy: 3,
     total: '0',
   });
-  function handleChangeEstimatedGain(event) {
+
+  // TODO: Update the function to calculate the estimated gain
+  function handleChangeEstimatedGain(event: Event) {
     switch (event.target.id) {
       case 'amount': {
         const total = event.target.value * (1 + estimatedGain.yieldApy) * 0.01;
@@ -42,11 +56,11 @@ export default function SendPayment() {
         });
         break;
       }
-      case 'frequencyUnit': {
+      case 'periodDuration': {
         const total = estimatedGain.amount * (1 + estimatedGain.yieldApy) * 0.01;
         setEstimatedGain({
           ...estimatedGain,
-          frequencyUnit: event.target.value,
+          periodDuration: event.target.value,
           total: total.toFixed(2),
         });
         break;
@@ -58,70 +72,55 @@ export default function SendPayment() {
       }
     }
   }
-  const frequencyUnit = [
-    { id: 1, name: 'second' },
-    { id: 2, name: 'minute' },
-    { id: 3, name: 'hour' },
-    { id: 4, name: 'day' },
-    { id: 5, name: 'week' },
-    { id: 6, name: 'month' },
-    { id: 7, name: 'year' },
-  ];
-  const [selectedSelector, setSelectedSelector] = useState(frequencyUnit[5]);
 
-  const yieldPlatform = [{ id: 1, name: 'Aave', apy: 5.43 }];
-  const [selectedYieldPlatform, setSelectedYieldPlatform] = useState(yieldPlatform[0]);
+  const config = useConfig();
 
-  const tokens = [
-    { id: 0, name: 'CPZ' },
-    { id: 1, name: 'USDC' },
-    { id: 2, name: 'USDT' },
-    { id: 3, name: 'BUSD' },
-  ];
-  const [selectedToken, setSelectedToken] = useState(tokens[0]);
+  // APPROVE
+  const approveTx = useContractWrite({
+    address: selectedToken.address,
+    abi: SimpleERC20.abi,
+    functionName: 'approve',
+    args: [config?.escrowFactoryAddress, amount * 10 ** selectedToken.decimals],
+    enabled: !!config,
+  });
 
-  // This ask the user to allow the future transaction
-  function approve() {
-    const {
-      data: dataToken,
-      error: errorToken,
-      isLoading: isLoadingToken,
-      refetch,
-    } = useToken({
-      address: tokenAddressCTZ,
-    });
-
-    const { data, error, isLoading, write } = useContractWrite({
-      address: tokenAddressCTZ,
-      abi: SimpleERC20.abi,
-      functionName: 'approve',
-      args: [tokenAddressEscrowFactory, 100],
-    });
-  }
-
-  // This launch the transaction
-  const { data, error, isLoading, write } = useContractWrite({
-    address: tokenAddressEscrowFactory,
+  // EXECUTE
+  const executeTx = useContractWrite({
+    address: config?.escrowFactoryAddress,
     abi: CapazEscrowFactory.abi,
     functionName: 'mint',
     args: [
       {
-        sender: '0x20015a0d2650bA427665Ea73784B6498CC05E851',
-        receiver: '0x5497Cfe8748e61b3d444c3aEb4B579a516A88117',
-        tokenAddress: tokenAddressCTZ,
-        capazERC20LocalAddress: '0x48C45A025D154b40AffB41bc3bDEecb689edE7E6',
-        totalAmount: 3,
-        startTime: 1668035169,
-        periodDuration: 600,
-        periods: 10,
-        yieldStrategyId: 2,
+        sender: `${isReady ? account.address : null}`,
+        receiver: receiverAddress,
+        tokenAddress: selectedToken.address,
+        totalAmount: amount * 10 ** selectedToken.decimals,
+        startTime: getTimestampInSeconds(),
+        periodDuration: selectedSelector.value,
+        periods: frequency,
+        yieldStrategyId: selectedYieldPlatform.id,
         escrowAddress: '0x0000000000000000000000000000000000000000',
       },
     ],
+    enabled: !!config,
   });
 
-  async function handleClick() {
-    write();
+  function getTimestampInSeconds() {
+    return Math.floor(Date.now() / 1000) + 60;
+  }
+
+  function handleSubmit() {
+    console.log('Amount: ', amount);
+    setApproveTxIsLoading(true);
+    approveTx.write().then(async hash => {
+      setApproveTxIsLoading(false);
+      setApproveTxHasLoaded(true);
+      console.log(await executeTx.data);
+    });
+  }
+
+  async function onPayment() {
+    await executeTx.write();
   }
 
   return (
@@ -140,6 +139,7 @@ export default function SendPayment() {
                 type='text'
                 className='focus:outline-none border-b w-full pb-2 border-sky-400 placeholder-gray-500'
                 placeholder='Receiver wallet address'
+                onChange={event => setReceiverAddress(event.target.value)}
               />
             </div>
             <div className='flex'>
@@ -210,7 +210,7 @@ export default function SendPayment() {
                 type='number'
                 className='focus:outline-none border-b w-full pb-2 border-sky-400 placeholder-gray-500 my-8'
                 placeholder='Amount'
-                onChange={handleChangeEstimatedGain}
+                onChange={event => setAmount(event.target.value)}
               />
             </div>
             <div className='flex'>
@@ -219,7 +219,7 @@ export default function SendPayment() {
                 type='number'
                 className='focus:outline-none border-b w-full pb-2 border-sky-400 placeholder-gray-500 my-8 mr-8'
                 placeholder='Frequency'
-                onChange={handleChangeEstimatedGain}
+                onChange={event => setFrequency(event.target.value)}
               />
               {/* Frequency selector */}
               <div className='my-8 w-72 mr-8'>
@@ -231,7 +231,7 @@ export default function SendPayment() {
                         displayValue={selectedSelector => selectedSelector.name}
                         onChange={event => {
                           setQuery(event.target.value);
-                          handleChangeEstimatedGain();
+                          handleChangeEstimatedGain(event);
                         }}
                       />
                       <Combobox.Button className='absolute inset-y-0 right-0 flex items-center pr-2'>
@@ -245,27 +245,27 @@ export default function SendPayment() {
                       leaveTo='opacity-0'
                       afterLeave={() => setQuery('')}>
                       <Combobox.Options className='absolute mt-1 max-h-60 w-full overflow-auto rounded-md bg-white py-1 text-base shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none sm:text-sm'>
-                        {frequencyUnit.length === 0 && query !== '' ? (
+                        {periodDuration.length === 0 && query !== '' ? (
                           <div className='relative cursor-default select-none py-2 px-4 text-gray-700'>
                             Nothing found.
                           </div>
                         ) : (
-                          frequencyUnit.map(frequencyUnit => (
+                          periodDuration.map(periodDuration => (
                             <Combobox.Option
-                              key={frequencyUnit.id}
+                              key={periodDuration.id}
                               className={({ active }) =>
                                 `relative cursor-default select-none py-2 pl-10 pr-4 ${
                                   active ? 'bg-teal-600 text-white' : 'text-gray-900'
                                 }`
                               }
-                              value={frequencyUnit}>
+                              value={periodDuration}>
                               {({ selected, active }) => (
                                 <>
                                   <span
                                     className={`block truncate ${
                                       selected ? 'font-medium' : 'font-normal'
                                     }`}>
-                                    {frequencyUnit.name}
+                                    {periodDuration.name}
                                   </span>
                                   {selected ? (
                                     <span
@@ -289,15 +289,15 @@ export default function SendPayment() {
             <div className='flex'>
               {/* Yield selector */}
               <div className='my-8 w-72 mr-8'>
-                <Combobox value={yieldPlatform} onChange={setSelectedYieldPlatform}>
+                <Combobox value={selectedYieldPlatform.name} onChange={setSelectedYieldPlatform}>
                   <div className='relative mt-1'>
                     <div className='relative w-full cursor-default overflow-hidden rounded-lg bg-white text-left shadow-md focus:outline-none focus-visible:ring-2 focus-visible:ring-white focus-visible:ring-opacity-75 focus-visible:ring-offset-2 focus-visible:ring-offset-teal-300 sm:text-sm'>
                       <Combobox.Input
                         className='w-full border-none py-2 pl-3 pr-10 text-sm leading-5 text-gray-900 focus:ring-0'
-                        displayValue={yieldPlatform => selectedYieldPlatform.name}
+                        displayValue={yieldStrategy => selectedYieldPlatform.name}
                         onChange={event => {
                           setQuery(event.target.value);
-                          handleChangeEstimatedGain();
+                          handleChangeEstimatedGain(event);
                         }}
                       />
                       <Combobox.Button className='absolute inset-y-0 right-0 flex items-center pr-2'>
@@ -311,27 +311,27 @@ export default function SendPayment() {
                       leaveTo='opacity-0'
                       afterLeave={() => setQuery('')}>
                       <Combobox.Options className='absolute mt-1 max-h-60 w-full overflow-auto rounded-md bg-white py-1 text-base shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none sm:text-sm'>
-                        {yieldPlatform.length === 0 && query !== '' ? (
+                        {yieldStrategy.length === 0 && query !== '' ? (
                           <div className='relative cursor-default select-none py-2 px-4 text-gray-700'>
                             Nothing found.
                           </div>
                         ) : (
-                          yieldPlatform.map(yieldPlatform => (
+                          yieldStrategy.map(yieldStrategy => (
                             <Combobox.Option
-                              key={yieldPlatform.id}
+                              key={yieldStrategy.id}
                               className={({ active }) =>
                                 `relative cursor-default select-none py-2 pl-10 pr-4 ${
                                   active ? 'bg-teal-600 text-white' : 'text-gray-900'
                                 }`
                               }
-                              value={yieldPlatform}>
+                              value={yieldStrategy}>
                               {({ selected, active }) => (
                                 <>
                                   <span
                                     className={`block truncate ${
                                       selected ? 'font-medium' : 'font-normal'
                                     }`}>
-                                    {yieldPlatform.name}
+                                    {yieldStrategy.name}
                                   </span>
                                   {selected ? (
                                     <span
@@ -359,12 +359,82 @@ export default function SendPayment() {
               <input type='checkbox' className='border-sky-400 ' value='' />
               <div className='px-3 text-gray-500'>I accept terms & conditions</div>
             </div>
-            <div className='flex justify-center my-6'>
-              <button
-                className='rounded-full  p-3 w-full sm:w-56   bg-gradient-to-r from-sky-600  to-teal-300 text-white text-lg font-semibold'
-                onClick={handleClick}>
-                Send Payment
-              </button>
+
+            {/* Buttons */}
+            <div className='flex justify-center my-6 flex-col align-center mx-auto'>
+              {approveTxHasLoaded !== true && (
+                <button
+                  className='rounded-full text-center flex align-center justify-center  p-3 w-full sm:w-56   bg-gradient-to-r from-sky-600  to-teal-300 text-white text-lg font-semibold'
+                  onClick={handleSubmit}>
+                  <span>Approve Payment</span>
+                  {approveTx.isLoading && (
+                    <div className='loader'>
+                      <svg
+                        version='1.1'
+                        id='loader-1'
+                        x='0px'
+                        y='0px'
+                        width='30px'
+                        height='30px'
+                        viewBox='0 0 50 50'>
+                        <path
+                          fill='#000'
+                          d='M43.935,25.145c0-10.318-8.364-18.683-18.683-18.683c-10.318,0-18.683,8.365-18.683,18.683h4.068c0-8.071,6.543-14.615,14.615-14.615c8.072,0,14.615,6.543,14.615,14.615H43.935z'>
+                          <animateTransform
+                            attributeType='xml'
+                            attributeName='transform'
+                            type='rotate'
+                            from='0 25 25'
+                            to='360 25 25'
+                            dur='0.6s'
+                            repeatCount='indefinite'
+                          />
+                        </path>
+                      </svg>
+                    </div>
+                  )}
+                </button>
+              )}
+              {/* display errors */}
+              {approveTx.error && (
+                <div className='text-red-500 text-sm font-semibold text-center'>
+                  {approveTx.error.message.split(' (')[0]}
+                </div>
+              )}
+
+              {approveTxHasLoaded && (
+                <button
+                  className='rounded-full text-center flex align-center justify-center  p-3 w-full sm:w-56   bg-gradient-to-r from-sky-600  to-teal-300 text-white text-lg font-semibold'
+                  onClick={onPayment}>
+                  <span>Send Payment</span>
+                  {executeTx.isLoading ? (
+                    <div className='loader'>
+                      <svg
+                        version='1.1'
+                        id='loader-1'
+                        x='0px'
+                        y='0px'
+                        width='30px'
+                        height='30px'
+                        viewBox='0 0 50 50'>
+                        <path
+                          fill='#000'
+                          d='M43.935,25.145c0-10.318-8.364-18.683-18.683-18.683c-10.318,0-18.683,8.365-18.683,18.683h4.068c0-8.071,6.543-14.615,14.615-14.615c8.072,0,14.615,6.543,14.615,14.615H43.935z'>
+                          <animateTransform
+                            attributeType='xml'
+                            attributeName='transform'
+                            type='rotate'
+                            from='0 25 25'
+                            to='360 25 25'
+                            dur='0.6s'
+                            repeatCount='indefinite'
+                          />
+                        </path>
+                      </svg>
+                    </div>
+                  ) : null}
+                </button>
+              )}
             </div>
           </div>
         </div>

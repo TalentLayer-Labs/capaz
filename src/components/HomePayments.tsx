@@ -47,14 +47,14 @@ export default function HomePayments() {
     };
 
     getUserPayments();
-  }, [isAccountReady, config, provider, account]);
+  }, [isAccountReady, config, provider, account.address]);
 
   return (
     <main>
       {/* Main dashboard's table */}
       <div className='py-6 w-full'>
         <div className='mx-auto xl:w-8/12 px-4 sm:px-6 md:px-8'>
-          <h1 className='text-2xl font-semibold text-gray-900'>Your payments</h1>
+          <h1 className='text-2xl font-semibold text-gray-900'>Dashboard</h1>
         </div>
 
         <div className='mx-auto px-4 sm:px-6 md:px-8'>

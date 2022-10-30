@@ -6,24 +6,22 @@
   },
   "root": true,
   "extends": [
-      "eslint:recommended",
-      "plugin:@typescript-eslint/recommended",
-      "plugin:prettier/recommended"
+    "eslint:recommended",
+    "plugin:@typescript-eslint/recommended",
+    "plugin:prettier/recommended"
   ],
   "parser": "@typescript-eslint/parser",
   "parserOptions": { "project": ["./tsconfig.json"] },
-  "plugins": [
-      "@typescript-eslint"
-  ],
+  "plugins": ["@typescript-eslint"],
   "rules": {
-      "@typescript-eslint/strict-boolean-expressions": [
-          2,
-          {
-              "allowString" : false,
-              "allowNumber" : false
-          }
-      ],
-      "react/jsx-filename-extension": [1, { "extensions": [".tsx"] }]
+    "@typescript-eslint/strict-boolean-expressions": [
+      2,
+      {
+        "allowString": false,
+        "allowNumber": false
+      }
+    ],
+    "react/jsx-filename-extension": [1, { "extensions": [".tsx"] }]
   },
   "ignorePatterns": ["src/**/*.test.ts"]
 }

@@ -30,7 +30,7 @@ const mainnet: Config = {
 
 const goerli: Config = {
   networkId: Network.GOERLI,
-  escrowFactoryAddress: '0x20c1Dec4ca935c5848B0F8Ea963713d8F3594c02',
+  escrowFactoryAddress: '0x3f5f310A63AD54256403586f133D578fCa80B8FC',
   tokens: [
     {
       name: 'USDC',

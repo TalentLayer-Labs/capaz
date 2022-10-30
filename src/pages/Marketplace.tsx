@@ -66,13 +66,15 @@ function Marketplace() {
             {/* Main dashboard's table */}
             <div className='py-6 w-full'>
               <div className='mx-auto xl:w-10/12 px-4 sm:px-6 md:px-8'>
-                <h1 className='text-2xl font-semibold text-gray-900'>Marketplace</h1>
+                <h1 className='text-2xl font-semibold text-gray-900 mb-8'>Marketplace</h1>
               </div>
 
               <div className='mx-auto xl:w-10/12 px-4 sm:px-6 md:px-8'>
-                {payments.map(payment => (
-                  <MarketplaceItem key={payment.escrowAddress} payment={payment} />
-                ))}
+                <div className='grid grid-cols-1 md:grid-cols-[repeat(auto-fill,_minmax(240px,_1fr))] gap-8'>
+                  {payments.map(payment => (
+                    <MarketplaceItem key={payment.escrowAddress} payment={payment} />
+                  ))}
+                </div>
               </div>
             </div>
           </main>

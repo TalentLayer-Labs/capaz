@@ -3,7 +3,7 @@ import { BigNumber, ethers } from 'ethers';
 import { formatDate } from '../utils/dates';
 import ClaimButton from './ClaimButton';
 import DistributeYieldButton from './DistributeYieldButton';
-import { periodDuration, yieldStrategy } from '../utils';
+import { periodDuration, truncateAddress, yieldStrategy } from '../utils';
 import { useAccount, useToken, useContractRead } from '@web3modal/react';
 import CapazEscrow from '../contracts/CapazEscrow.json';
 
@@ -48,21 +48,26 @@ function PaymentRow({ payment }: { payment: Payment }) {
 
   return (
     <tr style={{ height: '78px', borderBottom: '1px solid #dddddd' }}>
-      <th className='border-t-0 px-4 align-middle border-l-0 border-r-0 text-xs whitespace-nowrap p-3 text-left text-blueGray-700 '>
+      <td className='border-t-0 px-4 align-middle border-l-0 border-r-0 text-xs whitespace-nowrap p-3 text-left text-blueGray-700 '>
         {payment.sender === account.address ? (
           <span className='text-red-500'>Out</span>
         ) : (
           <span className='text-green-500'>In</span>
         )}
-      </th>
-      <th className='border-t-0 px-4 align-middle border-l-0 border-r-0 text-xs whitespace-nowrap p-3 text-left text-blueGray-700 '>
+      </td>
+      <td className='border-t-0 px-4 align-middle border-l-0 border-r-0 text-xs whitespace-nowrap p-3 text-left text-blueGray-700 '>
         <span
           className={`px-2.5 py-1.5 text-xs font-medium text-white ${
             status == 'Active' ? 'bg-indigo-600 ' : 'bg-rose-600 '
           }`}>
           {status}
         </span>
-      </th>
+      </td>
+      <td className='text-xs'>
+        {payment.sender === account.address
+          ? truncateAddress(payment.receiver)
+          : truncateAddress(payment.sender)}
+      </td>
       <td className='border-t-0 px-4 align-center border-l-0 border-r-0 text-xs whitespace-nowrap p-3'>
         {formatDate(payment.startTime.toNumber() * 1000)}
       </td>

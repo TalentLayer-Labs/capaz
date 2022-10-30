@@ -6,7 +6,7 @@ import { useToken } from '@web3modal/react';
 
 function getPeriodName(seconds: number) {
   for (const period of periodDuration) {
-    if (seconds < period.value) return period.name + 's';
+    if (seconds <= period.value) return period.name + 's';
   }
 
   return 'years';

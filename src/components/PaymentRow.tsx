@@ -47,9 +47,7 @@ function PaymentRow({ payment }: { payment: Payment }) {
   const releasableAmountNum = releasableAmount as BigNumber | undefined;
 
   return (
-    <tr
-      className={status == 'Finished' ? 'opacity-30' : ''}
-      style={{ height: '78px', borderBottom: '1px solid #dddddd' }}>
+    <tr style={{ height: '78px', borderBottom: '1px solid #dddddd' }}>
       <th className='border-t-0 px-4 align-middle border-l-0 border-r-0 text-xs whitespace-nowrap p-3 text-left text-blueGray-700 '>
         {payment.sender === account.address ? (
           <span className='text-red-500'>Out</span>

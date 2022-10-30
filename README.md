@@ -27,3 +27,10 @@ Please add the deployed contracts addresses in your .env file
 AaveStrategy deployed Cronos Testnet: 0x00F55088c15b9bF75e6a19699fA2b32FB1388126
 CapazEscrowFactory deployed on Cronos: 0x2eD3f237aEa7624669aa6AF363f1b1CC67772931
 CapazERC20 deployed on Cronos Testnet: 0x962F2585Da1B901CAB10ab447f8cb40Cc15b3197
+
+# Deployed contract on Mumbai
+
+AaveStrategy deployed to: 0x3220A910e4a2e437c2A1a5bb8799ff1143E144F0
+CapazEscrowFactory deployed to: 0x48C45A025D154b40AffB41bc3bDEecb689edE7E6
+CapazWETHAdapter deployed to: 0xdA1DA2364707Bdd242be34b9D8c2D8cf504B52f4
+capazERC20 deployed to: 0x5B5C32217dc6c13828F75221949fC6D1Bd6C6A08

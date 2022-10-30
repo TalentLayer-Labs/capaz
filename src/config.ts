@@ -35,6 +35,5 @@ const chains: { [networkId in Network]: Config } = {
 };
 
 export const getConfig = (network: Network) => {
-  console.log({ network });
   return chains[network];
 };

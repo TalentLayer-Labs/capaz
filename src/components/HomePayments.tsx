@@ -5,6 +5,8 @@ import { useEffect, useState } from 'react';
 import { BigNumber, ethers } from 'ethers';
 import { Payment } from '../types';
 import useConfig from '../hooks/useConfig';
+import ClaimButton from './buttons/ClaimButton';
+import ReleasableAmount from './ReleasableAmount';
 
 export default function HomePayments() {
   const [payments, setPayments] = useState<Payment[]>([]);
@@ -86,7 +88,6 @@ export default function HomePayments() {
                         </th>
                       </tr>
                     </thead>
-
                     <tbody>
                       {payments.map(payment => (
                         <PaymentRow payment={payment} key={payment.escrowAddress} />
@@ -95,6 +96,8 @@ export default function HomePayments() {
                   </table>
                 </div>
               </div>
+              <ClaimButton escrowAddress={'0x68bd7E2178580dc829012b0ef7985325aa0eAc6f'} />
+              <ReleasableAmount escrowAddress={'0x68bd7E2178580dc829012b0ef7985325aa0eAc6f'} />
             </div>
           </div>
         </div>

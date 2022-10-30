@@ -14,10 +14,9 @@ export default function SendPayment() {
   const [query, setQuery] = useState('');
   const [selectedToken, setSelectedToken] = useState(tokens[0]);
   const [amount, setAmount] = useState(0);
-  const [frequency, setFrequency] = useState(0);
+  const [period, setPeriod] = useState(0);
   const [selectedYieldPlatform, setSelectedYieldPlatform] = useState(yieldStrategy[0]);
   const [selectedSelector, setSelectedSelector] = useState(periodDuration[5]);
-  const [approveTxIsLoading, setApproveTxIsLoading] = useState(false);
   const [approveTxHasLoaded, setApproveTxHasLoaded] = useState(false);
   const [receiverAddress, setReceiverAddress] = useState(
     '0x0000000000000000000000000000000000000000',
@@ -25,7 +24,7 @@ export default function SendPayment() {
   const [estimatedGain, setEstimatedGain] = useState({
     amount: 0,
     currency: 'CPZ',
-    frequency: 0,
+    period: 0,
     periodDuration: 'year',
     yieldApy: 3,
     total: '0',
@@ -35,35 +34,13 @@ export default function SendPayment() {
   function handleChangeEstimatedGain(event: Event) {
     switch (event.target.id) {
       case 'amount': {
-        const total = event.target.value * (1 + estimatedGain.yieldApy) * 0.01;
+        const amount = event.target.value;
+        const totalPD = (amount * (1 + estimatedGain.yieldApy / 100)) / 365;
+        const periodNumber = Number(period);
+        const length = period * (selectedSelector.value / (3600 * 24));
+        const total = totalPD * length;
+        console.log(total, totalPD, length, periodNumber, selectedSelector.value);
         setEstimatedGain({ ...estimatedGain, amount: event.target.value, total: total.toFixed(2) });
-        break;
-      }
-      case 'yieldApy': {
-        const total = estimatedGain.amount * (1 + event.target.value) * 0.01;
-        setEstimatedGain({
-          ...estimatedGain,
-          yieldApy: event.target.value,
-          total: total.toFixed(2),
-        });
-        break;
-      }
-      case 'frequency': {
-        const total = estimatedGain.amount * (1 + estimatedGain.yieldApy) * 0.01;
-        setEstimatedGain({
-          ...estimatedGain,
-          frequency: event.target.value,
-          total: total.toFixed(2),
-        });
-        break;
-      }
-      case 'periodDuration': {
-        const total = estimatedGain.amount * (1 + estimatedGain.yieldApy) * 0.01;
-        setEstimatedGain({
-          ...estimatedGain,
-          periodDuration: event.target.value,
-          total: total.toFixed(2),
-        });
         break;
       }
       default: {
@@ -98,7 +75,7 @@ export default function SendPayment() {
         totalAmount: amount * 10 ** selectedToken.decimals,
         startTime: getTimestampInSeconds(),
         periodDuration: selectedSelector.value,
-        periods: frequency,
+        periods: period,
         yieldStrategyId: selectedYieldPlatform.id,
         escrowAddress: '0x0000000000000000000000000000000000000000',
       },
@@ -110,14 +87,19 @@ export default function SendPayment() {
     return Math.floor(Date.now() / 1000) + 60;
   }
 
-  function handleSubmit() {
-    console.log('Amount: ', amount);
-    setApproveTxIsLoading(true);
-    approveTx.write().then(async hash => {
-      setApproveTxIsLoading(false);
-      setApproveTxHasLoaded(true);
-      console.log(await executeTx.data);
-    });
+  function handleSubmit(e) {
+    e.preventDefault();
+    if (approveTxHasLoaded !== true) {
+      onApprove().then(() => {
+        setApproveTxHasLoaded(true);
+      });
+    } else {
+      onPayment();
+    }
+  }
+
+  async function onApprove() {
+    await approveTx.write();
   }
 
   async function onPayment() {
@@ -132,10 +114,11 @@ export default function SendPayment() {
           <h1 className='text-2xl font-semibold text-gray-900'>Send Payment</h1>
         </div>
         <div className='mx-auto xl:w-8/12 px-4 sm:px-6 md:px-8'>
-          <div className='py-4'>
+          <form onSubmit={e => handleSubmit(e)} className='py-4'>
             <div>
               {/* Receiver wallet */}
               <input
+                required
                 id='receiverAddress'
                 type='text'
                 className='focus:outline-none border-b w-full pb-2 border-sky-400 placeholder-gray-500'
@@ -152,6 +135,7 @@ export default function SendPayment() {
                       <Combobox.Input
                         className='w-full border-none py-2 pl-3 pr-10 text-sm leading-5 text-gray-900 focus:ring-0'
                         displayValue={token => token.name}
+                        required
                         onChange={event => setQuery(event.target.value)}
                       />
                       <Combobox.Button className='absolute inset-y-0 right-0 flex items-center pr-2'>
@@ -209,25 +193,31 @@ export default function SendPayment() {
               <input
                 id='amount'
                 type='number'
+                required
                 className='focus:outline-none border-b w-full pb-2 border-sky-400 placeholder-gray-500 my-8'
                 placeholder='Amount'
-                onChange={event => setAmount(event.target.value)}
+                onChange={event => {
+                  setAmount(event.target.value);
+                  handleChangeEstimatedGain(event);
+                }}
               />
             </div>
             <div className='flex'>
-              {/* Frequency */}
+              {/* Period */}
               <input
                 type='number'
+                required
                 className='focus:outline-none border-b w-full pb-2 border-sky-400 placeholder-gray-500 my-8 mr-8'
-                placeholder='Frequency'
-                onChange={event => setFrequency(event.target.value)}
+                placeholder='Period'
+                onChange={event => setPeriod(event.target.value)}
               />
-              {/* Frequency selector */}
+              {/* Period selector */}
               <div className='my-8 w-72 mr-8'>
                 <Combobox value={selectedSelector} onChange={setSelectedSelector}>
                   <div className='relative mt-1'>
                     <div className='relative w-full cursor-default overflow-hidden rounded-lg bg-white text-left shadow-md focus:outline-none focus-visible:ring-2 focus-visible:ring-white focus-visible:ring-opacity-75 focus-visible:ring-offset-2 focus-visible:ring-offset-teal-300 sm:text-sm'>
                       <Combobox.Input
+                        required
                         className='w-full border-none py-2 pl-3 pr-10 text-sm leading-5 text-gray-900 focus:ring-0'
                         displayValue={selectedSelector => selectedSelector.name}
                         onChange={event => {
@@ -295,6 +285,7 @@ export default function SendPayment() {
                     <div className='relative w-full cursor-default overflow-hidden rounded-lg bg-white text-left shadow-md focus:outline-none focus-visible:ring-2 focus-visible:ring-white focus-visible:ring-opacity-75 focus-visible:ring-offset-2 focus-visible:ring-offset-teal-300 sm:text-sm'>
                       <Combobox.Input
                         className='w-full border-none py-2 pl-3 pr-10 text-sm leading-5 text-gray-900 focus:ring-0'
+                        required
                         displayValue={yieldStrategy => selectedYieldPlatform.name}
                         onChange={event => {
                           setQuery(event.target.value);
@@ -356,17 +347,13 @@ export default function SendPayment() {
                 {`${selectedYieldPlatform.apy} % APY | Estimated gain : ${estimatedGain.total} $`}
               </div>
             </div>
-            <div className='flex'>
-              <input type='checkbox' className='border-sky-400 ' value='' />
-              <div className='px-3 text-gray-500'>I accept terms & conditions</div>
-            </div>
 
             {/* Buttons */}
             <div className='flex justify-center my-6 flex-col align-center mx-auto'>
-              {approveTxHasLoaded !== true && (
+              {approveTxHasLoaded !== true ? (
                 <button
-                  className='rounded-full text-center flex align-center justify-center  p-3 w-full sm:w-56   bg-gradient-to-r from-sky-600  to-teal-300 text-white text-lg font-semibold'
-                  onClick={handleSubmit}>
+                  type='submit'
+                  className='rounded-full text-center flex align-center justify-center  p-3 w-full sm:w-56   bg-gradient-to-r from-sky-600  to-teal-300 text-white text-lg font-semibold'>
                   <span>Approve Payment</span>
                   {approveTx.isLoading && (
                     <div className='loader'>
@@ -374,18 +361,10 @@ export default function SendPayment() {
                     </div>
                   )}
                 </button>
-              )}
-              {/* display errors */}
-              {approveTx.error && (
-                <div className='text-red-500 text-sm font-semibold text-center'>
-                  {approveTx.error.message.split(' (')[0]}
-                </div>
-              )}
-
-              {approveTxHasLoaded && (
+              ) : (
                 <button
-                  className='rounded-full text-center flex align-center justify-center  p-3 w-full sm:w-56   bg-gradient-to-r from-sky-600  to-teal-300 text-white text-lg font-semibold'
-                  onClick={onPayment}>
+                  type='submit'
+                  className='rounded-full text-center flex align-center justify-center  p-3 w-full sm:w-56   bg-gradient-to-r from-sky-600  to-teal-300 text-white text-lg font-semibold'>
                   <span>Send Payment</span>
                   {executeTx.isLoading ? (
                     <div className='loader'>
@@ -394,8 +373,19 @@ export default function SendPayment() {
                   ) : null}
                 </button>
               )}
+              {/* display errors */}
+              {approveTx.error && (
+                <div className='text-red-500 text-sm font-semibold text-center'>
+                  {approveTx.error.message.split(' (')[0]}
+                </div>
+              )}
+              {executeTx.error && (
+                <div className='text-red-500 text-sm font-semibold text-center'>
+                  {executeTx.error.message.split(' (')[0]}
+                </div>
+              )}
             </div>
-          </div>
+          </form>
         </div>
       </div>
     </main>

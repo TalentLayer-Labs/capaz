@@ -19,7 +19,7 @@ export default function HomePayments() {
 
     const getUserPayments = async () => {
       const contract = new ethers.Contract(
-        config.escrowFactoryAddress,
+        config?.escrowFactoryAddress,
         CapazEscrowFactory.abi,
         provider,
       );

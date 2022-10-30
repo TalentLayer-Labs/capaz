@@ -21,7 +21,7 @@ function getStrategyName(strategyId: number) {
 
 function getStatus(payment: Payment): string {
   if (
-    payment.startTime.add(payment.periodDuration.mul(payment.periods)).toNumber() >
+    payment.startTime.add(payment.periodDuration.mul(payment.periods)).toNumber() <
     Date.now() / 1000
   ) {
     return 'Finished';

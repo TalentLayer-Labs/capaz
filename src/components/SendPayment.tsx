@@ -9,7 +9,7 @@ import CapazEscrowFactory from '../contracts/CapazEscrowFactory.json';
 import SimpleERC20 from '../contracts/SimpleERC20.json';
 import useConfig from '../hooks/useConfig';
 import SvgLoader from './svgLoader';
-import { ethers } from 'ethers';
+import { BigNumber, ethers } from 'ethers';
 
 export default function SendPayment() {
   const config = useConfig();
@@ -29,12 +29,16 @@ export default function SendPayment() {
   const getAmountFromEthInWei = ethAmount =>
     ethers.utils.parseUnits(String(ethAmount), selectedToken?.decimals).toString();
 
+  const formattedAmount = BigNumber.from(amount).mul(
+    BigNumber.from(10).pow(selectedToken?.decimals ?? 0),
+  );
+
   // APPROVE
   const approveTx = useContractWrite({
     address: selectedToken?.address,
     abi: SimpleERC20.abi,
     functionName: 'approve',
-    args: [config?.escrowFactoryAddress, getAmountFromEthInWei(amount)],
+    args: [config?.escrowFactoryAddress, formattedAmount],
     enabled: !!config && selectedToken,
   });
 
@@ -48,7 +52,7 @@ export default function SendPayment() {
         sender: `${isReady ? account.address : null}`,
         receiver: receiverAddress,
         tokenAddress: selectedToken?.address,
-        totalAmount: getAmountFromEthInWei(amount),
+        totalAmount: formattedAmount,
         startTime: getTimestampInSeconds(),
         periodDuration: selectedSelector.value,
         periods: period,

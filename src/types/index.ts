@@ -1,13 +1,13 @@
 import { BigNumber } from 'ethers';
 
 export interface Payment {
-  sender: string;
-  receiver: string;
-  tokenAddress: string;
+  sender: `0x${string}`;
+  receiver: `0x${string}`;
+  tokenAddress: `0x${string}`;
   totalAmount: BigNumber;
   startTime: BigNumber;
   periodDuration: BigNumber;
   periods: BigNumber;
   yieldStrategyId: BigNumber;
-  escrowAddress: string;
+  escrowAddress: `0x${string}`;
 }

@@ -1,3 +1,4 @@
+import ClaimButton from './buttons/ClaimButton';
 import PaymentRow from './PaymentRow';
 import ReleasableAmount from './ReleasableAmount';
 
@@ -51,6 +52,7 @@ export default function HomePayments() {
                   </table>
                 </div>
               </div>
+              <ClaimButton />
             </div>
           </div>
         </div>

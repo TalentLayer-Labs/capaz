@@ -196,7 +196,7 @@ contract CapazEscrowFactory is ERC721, ERC2981, Ownable, CapazCommon {
             Base64.encode(
                 bytes(
                     abi.encodePacked(
-                        '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 900 900"><defs><filter id="A"><feFlood flood-opacity="0"/><feBlend in="SourceGraphic"/><feGaussianBlur stdDeviation="189"/></filter></defs><path fill="#60f" d="M0 0h900v900H0z"/><g filter="url(#A)"><circle cx="469" cy="489" r="420" fill="#4facf7"/><circle cx="353" cy="137" r="420" fill="#60f"/><g fill="#4facf7"><circle cx="708" cy="201" r="420"/><circle cx="276" cy="580" r="420"/></g><circle cx="681" cy="835" r="420" fill="#60f"/><circle cx="105" cy="146" r="420" fill="#4facf7"/></g><text x="30" y="70" fill="#fff">Capaz Escrow</text><text x="30" y="700" fill="#fff">',
+                        '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 900 900"><defs><filter id="A"><feFlood flood-opacity="0"/><feBlend in="SourceGraphic"/><feGaussianBlur stdDeviation="189"/></filter></defs><path fill="#e11d48" d="M0 0h900v900H0z"/><g filter="url(#A)"><circle cx="469" cy="489" r="420" fill="#f43f5e"/><circle cx="353" cy="137" r="420" fill="#e11d48"/><g fill="#f43f5e"><circle cx="708" cy="201" r="420"/><circle cx="276" cy="580" r="420"/></g><circle cx="681" cy="835" r="420" fill="#e11d48"/><circle cx="105" cy="146" r="420" fill="#f43f5e"/></g><text x="30" y="50" style="font:20px sans-serif;fill:#fff">Capaz Escrow</text><text x="30" y="700" style="font:70px sans-serif;fill:#fff">',
                         escrowValue,
                         "</text></svg>"
                     )

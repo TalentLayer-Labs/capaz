@@ -44,6 +44,8 @@ function PaymentRow({ payment }: { payment: Payment }) {
 
   const status = getStatus(payment);
 
+  const releasableAmountNum = releasableAmount as BigNumber | undefined;
+
   return (
     <tr
       className={status == 'Finished' ? 'opacity-30' : ''}
@@ -76,7 +78,10 @@ function PaymentRow({ payment }: { payment: Payment }) {
         {getStrategyName(payment.yieldStrategyId.toNumber())}
       </td>
       <td className='border-t-0 px-4 align-center border-l-0 border-r-0 text-xs whitespace-nowrap p-3'>
-        {releasableAmount?.toString() ?? ''} {token?.symbol}
+        {releasableAmountNum &&
+          token &&
+          ethers.utils.formatUnits(releasableAmountNum?.toString(), token?.decimals)}
+        {token?.symbol}
       </td>
       <td className='border-t-0 px-4 align-center border-l-0 border-r-0 text-xs whitespace-nowrap p-3'>
         {payment.receiver == account.address && (releasableAmount as BigNumber)?.toNumber() > 0 && (

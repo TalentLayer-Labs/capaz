@@ -26,11 +26,13 @@ export default function Sidebar() {
         <div className='flex flex-shrink-0 items-center px-4 text-1xl sm:text-2xl'>
           <a className='flex' href='/'>
             <img
-              className='h-8 w-auto'
-              src='https://tailwindui.com/img/logos/mark.svg?from-color=rose&from-shade=600&to-color=rose&to-shade=700&toShade=600'
+              width='26'
+              height='26'
+              className='h-7 mt-0.5 w-auto'
+              src='/logo.webp'
               alt='Capaz'
             />
-            <span className='ml-1 font-bold tracking-tight text-gray-900 '>Capaz</span>
+            <span className='ml-2 font-bold tracking-tight text-gray-900 '>Capaz</span>
           </a>
         </div>
         <div className='mt-5 flex flex-1 flex-col'>

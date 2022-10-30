@@ -2,16 +2,14 @@ import { Payment } from '../types';
 import { ethers } from 'ethers';
 import { formatDate } from '../utils/dates';
 import ClaimButton from './ClaimButton';
-import ReleasableAmount from './ReleasableAmount';
 import DistributeYieldButton from './DistributeYieldButton';
-import { useAccount, useContractRead } from '@web3modal/react';
 import { periodDuration, yieldStrategy } from '../utils';
-import { useToken } from '@web3modal/react';
+import { useAccount, useToken, useContractRead } from '@web3modal/react';
 import CapazEscrow from '../contracts/CapazEscrow.json';
 
 function getPeriodName(seconds: number) {
   for (const period of periodDuration) {
-    if (seconds < period.value) return period.name + 's';
+    if (seconds <= period.value) return period.name + 's';
   }
 
   return 'years';
@@ -23,7 +21,7 @@ function getStrategyName(strategyId: number) {
 
 function getStatus(payment: Payment): string {
   if (
-    payment.startTime.add(payment.periodDuration.mul(payment.periods)).toNumber() >
+    payment.startTime.add(payment.periodDuration.mul(payment.periods)).toNumber() <
     Date.now() / 1000
   ) {
     return 'Finished';
@@ -54,6 +52,13 @@ function PaymentRow({ payment }: { payment: Payment }) {
   return (
     <tr className={status == 'Finished' ? 'opacity-30' : ''}>
       <th className='border-t-0 px-6 align-middle border-l-0 border-r-0 text-xs whitespace-nowrap p-4 text-left text-blueGray-700 '>
+        {payment.sender === account.address ? (
+          <span className='text-red-500'>Outflow</span>
+        ) : (
+          <span className='text-green-500'>Inflow</span>
+        )}
+      </th>
+      <th className='border-t-0 px-6 align-middle border-l-0 border-r-0 text-xs whitespace-nowrap p-4 text-left text-blueGray-700 '>
         <span
           className={`px-2.5 py-1.5 text-xs font-medium text-white ${
             status == 'Active' ? 'bg-indigo-600 ' : 'bg-rose-600 '
@@ -80,7 +85,7 @@ function PaymentRow({ payment }: { payment: Payment }) {
         {getStrategyName(payment.yieldStrategyId.toNumber())}
       </td>
       <td className='border-t-0 px-6 align-center border-l-0 border-r-0 text-xs whitespace-nowrap p-4'>
-        {releasableAmount?.toString() || ''}
+        {releasableAmount?.toString() ?? ''}
       </td>
       <td className='border-t-0 px-6 align-center border-l-0 border-r-0 text-xs whitespace-nowrap p-4'>
         {payment.receiver == account.address && releasableAmount?.toNumber() > 0 && (

@@ -13,6 +13,11 @@ const navigation = [
     href: '/dashboard/send-payment',
     icon: BanknotesIcon,
   },
+  {
+    name: 'Marketplace',
+    href: '/marketplace',
+    icon: BanknotesIcon, // TODO: change this icon
+  },
 ];
 
 export default function Sidebar() {

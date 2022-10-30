@@ -47,7 +47,7 @@ export default function HomePayments() {
     };
 
     getUserPayments();
-  }, [isAccountReady, config, provider, account]);
+  }, [isAccountReady, config, provider, account.address]);
 
   return (
     <main>

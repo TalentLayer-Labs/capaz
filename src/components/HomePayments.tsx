@@ -1,8 +1,52 @@
-import ClaimButton from './ClaimButton';
-import DistributeYieldButton from './DistributeYieldButton';
-import ReleasableAmount from './ReleasableAmount';
+import PaymentRow from './PaymentRow';
+import { useAccount, useProvider } from '@web3modal/react';
+import CapazEscrowFactory from '../contracts/CapazEscrowFactory.json';
+import { useEffect, useState } from 'react';
+import { BigNumber, ethers } from 'ethers';
+import { Payment } from '../types';
+import useConfig from '../hooks/useConfig';
 
 export default function HomePayments() {
+  const [payments, setPayments] = useState<Payment[]>([]);
+
+  const config = useConfig();
+
+  const { account, isReady: isAccountReady } = useAccount();
+  const { provider } = useProvider();
+
+  useEffect(() => {
+    if (!isAccountReady || !config) return;
+
+    const getUserPayments = async () => {
+      const contract = new ethers.Contract(
+        config.escrowFactoryAddress,
+        CapazEscrowFactory.abi,
+        provider,
+      );
+
+      const totalSupply: BigNumber = await contract.totalSupply();
+
+      const userPayments: Payment[] = [];
+
+      for (let tokenId = 0; tokenId < totalSupply.toNumber(); tokenId++) {
+        const escrow: Payment = await contract.getEscrow(tokenId);
+        const sender = escrow.sender.toLowerCase();
+        const receiver = escrow.receiver.toLowerCase();
+
+        if (
+          sender === account.address.toLowerCase() ||
+          receiver === account.address.toLowerCase()
+        ) {
+          userPayments.push(escrow);
+        }
+      }
+
+      setPayments(userPayments);
+    };
+
+    getUserPayments();
+  }, [isAccountReady, config, provider, account]);
+
   return (
     <main>
       {/* Main dashboard's table */}
@@ -42,12 +86,14 @@ export default function HomePayments() {
                         </th>
                       </tr>
                     </thead>
+                    <tbody>
+                      {payments.map(payment => (
+                        <PaymentRow payment={payment} key={payment.escrowAddress} />
+                      ))}
+                    </tbody>
                   </table>
                 </div>
               </div>
-              <ClaimButton escrowAddress={'0x68bd7E2178580dc829012b0ef7985325aa0eAc6f'} />
-              <ReleasableAmount escrowAddress={'0x68bd7E2178580dc829012b0ef7985325aa0eAc6f'} />
-              <DistributeYieldButton escrowAddress={'0x68bd7E2178580dc829012b0ef7985325aa0eAc6f'} />
             </div>
           </div>
         </div>

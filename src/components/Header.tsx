@@ -8,7 +8,7 @@ import NetworkLink from './NetworkLink';
 
 export default function Header() {
   const { account } = useAccount();
-  const [sidebarOpen, setSidebarOpen] = useState(false);
+  const [, setSidebarOpen] = useState(false);
   const navigate = useNavigate();
   const disconnect = useDisconnect();
   const { network } = useNetwork();
@@ -54,9 +54,9 @@ export default function Header() {
                 </Menu.Item>
                 {/* .If it's an dev env we display localhost network */}
                 {import.meta.env.DEV && (
-                <Menu.Item>
-                  <NetworkLink chaindId={1137} chainName='Localhost' />
-                </Menu.Item>
+                  <Menu.Item>
+                    <NetworkLink chaindId={1137} chainName='Localhost' />
+                  </Menu.Item>
                 )}
               </div>
             </Menu.Items>

@@ -2,7 +2,7 @@ import { useContractWrite } from '@web3modal/react';
 import CapazEscrow from '../contracts/CapazEscrow.json';
 
 function ClaimButton({ escrowAddress }: { escrowAddress: string }) {
-  const { data, error, isLoading, write } = useContractWrite({
+  const { error, write } = useContractWrite({
     address: escrowAddress,
     abi: CapazEscrow.abi,
     functionName: 'release',
@@ -13,7 +13,7 @@ function ClaimButton({ escrowAddress }: { escrowAddress: string }) {
   }
 
   if (error) {
-    console.error(error?.error?.message);
+    console.error(error?.message);
   }
 
   return (

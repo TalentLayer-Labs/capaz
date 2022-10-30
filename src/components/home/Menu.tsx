@@ -2,7 +2,7 @@ import { Fragment } from 'react';
 import { Popover, Transition } from '@headlessui/react';
 import { ConnectButton, useAccount } from '@web3modal/react';
 import { truncateAddress } from '../../utils';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link } from 'react-router-dom';
 import {
   Bars3Icon,
   ChatBubbleBottomCenterTextIcon,
@@ -43,8 +43,7 @@ const tools = [
 ];
 
 function Menu() {
-  const { account, isReady } = useAccount();
-  const navigate = useNavigate();
+  const { account } = useAccount();
 
   return (
     <div className='bg-white'>
@@ -93,11 +92,11 @@ function Menu() {
                 <div className='px-5 pt-5 pb-6'>
                   <div className='flex items-center justify-between'>
                     <div>
-                      <img
+                      {/* <img
                         className='h-8 w-auto'
                         src='https://tailwindui.com/img/logos/mark.svg?from-color=rose&from-shade=600&to-color=rose&to-shade=500&toShade=600'
                         alt='Capaz'
-                      />
+                      /> */}
                     </div>
                     <div className='-mr-2'>
                       <Popover.Button className='inline-flex items-center justify-center rounded-md bg-white p-2 text-gray-400 hover:bg-gray-100 hover:text-gray-500 focus:outline-none focus:ring-2 focus:ring-inset focus:ring-rose-500'>

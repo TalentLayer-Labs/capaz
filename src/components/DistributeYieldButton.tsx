@@ -2,8 +2,8 @@ import { useAccount, useContractWrite } from '@web3modal/react';
 import CapazEscrow from '../contracts/CapazEscrow.json';
 
 function DistributeYieldButton({ escrowAddress }: { escrowAddress: string }) {
-  const { account, isReady } = useAccount();
-  const { data, error, isLoading, write } = useContractWrite({
+  const { account } = useAccount();
+  const { error, write } = useContractWrite({
     address: escrowAddress,
     abi: CapazEscrow.abi,
     functionName: 'distributeYield',
@@ -15,7 +15,7 @@ function DistributeYieldButton({ escrowAddress }: { escrowAddress: string }) {
   }
 
   if (error) {
-    console.error(error?.error?.message);
+    console.error(error?.message);
   }
 
   return (

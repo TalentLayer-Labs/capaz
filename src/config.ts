@@ -54,11 +54,13 @@ const local = {
 const cronostestnet = {
   networkId: Network.CRONOSTESTNET,
   escrowFactoryAddress: '0x2eD3f237aEa7624669aa6AF363f1b1CC67772931',
+  tokens: [],
 };
 
 const mumbai = {
   networkId: Network.MUMBAI,
   escrowFactoryAddress: '0x48C45A025D154b40AffB41bc3bDEecb689edE7E6',
+  tokens: [],
 };
 
 const chains: { [networkId in Network]: Config } = {

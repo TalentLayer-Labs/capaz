@@ -50,7 +50,7 @@ function Menu() {
       <header>
         <Popover className='relative bg-slate-100'>
           <div className='mx-auto flex max-w-7xl items-center justify-between px-4 py-6 sm:px-6 md:justify-start md:space-x-10 lg:px-8'>
-            <div className='flex flex-shrink-0 items-center px-4 text-1xl sm:text-2xl'>
+            <div className='flex flex-shrink-0 items-center pr-4 text-1xl sm:text-2xl'>
               <a className='flex' href='/'>
                 <img
                   width='26'

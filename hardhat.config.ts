@@ -27,6 +27,7 @@ const chainIds = {
   mainnet: 1,
   cronos: 25,
   cronosTestnet: 338,
+  mumbai: 80001,
 }
 
 function getChainConfig(chain: keyof typeof chainIds): NetworkUserConfig {
@@ -75,6 +76,10 @@ const config: HardhatUserConfig = {
     src: './contracts',
   },
   networks: {
+    mumbai: {
+      url: 'https://matic-mumbai.chainstacklabs.com',
+      accounts: [process.env.MUMBAI_PRIVATE_KEY!],
+    },
     cronosTestnet: {
       url: 'https://cronos-testnet-3.crypto.org:8545/',
       chainId: 338,

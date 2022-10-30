@@ -1,6 +1,7 @@
 import { Menu } from '@headlessui/react';
 import { useBalance } from '@web3modal/react';
 import ClaimButton from './buttons/ClaimButton';
+import PaymentRow from './PaymentRow';
 
 export default function HomePayments() {
   return (
@@ -44,29 +45,7 @@ export default function HomePayments() {
                     </thead>
 
                     <tbody>
-                      <tr>
-                        <th className='border-t-0 px-6 align-middle border-l-0 border-r-0 text-xs whitespace-nowrap p-4 text-left text-blueGray-700 '>
-                          USDC
-                        </th>
-                        <td className='border-t-0 px-6 align-middle border-l-0 border-r-0 text-xs whitespace-nowrap p-4 '>
-                          500$
-                        </td>
-                        <td className='border-t-0 px-6 align-center border-l-0 border-r-0 text-xs whitespace-nowrap p-4'>
-                          28 oct
-                        </td>
-                        <td className='border-t-0 px-6 align-middle border-l-0 border-r-0 text-xs whitespace-nowrap p-4'>
-                          <i className='fas fa-arrow-up text-emerald-500 mr-4'></i>5
-                        </td>
-                        <td className='border-t-0 px-6 align-center border-l-0 border-r-0 text-xs whitespace-nowrap p-4'>
-                          weeks
-                        </td>
-                        <td className='border-t-0 px-6 align-center border-l-0 border-r-0 text-xs whitespace-nowrap p-4'>
-                          Aave
-                        </td>
-                        <td className='border-t-0 px-6 align-center border-l-0 border-r-0 text-xs whitespace-nowrap p-4'>
-                          -
-                        </td>
-                      </tr>
+                      <PaymentRow tokenId={0} />
                     </tbody>
                   </table>
                 </div>

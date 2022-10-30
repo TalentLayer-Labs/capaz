@@ -1,11 +1,10 @@
 import { BanknotesIcon, HomeIcon } from '@heroicons/react/24/outline';
 import { useBlockNumber, useNetwork } from '@web3modal/react';
-import React, { Fragment } from 'react';
 import { NavLink } from 'react-router-dom';
 
 const navigation = [
   {
-    name: 'Home',
+    name: 'Dashboard',
     href: '/dashboard/home',
     icon: HomeIcon,
   },
@@ -52,7 +51,7 @@ export default function Sidebar() {
         </div>
       </div>
       <div className='flex flex-shrink-0 p-4'>
-        <a href='' className='group block w-full flex-shrink-0'>
+        <div className='group block w-full flex-shrink-0'>
           <div className='flex items-center'>
             <div className=''>
               <a
@@ -77,7 +76,7 @@ export default function Sidebar() {
               </a>
             </div>
           </div>
-        </a>
+        </div>
       </div>
     </div>
   );

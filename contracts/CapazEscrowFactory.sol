@@ -211,10 +211,10 @@ contract CapazEscrowFactory is ERC721, ERC2981, Ownable, CapazCommon {
                         bytes(
                             abi.encodePacked(
                                 '{"sender":"',
-                                escrow.sender,
-                                '{"receiver":"',
-                                escrow.receiver,
-                                '{"totalAmount":"',
+                                Strings.toHexString(uint256(uint160(escrow.sender)), 20),
+                                '", "receiver":"',
+                                Strings.toHexString(uint256(uint160(escrow.receiver)), 20),
+                                '", "totalAmount":"',
                                 escrowValue,
                                 '", "image":"',
                                 image,

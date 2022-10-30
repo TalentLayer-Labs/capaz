@@ -2,7 +2,7 @@ import { Payment } from '../types';
 import { ethers } from 'ethers';
 import { formatDate } from '../utils/dates';
 import { periodDuration, yieldStrategy } from '../utils';
-import { useToken } from '@web3modal/react';
+import { useAccount, useToken } from '@web3modal/react';
 
 function getPeriodName(seconds: number) {
   for (const period of periodDuration) {
@@ -17,12 +17,20 @@ function getStrategyName(strategyId: number) {
 }
 
 function PaymentRow({ payment }: { payment: Payment }) {
+  const { account } = useAccount();
   const { data } = useToken({
     address: payment.tokenAddress,
   });
 
   return (
     <tr>
+      <th className='border-t-0 px-6 align-middle border-l-0 border-r-0 text-xs whitespace-nowrap p-4 text-left text-blueGray-700 '>
+        {payment.sender === account.address ? (
+          <span className='text-red-500'>Outflow</span>
+        ) : (
+          <span className='text-green-500'>Inflow</span>
+        )}
+      </th>
       <th className='border-t-0 px-6 align-middle border-l-0 border-r-0 text-xs whitespace-nowrap p-4 text-left text-blueGray-700 '>
         {data?.symbol}
       </th>

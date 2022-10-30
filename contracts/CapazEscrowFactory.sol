@@ -154,6 +154,13 @@ contract CapazEscrowFactory is ERC721, ERC2981, Ownable, CapazCommon {
     }
 
     /**
+     * Gets the total amount of tokens that have been minted
+     */
+    function totalSupply() public view returns (uint256) {
+        return _tokenIdCounter.current();
+    }
+
+    /**
      * Get the dynamic token URI
      * @param tokenId NFT id
      */

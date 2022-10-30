@@ -16,7 +16,7 @@ function ReleasableAmount({ escrowAddress }: { escrowAddress: string }) {
     console.error(error?.error?.message);
   }
 
-  return <span>{data?.toString()}</span>;
+  return <span>Releasable amount: {data?.toString()}</span>;
 }
 
 export default ReleasableAmount;

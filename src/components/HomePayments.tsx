@@ -1,4 +1,5 @@
-import ClaimButton from './buttons/ClaimButton';
+import ClaimButton from './ClaimButton';
+import DistributeYieldButton from './DistributeYieldButton';
 import ReleasableAmount from './ReleasableAmount';
 
 export default function HomePayments() {
@@ -46,6 +47,7 @@ export default function HomePayments() {
               </div>
               <ClaimButton escrowAddress={'0x68bd7E2178580dc829012b0ef7985325aa0eAc6f'} />
               <ReleasableAmount escrowAddress={'0x68bd7E2178580dc829012b0ef7985325aa0eAc6f'} />
+              <DistributeYieldButton escrowAddress={'0x68bd7E2178580dc829012b0ef7985325aa0eAc6f'} />
             </div>
           </div>
         </div>

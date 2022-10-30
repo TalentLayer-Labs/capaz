@@ -1,11 +1,13 @@
-import { useContractWrite } from '@web3modal/react';
-import CapazEscrow from '../../contracts/CapazEscrow.json';
+import { useAccount, useContractWrite } from '@web3modal/react';
+import CapazEscrow from '../contracts/CapazEscrow.json';
 
-function ClaimButton({ escrowAddress }: { escrowAddress: string }) {
+function DistributeYieldButton({ escrowAddress }: { escrowAddress: string }) {
+  const { account, isReady } = useAccount();
   const { data, error, isLoading, write } = useContractWrite({
     address: escrowAddress,
     abi: CapazEscrow.abi,
-    functionName: 'release',
+    functionName: 'distributeYield',
+    args: [account.address, account.address],
   });
 
   async function handleClick() {
@@ -21,10 +23,10 @@ function ClaimButton({ escrowAddress }: { escrowAddress: string }) {
       <button
         className='rounded-full p-3 w-full sm:w-56 bg-gradient-to-r from-sky-600  to-teal-300 text-white text-lg font-semibold'
         onClick={handleClick}>
-        Claim
+        Distribute yield
       </button>
     </div>
   );
 }
 
-export default ClaimButton;
+export default DistributeYieldButton;

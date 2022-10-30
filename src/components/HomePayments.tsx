@@ -65,32 +65,26 @@ export default function HomePayments() {
                   <table className='items-center bg-transparent w-full border-collapse '>
                     <thead>
                       <tr>
-                        <th className='px-6 bg-blueGray-50 text-blueGray-500 align-middle border border-solid border-blueGray-50 py-5 text-xs uppercase border-l-0 border-r-0 whitespace-nowrap font-semibold text-left' />
-                        <th className='px-6 bg-blueGray-50 text-blueGray-500 align-middle border border-solid border-blueGray-50 py-5 text-xs uppercase border-l-0 border-r-0 whitespace-nowrap font-semibold text-left'>
+                        <th className='px-4 bg-blueGray-50 text-blueGray-500 align-middle border border-solid border-blueGray-50 py-5 text-xs uppercase border-l-0 border-r-0 whitespace-nowrap font-semibold text-left' />
+                        <th className='px-4 bg-blueGray-50 text-blueGray-500 align-middle border border-solid border-blueGray-50 py-5 text-xs uppercase border-l-0 border-r-0 whitespace-nowrap font-semibold text-left'>
                           Status
                         </th>
-                        <th className='px-6 bg-blueGray-50 text-blueGray-500 align-middle border border-solid border-blueGray-50 py-5 text-xs uppercase border-l-0 border-r-0 whitespace-nowrap font-semibold text-left'>
-                          Asset
+                        <th className='px-4 bg-blueGray-50 text-blueGray-500 align-middle border border-solid border-blueGray-50 py-5 text-xs uppercase border-l-0 border-r-0 whitespace-nowrap font-semibold text-left'>
+                          Start
                         </th>
-                        <th className='px-6 bg-blueGray-50 text-blueGray-500 align-middle border border-solid border-blueGray-50 py-5 text-xs uppercase border-l-0 border-r-0 whitespace-nowrap font-semibold text-left'>
+                        <th className='px-4 bg-blueGray-50 text-blueGray-500 align-middle border border-solid border-blueGray-50 py-5 text-xs uppercase border-l-0 border-r-0 whitespace-nowrap font-semibold text-left'>
                           Total
                         </th>
-                        <th className='px-6 bg-blueGray-50 text-blueGray-500 align-middle border border-solid border-blueGray-50 py-5 text-xs uppercase border-l-0 border-r-0 whitespace-nowrap font-semibold text-left'>
-                          Start at
-                        </th>
-                        <th className='px-6 bg-blueGray-50 text-blueGray-500 align-middle border border-solid border-blueGray-50 py-5 text-xs uppercase border-l-0 border-r-0 whitespace-nowrap font-semibold text-left'>
+                        <th className='px-4 bg-blueGray-50 text-blueGray-500 align-middle border border-solid border-blueGray-50 py-5 text-xs uppercase border-l-0 border-r-0 whitespace-nowrap font-semibold text-left'>
                           Payed In
                         </th>
-                        <th className='px-6 bg-blueGray-50 text-blueGray-500 align-middle border border-solid border-blueGray-50 py-5 text-xs uppercase border-l-0 border-r-0 whitespace-nowrap font-semibold text-left'>
-                          Every
-                        </th>
-                        <th className='px-6 bg-blueGray-50 text-blueGray-500 align-middle border border-solid border-blueGray-50 py-5 text-xs uppercase border-l-0 border-r-0 whitespace-nowrap font-semibold text-left'>
+                        <th className='px-4 bg-blueGray-50 text-blueGray-500 align-middle border border-solid border-blueGray-50 py-5 text-xs uppercase border-l-0 border-r-0 whitespace-nowrap font-semibold text-left'>
                           Yield
                         </th>
-                        <th className='px-6 bg-blueGray-50 text-blueGray-500 align-middle border border-solid border-blueGray-50 py-5 text-xs uppercase border-l-0 border-r-0 whitespace-nowrap font-semibold text-left'>
+                        <th className='px-4 bg-blueGray-50 text-blueGray-500 align-middle border border-solid border-blueGray-50 py-5 text-xs uppercase border-l-0 border-r-0 whitespace-nowrap font-semibold text-left'>
                           Releasable
                         </th>
-                        <th className='px-6 bg-blueGray-50 text-blueGray-500 align-middle border border-solid border-blueGray-50 py-5 text-xs uppercase border-l-0 border-r-0 whitespace-nowrap font-semibold text-left'>
+                        <th className='px-4 bg-blueGray-50 text-blueGray-500 align-middle border border-solid border-blueGray-50 py-5 text-xs uppercase border-l-0 border-r-0 whitespace-nowrap font-semibold text-left'>
                           Action
                         </th>
                       </tr>

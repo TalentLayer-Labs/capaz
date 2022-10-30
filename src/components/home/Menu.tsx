@@ -50,14 +50,16 @@ function Menu() {
       <header>
         <Popover className='relative bg-slate-100'>
           <div className='mx-auto flex max-w-7xl items-center justify-between px-4 py-6 sm:px-6 md:justify-start md:space-x-10 lg:px-8'>
-            <div className='flex justify-start lg:w-0 lg:flex-1'>
-              <a href='/'>
-                <span className='sr-only'>Capaz</span>
+            <div className='flex flex-shrink-0 items-center px-4 text-1xl sm:text-2xl'>
+              <a className='flex' href='/'>
                 <img
-                  className='h-8 w-auto sm:h-10'
-                  src='https://tailwindui.com/img/logos/mark.svg?from-color=rose&from-shade=600&to-color=rose&to-shade=500&toShade=600'
-                  alt=''
+                  width='26'
+                  height='26'
+                  className='h-7 mt-0.5 w-auto'
+                  src='/logo.webp'
+                  alt='Capaz'
                 />
+                <span className='ml-2 font-bold tracking-tight text-gray-900 '>Capaz</span>
               </a>
             </div>
             <div className='-my-2 -mr-2 md:hidden'>
@@ -92,7 +94,7 @@ function Menu() {
                     <div>
                       {/* <img
                         className='h-8 w-auto'
-                        src='https://tailwindui.com/img/logos/mark.svg?from-color=rose&from-shade=600&to-color=rose&to-shade=700&toShade=600'
+                        src='https://tailwindui.com/img/logos/mark.svg?from-color=rose&from-shade=600&to-color=rose&to-shade=500&toShade=600'
                         alt='Capaz'
                       /> */}
                     </div>

@@ -223,7 +223,7 @@ export default function SendPayment() {
               <input
                 type='number'
                 className='focus:outline-none border-b w-full pb-2 border-sky-400 placeholder-gray-500 my-8 mr-8'
-                placeholder='Frequency'
+                placeholder='Payed in X times'
                 onChange={event => setFrequency(event.target.value)}
               />
               {/* Frequency selector */}
@@ -359,10 +359,6 @@ export default function SendPayment() {
               <div className='my-8'>
                 {`${selectedYieldPlatform.apy} % APY | Estimated gain : ${estimatedGain.total} $`}
               </div>
-            </div>
-            <div className='flex'>
-              <input type='checkbox' className='border-sky-400 ' value='' />
-              <div className='px-3 text-gray-500'>I accept terms & conditions</div>
             </div>
 
             {/* Buttons */}

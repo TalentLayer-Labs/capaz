@@ -1,5 +1,5 @@
 import { BanknotesIcon, HomeIcon } from '@heroicons/react/24/outline';
-import { useBlockNumber, useNetwork } from '@web3modal/react';
+import { useBlockNumber, useFeeData, useNetwork } from '@web3modal/react';
 import { NavLink } from 'react-router-dom';
 
 const navigation = [
@@ -22,6 +22,7 @@ const navigation = [
 
 export default function Sidebar() {
   const { data: blockNumber } = useBlockNumber({ watch: true });
+  const { data: feeData, error, isLoading, refetch } = useFeeData({ watch: true });
   const { network } = useNetwork();
 
   return (
@@ -40,7 +41,7 @@ export default function Sidebar() {
             <span className='ml-2 font-bold tracking-tight text-gray-900 '>Capaz</span>
           </a>
         </div>
-        <div className='mt-5 flex flex-1 flex-col'>
+        <div className='mt-8 flex flex-1 flex-col'>
           <nav className='flex-1 space-y-1 px-2 pb-4'>
             {navigation.map(item => (
               <NavLink
@@ -48,7 +49,7 @@ export default function Sidebar() {
                 to={item.href}
                 className={({ isActive }) =>
                   isActive
-                    ? 'bg-gray-100 text-gray-900 group rounded-md py-2 px-2 flex items-center text-sm font-medium'
+                    ? 'bg-rose-100 text-rose-600 group rounded-md py-2 px-2 flex items-center text-sm font-medium'
                     : 'text-gray-600 hover:bg-gray-50 group rounded-md py-2 px-2 flex items-center text-sm font-medium'
                 }>
                 {item.name}
@@ -57,7 +58,7 @@ export default function Sidebar() {
           </nav>
         </div>
       </div>
-      <div className='flex flex-shrink-0 p-4'>
+      <div className='flex flex-shrink-0 p-4 border-r border-gray-200'>
         <div className='group block w-full flex-shrink-0'>
           <div className='flex items-center'>
             <div className=''>
@@ -79,7 +80,11 @@ export default function Sidebar() {
                     backgroundColor: 'rgb(118, 209, 145)',
                     transition: 'background-color 250ms ease 0s',
                   }}></span>
-                {blockNumber}
+                {blockNumber} -{' '}
+                {feeData?.formatted.gasPrice
+                  ? Math.round(parseInt(feeData?.formatted.gasPrice) / 10 ** 8) / 10
+                  : ''}{' '}
+                Gwei
               </a>
             </div>
           </div>

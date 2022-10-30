@@ -1,10 +1,17 @@
 import { Menu, Transition } from '@headlessui/react';
 import { Bars3BottomLeftIcon, ChevronDownIcon } from '@heroicons/react/24/outline';
 import { truncateAddress } from '../utils';
-import { ConnectButton, useAccount, useDisconnect, useNetwork } from '@web3modal/react';
+import {
+  ConnectButton,
+  useAccount,
+  useDisconnect,
+  useNetwork,
+  useEnsAvatar,
+} from '@web3modal/react';
 import { Fragment, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import NetworkLink from './NetworkLink';
+import SvgLoader from './svgLoader';
 
 export default function Header() {
   const { account } = useAccount();
@@ -12,6 +19,24 @@ export default function Header() {
   const navigate = useNavigate();
   const disconnect = useDisconnect();
   const { network } = useNetwork();
+  const { data, isLoading } = useEnsAvatar({
+    addressOrName: 'vitalik.eth',
+  });
+
+  const chainIdToName = (chainId: number) => {
+    switch (chainId) {
+      case 1:
+        return 'Ethereum';
+      case 5:
+        return 'Goerli';
+      case 80001:
+        return 'Mumbai';
+      case 338:
+        return 'Cronos testnet';
+      default:
+        return 'Unknown';
+    }
+  };
 
   function classNames(...classes: any) {
     return classes.filter(Boolean).join(' ');
@@ -31,7 +56,8 @@ export default function Header() {
         <Menu as='div' className='relative inline-block text-left mt-3'>
           <div>
             <Menu.Button className='inline-flex w-full justify-center rounded-md border border-gray-300 bg-white px-4 py-2 text-sm font-medium text-gray-700 shadow-sm hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 focus:ring-offset-gray-100'>
-              {network?.chain?.name}
+              {network?.chain?.id ? chainIdToName(network.chain.id) : 'Select a network'}
+
               <ChevronDownIcon className='-mr-1 ml-2 h-5 w-5' aria-hidden='true' />
             </Menu.Button>
           </div>
@@ -52,6 +78,12 @@ export default function Header() {
                 <Menu.Item>
                   <NetworkLink chaindId={5} chainName='Goerli' />
                 </Menu.Item>
+                <Menu.Item>
+                  <NetworkLink chaindId={80001} chainName='Mumbai' />
+                </Menu.Item>
+                <Menu.Item>
+                  <NetworkLink chaindId={338} chainName='Cronos testnet' />
+                </Menu.Item>
                 {/* .If it's an dev env we display localhost network */}
                 {import.meta.env.DEV && (
                   <Menu.Item>
@@ -69,11 +101,15 @@ export default function Header() {
               <div>
                 <Menu.Button className='flex max-w-xs items-center rounded-full bg-white text-sm focus:outline-none focus:ring-2 focus:ring-rose-500 focus:ring-offset-2'>
                   <span className='sr-only'>Open user menu</span>
-                  <img
-                    className='h-8 w-8 rounded-full'
-                    src='https://imageio.forbes.com/specials-images/imageserve/6170e01f8d7639b95a7f2eeb/Sotheby-s-NFT-Natively-Digital-1-2-sale-Bored-Ape-Yacht-Club--8817-by-Yuga-Labs/0x0.png?format=png&width=960'
-                    alt=''
-                  />
+                  {data !== undefined ? (
+                    <img className='h-8 w-8 rounded-full' alt='' src={data} />
+                  ) : (
+                    <img
+                      className='h-8 w-8 rounded-full'
+                      alt=''
+                      src='https://imageio.forbes.com/specials-images/imageserve/6170e01f8d7639b95a7f2eeb/Sotheby-s-NFT-Natively-Digital-1-2-sale-Bored-Ape-Yacht-Club--8817-by-Yuga-Labs/0x0.png?format=png&width=960'
+                    />
+                  )}
                 </Menu.Button>
               </div>
               {account.isConnected === true ? (

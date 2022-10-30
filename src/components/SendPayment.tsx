@@ -2,10 +2,11 @@
 import { Fragment, useState } from 'react';
 import { Combobox, Transition } from '@headlessui/react';
 import { CheckIcon, ChevronUpDownIcon } from '@heroicons/react/20/solid';
-import { useAccount, useContractWrite, useWaitForTransaction } from '@web3modal/react';
-import { tokenAddressEscrowFactory, periodDuration, tokens, yieldStrategy } from '../utils/index';
+import { useAccount, useContractWrite } from '@web3modal/react';
+import { periodDuration, tokens, yieldStrategy } from '../utils/index';
 import CapazEscrowFactory from '../contracts/CapazEscrowFactory.json';
 import SimpleERC20 from '../contracts/SimpleERC20.json';
+import useConfig from '../hooks/useConfig';
 
 export default function SendPayment() {
   const { account, isReady } = useAccount();
@@ -72,17 +73,20 @@ export default function SendPayment() {
     }
   }
 
+  const config = useConfig();
+
   // APPROVE
   const approveTx = useContractWrite({
     address: selectedToken.address,
     abi: SimpleERC20.abi,
     functionName: 'approve',
-    args: [tokenAddressEscrowFactory, amount],
+    args: [config?.escrowFactoryAddress, amount * 10 ** selectedToken.decimals],
+    enabled: !!config,
   });
 
   // EXECUTE
   const executeTx = useContractWrite({
-    address: tokenAddressEscrowFactory,
+    address: config?.escrowFactoryAddress,
     abi: CapazEscrowFactory.abi,
     functionName: 'mint',
     args: [
@@ -90,8 +94,7 @@ export default function SendPayment() {
         sender: `${isReady ? account.address : null}`,
         receiver: receiverAddress,
         tokenAddress: selectedToken.address,
-        capazERC20LocalAddress: '0x48C45A025D154b40AffB41bc3bDEecb689edE7E6',
-        totalAmount: amount * 100,
+        totalAmount: amount * 10 ** selectedToken.decimals,
         startTime: getTimestampInSeconds(),
         periodDuration: selectedSelector.value,
         periods: frequency,
@@ -99,19 +102,25 @@ export default function SendPayment() {
         escrowAddress: '0x0000000000000000000000000000000000000000',
       },
     ],
+    enabled: !!config,
   });
 
   function getTimestampInSeconds() {
-    return Math.floor(Date.now() / 1000);
+    return Math.floor(Date.now() / 1000) + 60;
   }
 
   function handleSubmit() {
+    console.log('Amount: ', amount);
     setApproveTxIsLoading(true);
     approveTx.write().then(async hash => {
       setApproveTxIsLoading(false);
       setApproveTxHasLoaded(true);
       console.log(await executeTx.data);
     });
+  }
+
+  async function onPayment() {
+    await executeTx.write();
   }
 
   return (
@@ -396,7 +405,7 @@ export default function SendPayment() {
               {approveTxHasLoaded && (
                 <button
                   className='rounded-full text-center flex align-center justify-center  p-3 w-full sm:w-56   bg-gradient-to-r from-sky-600  to-teal-300 text-white text-lg font-semibold'
-                  onClick={() => executeTx.write()}>
+                  onClick={onPayment}>
                   <span>Send Payment</span>
                   {executeTx.isLoading ? (
                     <div className='loader'>

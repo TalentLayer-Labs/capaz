@@ -1,20 +1,22 @@
 import { useContractRead } from '@web3modal/react';
-import CapazEscrowFactory from '../contracts/CapazEscrowFactory.json';
+import CapazEscrow from '../contracts/CapazEscrow.json';
 
 function ReleasableAmount({ escrowAddress }: { escrowAddress: string }) {
   const { data, error, isLoading, refetch } = useContractRead({
     address: escrowAddress,
-    abi: CapazEscrowFactory.abi,
+    abi: CapazEscrow.abi,
     functionName: 'releasableAmount',
   });
 
   if (isLoading) {
-    return <p>'Loading...'</p>;
+    return <span>'Loading...'</span>;
   }
 
-  console.log(data, error);
+  if (error) {
+    console.error(error?.error?.message);
+  }
 
-  return <p>'data:'</p>;
+  return <span>{data?.toString()}</span>;
 }
 
 export default ReleasableAmount;

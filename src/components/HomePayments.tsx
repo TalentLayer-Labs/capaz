@@ -1,5 +1,4 @@
 import ClaimButton from './buttons/ClaimButton';
-import PaymentRow from './PaymentRow';
 import ReleasableAmount from './ReleasableAmount';
 
 export default function HomePayments() {
@@ -42,17 +41,11 @@ export default function HomePayments() {
                         </th>
                       </tr>
                     </thead>
-
-                    <tbody>
-                      <PaymentRow tokenId={0} />
-                      <ReleasableAmount
-                        escrowAddress={'0xc70c98a06be2c056984a2e3a5d352fa648837b8d'}
-                      />
-                    </tbody>
                   </table>
                 </div>
               </div>
-              <ClaimButton />
+              <ClaimButton escrowAddress={'0x68bd7E2178580dc829012b0ef7985325aa0eAc6f'} />
+              <ReleasableAmount escrowAddress={'0x68bd7E2178580dc829012b0ef7985325aa0eAc6f'} />
             </div>
           </div>
         </div>

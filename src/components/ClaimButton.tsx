@@ -1,8 +1,8 @@
 import { useContractWrite } from '@web3modal/react';
-import CapazEscrow from '../../contracts/CapazEscrow.json';
+import CapazEscrow from '../contracts/CapazEscrow.json';
 
 function ClaimButton({ escrowAddress }: { escrowAddress: string }) {
-  const { data, error, isLoading, write } = useContractWrite({
+  const { error, write } = useContractWrite({
     address: escrowAddress,
     abi: CapazEscrow.abi,
     functionName: 'release',
@@ -13,13 +13,13 @@ function ClaimButton({ escrowAddress }: { escrowAddress: string }) {
   }
 
   if (error) {
-    console.error(error?.error?.message);
+    console.error(error?.message);
   }
 
   return (
     <div className='flex justify-center my-6'>
       <button
-        className='rounded-full p-3 w-full sm:w-56 bg-gradient-to-r from-sky-600  to-teal-300 text-white text-lg font-semibold'
+        className='className="inline-flex items-center rounded border border-transparent bg-indigo-600 px-2.5 py-1.5 text-xs font-medium text-white shadow-sm hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2'
         onClick={handleClick}>
         Claim
       </button>

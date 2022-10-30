@@ -1,8 +1,6 @@
-import React from 'react';
-import logo from './logo.svg';
 import './App.css';
 import { Route, Routes } from 'react-router-dom';
-import { useAccount, Web3Modal } from '@web3modal/react';
+import { Web3Modal } from '@web3modal/react';
 import type { ConfigOptions } from '@web3modal/core';
 import Home from './pages/Home';
 import Dashboard from './pages/Dashboard';
@@ -20,8 +18,6 @@ const config: ConfigOptions = {
 };
 
 function App() {
-  const { account, isReady } = useAccount();
-
   return (
     <>
       <Routes>

@@ -1,10 +1,9 @@
-import { useAccount, useContractRead } from '@web3modal/react';
+import { useAccount } from '@web3modal/react';
 import { Route, useNavigate, Routes } from 'react-router-dom';
 import HomePayments from '../components/HomePayments';
 import Header from '../components/Header';
 import Sidebar from '../components/Sidebar';
 import SendPayment from '../components/SendPayment';
-import useConfig from '../hooks/useConfig';
 
 function Dashboard() {
   const { account } = useAccount();

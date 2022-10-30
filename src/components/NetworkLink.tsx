@@ -1,7 +1,7 @@
 import { useNetwork, useSwitchNetwork } from '@web3modal/react';
 
 function NetworkLink({ chaindId, chainName }: { chaindId: number; chainName: string }) {
-  const { data, error, isLoading, switchNetwork } = useSwitchNetwork({
+  const { switchNetwork } = useSwitchNetwork({
     chainId: chaindId,
   });
   const { network } = useNetwork();

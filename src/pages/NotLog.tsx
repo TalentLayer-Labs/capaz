@@ -1,16 +1,13 @@
 import Menu from '../components/home/Menu';
 import Footer from '../components/home/Footer';
-import { XCircleIcon } from '@heroicons/react/20/solid';
 import { useNavigate } from 'react-router-dom';
-import { ConnectButton, useAccount, Web3Modal } from '@web3modal/react';
-import { Fragment, useEffect, useState } from 'react';
+import { ConnectButton, useAccount } from '@web3modal/react';
 
 function NotLog() {
   const navigate = useNavigate();
-  const { account, isReady } = useAccount();
-  console.log(account);
+  const { account } = useAccount();
 
-  if (account.isConnected) {
+  if (account.isConnected !== undefined) {
     navigate('/dashboard/home');
   }
 

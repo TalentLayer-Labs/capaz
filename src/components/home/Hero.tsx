@@ -1,4 +1,3 @@
-import { ChevronRightIcon, StarIcon } from '@heroicons/react/24/outline';
 import { Link } from 'react-router-dom';
 
 export default function Hero() {
@@ -6,11 +5,19 @@ export default function Hero() {
     <div className='overflow-hidden pt-8 sm:pt-12 lg:relative lg:py-48'>
       <div className='mx-auto max-w-md px-4 sm:max-w-3xl sm:px-6 lg:grid lg:max-w-7xl lg:grid-cols-2 lg:gap-24 lg:px-8'>
         <div>
-          <div className='mt-20'>
-            <div className='mt-6 sm:max-w-xl'>
-              <h1 className='text-4xl font-bold tracking-tight text-gray-900 sm:text-5xl'>Capaz</h1>
-              <p className='mt-6 text-xl text-gray-500'>
+          <div className='mt-10'>
+            <div className='sm:max-w-xl'>
+              <h1 className='text-4xl font-bold tracking-tight text-gray-900 sm:text-5xl'>
                 An easy streaming payment protocol with yields
+              </h1>
+              <p className='mt-6 text-xl text-gray-500'>
+                Stream your payment every second, hour, and day...
+              </p>
+              <p className='mt-2 text-xl text-gray-500'>
+                Gain yield during your money is sleeping in the escrow.
+              </p>
+              <p className='mt-2 text-xl text-gray-500'>
+                Tokenized escrow to create a new marketplace for future yields.
               </p>
             </div>
             <div className='mx-auto mt-10 max-w-sm sm:max-w-none'>
@@ -65,7 +72,7 @@ export default function Hero() {
           <div className='relative -mr-40 pl-4 sm:mx-auto sm:max-w-3xl sm:px-0 lg:h-full lg:max-w-none lg:pl-12'>
             <img
               className='w-full rounded-md shadow-xl ring-1 ring-black ring-opacity-5 lg:h-full lg:w-auto lg:max-w-none'
-              src='https://tailwindui.com/img/component-images/task-app-rose.jpg'
+              src='/screenshot.png'
               alt=''
             />
           </div>

@@ -9,6 +9,7 @@ import CapazEscrowFactory from '../contracts/CapazEscrowFactory.json';
 import SimpleERC20 from '../contracts/SimpleERC20.json';
 import useConfig from '../hooks/useConfig';
 import SvgLoader from './svgLoader';
+import { ethers } from 'ethers';
 
 export default function SendPayment() {
   const config = useConfig();
@@ -16,7 +17,7 @@ export default function SendPayment() {
   const { account, isReady } = useAccount();
   const [query, setQuery] = useState('');
   const [selectedToken, setSelectedToken] = useState<string | null>(null);
-  const [amount, setAmount] = useState(0);
+  const [amount, setAmount] = useState(100);
   const [period, setPeriod] = useState(0);
   const [selectedYieldPlatform, setSelectedYieldPlatform] = useState(yieldStrategy[1]);
   const [selectedSelector, setSelectedSelector] = useState(periodDuration[5]);
@@ -25,13 +26,15 @@ export default function SendPayment() {
     '0x0000000000000000000000000000000000000000',
   );
 
+  const getAmountFromEthInWei = ethAmount =>
+    ethers.utils.parseUnits(String(ethAmount), selectedToken?.decimals).toString();
+
   // APPROVE
   const approveTx = useContractWrite({
     address: selectedToken?.address,
     abi: SimpleERC20.abi,
     functionName: 'approve',
-    // args: [config?.escrowFactoryAddress, amount * 100],
-    args: [config?.escrowFactoryAddress, amount * 10 ** selectedToken?.decimals],
+    args: [config?.escrowFactoryAddress, getAmountFromEthInWei(amount)],
     enabled: !!config && selectedToken,
   });
 
@@ -45,8 +48,7 @@ export default function SendPayment() {
         sender: `${isReady ? account.address : null}`,
         receiver: receiverAddress,
         tokenAddress: selectedToken?.address,
-        // totalAmount: amount * 100,
-        totalAmount: amount * 10 ** selectedToken?.decimals,
+        totalAmount: getAmountFromEthInWei(amount),
         startTime: getTimestampInSeconds(),
         periodDuration: selectedSelector.value,
         periods: period,
@@ -185,7 +187,7 @@ export default function SendPayment() {
                 required
                 className='focus:outline-none border-b w-full pb-2 border-sky-400 placeholder-gray-500 my-8 mr-8'
                 placeholder='Payed in X times'
-                onChange={event => setFrequency(event.target.value)}
+                onChange={event => setPeriod(event.target.value)}
               />
               {/* Period selector */}
               <div className='my-8 w-72 mr-8'>
@@ -317,7 +319,9 @@ export default function SendPayment() {
                 </Combobox>
               </div>
               <div className='my-8'>
-                {`${selectedYieldPlatform.apy} % APY | Estimated gain : ${amount * 1.05} $`}
+                {`${selectedYieldPlatform.apy} % APY | Estimated gain : ${Number(
+                  amount * 1.05 - amount,
+                ).toFixed(2)} $`}
               </div>
             </div>
 

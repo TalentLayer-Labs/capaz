@@ -19,6 +19,8 @@ Please add the deployed contracts addresses in your .env file
 -`npm run one`(will run the playground script 1-claim.ts)
 
 
-## Verify your contract on etherscan
+## Deploy on goerli
 
-`npx hardhat verify --network goerli <contract network addresses>`
+- Deploy contracts: `npx hardhat run scripts/deploy.ts --network goerli`
+- Verify your contract on etherscan: `npx hardhat verify --network goerli <contract network addresses>`
+

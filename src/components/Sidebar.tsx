@@ -53,7 +53,7 @@ export default function Sidebar() {
           </nav>
         </div>
       </div>
-      <div className='flex flex-shrink-0 p-4'>
+      <div className='flex flex-shrink-0 p-4 border-r border-gray-200'>
         <div className='group block w-full flex-shrink-0'>
           <div className='flex items-center'>
             <div className=''>

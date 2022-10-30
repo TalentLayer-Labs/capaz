@@ -60,7 +60,7 @@ export default function HomePayments() {
         <div className='mx-auto px-4 sm:px-6 md:px-8'>
           <div className='py-4'>
             <div className='w-full xl:w-10/12 mb-12 xl:mb-0 mx-auto mt-6'>
-              <div className='relative flex flex-col min-w-0 break-words bg-white w-full mb-6 shadow-lg rounded '>
+              <div className='relative flex flex-col min-w-0 break-words bg-white w-full mb-6 shadow-md rounded '>
                 <div className='block w-full overflow-x-auto'>
                   <table className='items-center bg-transparent w-full border-collapse '>
                     <thead>

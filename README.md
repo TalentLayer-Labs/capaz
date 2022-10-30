@@ -17,7 +17,7 @@ Please add the deployed contracts addresses in your .env file
 
 
 ## Deployed
-### Deployed contract on Cronons Testnet
+### Deployed contract on Goerli Testnet
 
 - AaveStrategy: ``
 - CapazEscrowFactory: `0xA351475E163533213e261f58e4840B59Da3A3b5B`

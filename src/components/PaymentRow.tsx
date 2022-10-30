@@ -1,36 +1,44 @@
-import { useContractRead, useNetwork, useSwitchNetwork } from '@web3modal/react';
-import useConfig from '../hooks/useConfig';
-import CapazEscrowFactory from '../contracts/CapazEscrowFactory.json';
+import { Payment } from '../types';
+import { ethers } from 'ethers';
+import { formatDate } from '../utils/dates';
+import { periodDuration, tokens, yieldStrategy } from '../utils';
 
-function PaymentRow({ tokenId }: { tokenId: number }) {
-  const config = useConfig();
-  const { data, error, isLoading, refetch } = useContractRead({
-    address: config?.escrowFactoryAddress || '',
-    abi: CapazEscrowFactory.abi,
-    functionName: 'getEscrow',
-    args: [tokenId],
-    enabled: !!config?.escrowFactoryAddress,
-  });
+function getPeriodName(seconds: number) {
+  for (const period of periodDuration) {
+    if (seconds < period.value) return period.name + 's';
+  }
 
+  return 'years';
+}
+
+function getTokenName(tokenAddress: string) {
+  return tokens.find(token => token.address === tokenAddress)?.name;
+}
+
+function getStrategyName(strategyId: number) {
+  return yieldStrategy.find(strategy => strategy.id === strategyId)?.name;
+}
+
+function PaymentRow({ payment }: { payment: Payment }) {
   return (
     <tr>
       <th className='border-t-0 px-6 align-middle border-l-0 border-r-0 text-xs whitespace-nowrap p-4 text-left text-blueGray-700 '>
-        USDC
+        {getTokenName(payment.tokenAddress)}
       </th>
       <td className='border-t-0 px-6 align-middle border-l-0 border-r-0 text-xs whitespace-nowrap p-4 '>
-        500$
+        {ethers.utils.formatUnits(payment.totalAmount.toString(), 6)}
       </td>
       <td className='border-t-0 px-6 align-center border-l-0 border-r-0 text-xs whitespace-nowrap p-4'>
-        28 oct
+        {formatDate(payment.startTime.toNumber() * 1000)}
       </td>
       <td className='border-t-0 px-6 align-middle border-l-0 border-r-0 text-xs whitespace-nowrap p-4'>
-        <i className='fas fa-arrow-up text-emerald-500 mr-4'></i>5
+        {payment.periods.toNumber()}
       </td>
       <td className='border-t-0 px-6 align-center border-l-0 border-r-0 text-xs whitespace-nowrap p-4'>
-        weeks
+        {getPeriodName(payment.periodDuration.toNumber())}
       </td>
       <td className='border-t-0 px-6 align-center border-l-0 border-r-0 text-xs whitespace-nowrap p-4'>
-        Aave
+        {getStrategyName(payment.yieldStrategyId.toNumber())}
       </td>
       <td className='border-t-0 px-6 align-center border-l-0 border-r-0 text-xs whitespace-nowrap p-4'>
         -

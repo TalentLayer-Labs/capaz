@@ -19,7 +19,7 @@ export default function Header() {
   const navigate = useNavigate();
   const disconnect = useDisconnect();
   const { network } = useNetwork();
-  const { data, error, isLoading, refetch } = useEnsAvatar({
+  const { data, isLoading } = useEnsAvatar({
     addressOrName: 'vitalik.eth',
   });
 
@@ -73,10 +73,8 @@ export default function Header() {
               <div>
                 <Menu.Button className='flex max-w-xs items-center rounded-full bg-white text-sm focus:outline-none focus:ring-2 focus:ring-rose-500 focus:ring-offset-2'>
                   <span className='sr-only'>Open user menu</span>
-                  {isLoading ? (
-                    <SvgLoader />
-                  ) : (
-                    <img className='h-8 w-8 rounded-full' src={data} alt='' />
+                  {!isLoading && data !== undefined && (
+                    <img className='h-8 w-8 rounded-full' alt='' src={data} />
                   )}
                 </Menu.Button>
               </div>

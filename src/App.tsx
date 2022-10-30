@@ -6,6 +6,7 @@ import Home from './pages/Home';
 import Dashboard from './pages/Dashboard';
 import NotLog from './pages/NotLog';
 import { chains } from '@web3modal/ethereum';
+import Marketplace from './pages/Marketplace';
 
 const config: ConfigOptions = {
   projectId: `${import.meta.env.VITE_WALLECT_CONNECT_PROJECT_ID}`,
@@ -24,6 +25,7 @@ function App() {
         <Route path='/' element={<Home />} />
         <Route path='dashboard/*' element={<Dashboard />} />
         <Route path='notlog' element={<NotLog />} />
+        <Route path='marketplace' element={<Marketplace />} />
       </Routes>
       <Web3Modal config={config} />
     </>

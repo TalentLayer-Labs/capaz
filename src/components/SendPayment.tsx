@@ -1,17 +1,19 @@
 // @ts-nocheck
-import { Fragment, useState } from 'react';
+import { Fragment, useEffect, useState } from 'react';
 import { Combobox, Transition } from '@headlessui/react';
 import { CheckIcon, ChevronUpDownIcon } from '@heroicons/react/20/solid';
 import { useAccount, useContractWrite } from '@web3modal/react';
-import { periodDuration, tokens, yieldStrategy } from '../utils/index';
+import { periodDuration, yieldStrategy } from '../utils/index';
 import CapazEscrowFactory from '../contracts/CapazEscrowFactory.json';
 import SimpleERC20 from '../contracts/SimpleERC20.json';
 import useConfig from '../hooks/useConfig';
 
 export default function SendPayment() {
+  const config = useConfig();
+
   const { account, isReady } = useAccount();
   const [query, setQuery] = useState('');
-  const [selectedToken, setSelectedToken] = useState(tokens[0]);
+  const [selectedToken, setSelectedToken] = useState<string | null>(null);
   const [amount, setAmount] = useState(0);
   const [frequency, setFrequency] = useState(0);
   const [selectedYieldPlatform, setSelectedYieldPlatform] = useState(yieldStrategy[0]);
@@ -73,15 +75,13 @@ export default function SendPayment() {
     }
   }
 
-  const config = useConfig();
-
   // APPROVE
   const approveTx = useContractWrite({
-    address: selectedToken.address,
+    address: selectedToken?.address,
     abi: SimpleERC20.abi,
     functionName: 'approve',
-    args: [config?.escrowFactoryAddress, amount * 10 ** selectedToken.decimals],
-    enabled: !!config,
+    args: [config?.escrowFactoryAddress, amount * 10 ** selectedToken?.decimals],
+    enabled: !!config && selectedToken,
   });
 
   // EXECUTE
@@ -93,8 +93,8 @@ export default function SendPayment() {
       {
         sender: `${isReady ? account.address : null}`,
         receiver: receiverAddress,
-        tokenAddress: selectedToken.address,
-        totalAmount: amount * 10 ** selectedToken.decimals,
+        tokenAddress: selectedToken?.address,
+        totalAmount: amount * 10 ** selectedToken?.decimals,
         startTime: getTimestampInSeconds(),
         periodDuration: selectedSelector.value,
         periods: frequency,
@@ -102,7 +102,7 @@ export default function SendPayment() {
         escrowAddress: '0x0000000000000000000000000000000000000000',
       },
     ],
-    enabled: !!config,
+    enabled: !!config && selectedToken,
   });
 
   function getTimestampInSeconds() {
@@ -122,6 +122,10 @@ export default function SendPayment() {
   async function onPayment() {
     await executeTx.write();
   }
+
+  useEffect(() => {
+    setSelectedToken(null);
+  }, [config?.networkId]);
 
   return (
     <main>
@@ -150,7 +154,7 @@ export default function SendPayment() {
                     <div className='relative w-full cursor-default overflow-hidden rounded-lg bg-white text-left shadow-md focus:outline-none focus-visible:ring-2 focus-visible:ring-white focus-visible:ring-opacity-75 focus-visible:ring-offset-2 focus-visible:ring-offset-teal-300 sm:text-sm'>
                       <Combobox.Input
                         className='w-full border-none py-2 pl-3 pr-10 text-sm leading-5 text-gray-900 focus:ring-0'
-                        displayValue={token => token.name}
+                        displayValue={token => (token ? token.name : 'Select token')}
                         onChange={event => setQuery(event.target.value)}
                       />
                       <Combobox.Button className='absolute inset-y-0 right-0 flex items-center pr-2'>
@@ -164,14 +168,14 @@ export default function SendPayment() {
                       leaveTo='opacity-0'
                       afterLeave={() => setQuery('')}>
                       <Combobox.Options className='absolute mt-1 max-h-60 w-full overflow-auto rounded-md bg-white py-1 text-base shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none sm:text-sm'>
-                        {tokens.length === 0 && query !== '' ? (
+                        {config?.tokens.length === 0 && query !== '' ? (
                           <div className='relative cursor-default select-none py-2 px-4 text-gray-700'>
                             Nothing found.
                           </div>
                         ) : (
-                          tokens.map(token => (
+                          config?.tokens.map(token => (
                             <Combobox.Option
-                              key={token.id}
+                              key={token}
                               className={({ active }) =>
                                 `relative cursor-default select-none py-2 pl-10 pr-4 ${
                                   active ? 'bg-teal-600 text-white' : 'text-gray-900'
@@ -184,7 +188,7 @@ export default function SendPayment() {
                                     className={`block truncate ${
                                       selected ? 'font-medium' : 'font-normal'
                                     }`}>
-                                    {token.name}
+                                    {token?.name}
                                   </span>
                                   {selected ? (
                                     <span

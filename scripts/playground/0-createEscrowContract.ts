@@ -65,7 +65,7 @@ async function main() {
     startTime,
     periodDuration: 3600,
     periods: 5,
-    yieldStrategyId: 2,
+    yieldStrategyId: 0,
     escrowAddress: '0x0000000000000000000000000000000000000000',
   })
   aliceMintData.wait()
@@ -79,7 +79,7 @@ async function main() {
     startTime,
     periodDuration: 10,
     periods: 5,
-    yieldStrategyId: 3,
+    yieldStrategyId: 0,
     escrowAddress: '0x0000000000000000000000000000000000000000',
   })
   bobMintData.wait()
@@ -90,6 +90,10 @@ async function main() {
 
   const getDaveEscrowData = await CapazEscrowFactoryContract.balanceOf(dave.address)
   console.log('Dave NFT number', getDaveEscrowData)
+
+  // we get the escrow contract address from the id
+  const carolEscrowAddress = await CapazEscrowFactoryContract.getEscrow(0)
+  console.log('Carol escrow address', carolEscrowAddress)
 }
 
 // We recommend this pattern to be able to use async/await everywhere

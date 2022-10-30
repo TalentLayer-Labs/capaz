@@ -2,6 +2,7 @@ import '@nomicfoundation/hardhat-toolbox'
 import { config as dotenvConfig } from 'dotenv'
 import type { HardhatUserConfig } from 'hardhat/config'
 import type { NetworkUserConfig } from 'hardhat/types'
+import '@cronos-labs/hardhat-cronoscan'
 import { resolve } from 'path'
 
 const dotenvConfigPath: string = process.env.DOTENV_CONFIG_PATH || './.env'
@@ -24,6 +25,9 @@ const chainIds = {
   goerli: 5,
   hardhat: 31337,
   mainnet: 1,
+  cronos: 25,
+  cronosTestnet: 338,
+  mumbai: 80001,
 }
 
 function getChainConfig(chain: keyof typeof chainIds): NetworkUserConfig {
@@ -61,6 +65,8 @@ const config: HardhatUserConfig = {
       optimisticEthereum: process.env.OPTIMISM_API_KEY || '',
       polygon: process.env.POLYGONSCAN_API_KEY || '',
       polygonMumbai: process.env.POLYGONSCAN_API_KEY || '',
+      cronosTestnet: <string>process.env.CRONOSCAN_TESTNET_API_KEY,
+      cronos: <string>process.env.CRONOS_PRIVATE_KEY,
     },
   },
   gasReporter: {
@@ -70,6 +76,22 @@ const config: HardhatUserConfig = {
     src: './contracts',
   },
   networks: {
+    mumbai: {
+      url: 'https://matic-mumbai.chainstacklabs.com',
+      accounts: [process.env.MUMBAI_PRIVATE_KEY!],
+    },
+    cronosTestnet: {
+      url: 'https://cronos-testnet-3.crypto.org:8545/',
+      chainId: 338,
+      accounts: [process.env.CRONOS_PRIVATE_KEY!],
+      gasPrice: 5000000000000,
+    },
+    cronos: {
+      url: 'https://evm.cronos.org/',
+      chainId: 25,
+      accounts: [process.env.CRONOS_PRIVATE_KEY!],
+      gasPrice: 5000000000000,
+    },
     hardhat: {
       accounts: {
         mnemonic,

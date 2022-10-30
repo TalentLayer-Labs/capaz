@@ -1,7 +1,5 @@
-import { Menu } from '@headlessui/react';
-import { useBalance } from '@web3modal/react';
 import ClaimButton from './buttons/ClaimButton';
-import PaymentRow from './PaymentRow';
+import ReleasableAmount from './ReleasableAmount';
 
 export default function HomePayments() {
   return (
@@ -43,14 +41,11 @@ export default function HomePayments() {
                         </th>
                       </tr>
                     </thead>
-
-                    <tbody>
-                      <PaymentRow tokenId={0} />
-                    </tbody>
                   </table>
                 </div>
               </div>
-              <ClaimButton />
+              <ClaimButton escrowAddress={'0x68bd7E2178580dc829012b0ef7985325aa0eAc6f'} />
+              <ReleasableAmount escrowAddress={'0x68bd7E2178580dc829012b0ef7985325aa0eAc6f'} />
             </div>
           </div>
         </div>

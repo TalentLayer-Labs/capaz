@@ -67,6 +67,9 @@ export default function HomePayments() {
                       <tr>
                         <th className='px-6 bg-blueGray-50 text-blueGray-500 align-middle border border-solid border-blueGray-50 py-5 text-xs uppercase border-l-0 border-r-0 whitespace-nowrap font-semibold text-left' />
                         <th className='px-6 bg-blueGray-50 text-blueGray-500 align-middle border border-solid border-blueGray-50 py-5 text-xs uppercase border-l-0 border-r-0 whitespace-nowrap font-semibold text-left'>
+                          Status
+                        </th>
+                        <th className='px-6 bg-blueGray-50 text-blueGray-500 align-middle border border-solid border-blueGray-50 py-5 text-xs uppercase border-l-0 border-r-0 whitespace-nowrap font-semibold text-left'>
                           Asset
                         </th>
                         <th className='px-6 bg-blueGray-50 text-blueGray-500 align-middle border border-solid border-blueGray-50 py-5 text-xs uppercase border-l-0 border-r-0 whitespace-nowrap font-semibold text-left'>

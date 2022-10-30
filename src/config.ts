@@ -2,6 +2,8 @@ export enum Network {
   LOCAL = 0,
   MAINNET = 1,
   GOERLI = 5,
+  CRONOSTESTNET = 338,
+  MUMBAI = 80001,
 }
 
 export interface Token {
@@ -49,10 +51,22 @@ const local = {
   tokens: [],
 };
 
+const cronostestnet = {
+  networkId: Network.CRONOSTESTNET,
+  escrowFactoryAddress: '0x2eD3f237aEa7624669aa6AF363f1b1CC67772931',
+};
+
+const mumbai = {
+  networkId: Network.MUMBAI,
+  escrowFactoryAddress: '0x48C45A025D154b40AffB41bc3bDEecb689edE7E6',
+};
+
 const chains: { [networkId in Network]: Config } = {
   [Network.LOCAL]: local,
   [Network.MAINNET]: mainnet,
   [Network.GOERLI]: goerli,
+  [Network.CRONOSTESTNET]: cronostestnet,
+  [Network.MUMBAI]: mumbai,
 };
 
 export const getConfig = (network: Network) => {

@@ -2,14 +2,12 @@
 import { Fragment, useState } from 'react';
 import { Combobox, Transition } from '@headlessui/react';
 import { CheckIcon, ChevronUpDownIcon } from '@heroicons/react/20/solid';
-import { useAccount, useContractWrite } from '@web3modal/react';
+import { useAccount, useContractWrite, useWaitForTransaction } from '@web3modal/react';
 import { tokenAddressEscrowFactory, periodDuration, tokens, yieldStrategy } from '../utils/index';
 import CapazEscrowFactory from '../contracts/CapazEscrowFactory.json';
 import SimpleERC20 from '../contracts/SimpleERC20.json';
 
 export default function SendPayment() {
-  let isApproved = false;
-  let isExecuted = false;
   const { account, isReady } = useAccount();
   const [query, setQuery] = useState('');
   const [selectedToken, setSelectedToken] = useState(tokens[0]);
@@ -17,6 +15,8 @@ export default function SendPayment() {
   const [frequency, setFrequency] = useState(0);
   const [selectedYieldPlatform, setSelectedYieldPlatform] = useState(yieldStrategy[0]);
   const [selectedSelector, setSelectedSelector] = useState(periodDuration[5]);
+  const [approveTxIsLoading, setApproveTxIsLoading] = useState(false);
+  const [approveTxHasLoaded, setApproveTxHasLoaded] = useState(false);
   const [receiverAddress, setReceiverAddress] = useState(
     '0x0000000000000000000000000000000000000000',
   );
@@ -29,6 +29,7 @@ export default function SendPayment() {
     total: '0',
   });
 
+  // TODO: Update the function to calculate the estimated gain
   function handleChangeEstimatedGain(event: Event) {
     switch (event.target.id) {
       case 'amount': {
@@ -71,13 +72,15 @@ export default function SendPayment() {
     }
   }
 
+  // APPROVE
   const approveTx = useContractWrite({
     address: selectedToken.address,
     abi: SimpleERC20.abi,
     functionName: 'approve',
-    args: [tokenAddressEscrowFactory, amount * 100],
+    args: [tokenAddressEscrowFactory, amount],
   });
 
+  // EXECUTE
   const executeTx = useContractWrite({
     address: tokenAddressEscrowFactory,
     abi: CapazEscrowFactory.abi,
@@ -101,17 +104,14 @@ export default function SendPayment() {
   function getTimestampInSeconds() {
     return Math.floor(Date.now() / 1000);
   }
-  function handleClick() {
-    console.log('handleClick');
 
-    if (!isApproved && !isExecuted) {
-      approveTx.write().then(() => {
-        isApproved = true;
-        executeTx.write().then(() => {
-          isExecuted = true;
-        });
-      });
-    }
+  function handleSubmit() {
+    setApproveTxIsLoading(true);
+    approveTx.write().then(async hash => {
+      setApproveTxIsLoading(false);
+      setApproveTxHasLoaded(true);
+      console.log(await executeTx.data);
+    });
   }
 
   return (
@@ -122,12 +122,7 @@ export default function SendPayment() {
           <h1 className='text-2xl font-semibold text-gray-900'>Send Payment</h1>
         </div>
         <div className='mx-auto xl:w-8/12 px-4 sm:px-6 md:px-8'>
-          <form
-            className='py-4'
-            onSubmit={e => {
-              e.preventDefault();
-              handleClick?.();
-            }}>
+          <div className='py-4'>
             <div>
               {/* Receiver wallet */}
               <input
@@ -355,51 +350,84 @@ export default function SendPayment() {
               <input type='checkbox' className='border-sky-400 ' value='' />
               <div className='px-3 text-gray-500'>I accept terms & conditions</div>
             </div>
+
+            {/* Buttons */}
             <div className='flex justify-center my-6 flex-col align-center mx-auto'>
-              <button
-                className='rounded-full text-center flex align-center justify-center  p-3 w-full sm:w-56   bg-gradient-to-r from-sky-600  to-teal-300 text-white text-lg font-semibold'
-                onClick={handleClick}>
-                <span>Send Payment</span>
-                {approveTx.isLoading || executeTx.isLoading ? (
-                  <div className='loader'>
-                    <svg
-                      version='1.1'
-                      id='loader-1'
-                      x='0px'
-                      y='0px'
-                      width='30px'
-                      height='30px'
-                      viewBox='0 0 50 50'>
-                      <path
-                        fill='#000'
-                        d='M43.935,25.145c0-10.318-8.364-18.683-18.683-18.683c-10.318,0-18.683,8.365-18.683,18.683h4.068c0-8.071,6.543-14.615,14.615-14.615c8.072,0,14.615,6.543,14.615,14.615H43.935z'>
-                        <animateTransform
-                          attributeType='xml'
-                          attributeName='transform'
-                          type='rotate'
-                          from='0 25 25'
-                          to='360 25 25'
-                          dur='0.6s'
-                          repeatCount='indefinite'
-                        />
-                      </path>
-                    </svg>
-                  </div>
-                ) : null}
-              </button>
-              {/* display errors in jsx */}
+              {approveTxHasLoaded !== true && (
+                <button
+                  className='rounded-full text-center flex align-center justify-center  p-3 w-full sm:w-56   bg-gradient-to-r from-sky-600  to-teal-300 text-white text-lg font-semibold'
+                  onClick={handleSubmit}>
+                  <span>Approve Payment</span>
+                  {approveTx.isLoading && (
+                    <div className='loader'>
+                      <svg
+                        version='1.1'
+                        id='loader-1'
+                        x='0px'
+                        y='0px'
+                        width='30px'
+                        height='30px'
+                        viewBox='0 0 50 50'>
+                        <path
+                          fill='#000'
+                          d='M43.935,25.145c0-10.318-8.364-18.683-18.683-18.683c-10.318,0-18.683,8.365-18.683,18.683h4.068c0-8.071,6.543-14.615,14.615-14.615c8.072,0,14.615,6.543,14.615,14.615H43.935z'>
+                          <animateTransform
+                            attributeType='xml'
+                            attributeName='transform'
+                            type='rotate'
+                            from='0 25 25'
+                            to='360 25 25'
+                            dur='0.6s'
+                            repeatCount='indefinite'
+                          />
+                        </path>
+                      </svg>
+                    </div>
+                  )}
+                </button>
+              )}
+              {/* display errors */}
               {approveTx.error && (
                 <div className='text-red-500 text-sm font-semibold text-center'>
                   {approveTx.error.message.split(' (')[0]}
                 </div>
               )}
-              {executeTx.error && (
-                <div className='text-red-500 text-sm font-semibold text-center'>
-                  {executeTx.error.message.split(' (')[0]}
-                </div>
+
+              {approveTxHasLoaded && (
+                <button
+                  className='rounded-full text-center flex align-center justify-center  p-3 w-full sm:w-56   bg-gradient-to-r from-sky-600  to-teal-300 text-white text-lg font-semibold'
+                  onClick={() => executeTx.write()}>
+                  <span>Send Payment</span>
+                  {executeTx.isLoading ? (
+                    <div className='loader'>
+                      <svg
+                        version='1.1'
+                        id='loader-1'
+                        x='0px'
+                        y='0px'
+                        width='30px'
+                        height='30px'
+                        viewBox='0 0 50 50'>
+                        <path
+                          fill='#000'
+                          d='M43.935,25.145c0-10.318-8.364-18.683-18.683-18.683c-10.318,0-18.683,8.365-18.683,18.683h4.068c0-8.071,6.543-14.615,14.615-14.615c8.072,0,14.615,6.543,14.615,14.615H43.935z'>
+                          <animateTransform
+                            attributeType='xml'
+                            attributeName='transform'
+                            type='rotate'
+                            from='0 25 25'
+                            to='360 25 25'
+                            dur='0.6s'
+                            repeatCount='indefinite'
+                          />
+                        </path>
+                      </svg>
+                    </div>
+                  ) : null}
+                </button>
               )}
             </div>
-          </form>
+          </div>
         </div>
       </div>
     </main>

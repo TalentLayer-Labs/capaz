@@ -52,6 +52,12 @@ export default function Header() {
                 <Menu.Item>
                   <NetworkLink chaindId={5} chainName='Goerli' />
                 </Menu.Item>
+                <Menu.Item>
+                  <NetworkLink chaindId={80001} chainName='Mumbai' />
+                </Menu.Item>
+                <Menu.Item>
+                  <NetworkLink chaindId={338} chainName='Cronos testnet' />
+                </Menu.Item>
                 {/* .If it's an dev env we display localhost network */}
                 {import.meta.env.DEV && (
                 <Menu.Item>

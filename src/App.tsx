@@ -15,7 +15,7 @@ const config: ConfigOptions = {
   accentColor: 'default',
   ethereum: {
     appName: 'web3-boilerplate',
-    chains: [chains.mainnet, chains.goerli, chains.localhost],
+    chains: [chains.mainnet, chains.goerli, chains.localhost, chains.polygon],
   },
 };
 

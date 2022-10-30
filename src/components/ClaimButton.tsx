@@ -19,7 +19,7 @@ function ClaimButton({ escrowAddress }: { escrowAddress: string }) {
   return (
     <div className='flex justify-center my-6'>
       <button
-        className='rounded-full p-3 w-full sm:w-56 bg-gradient-to-r from-sky-600  to-teal-300 text-white text-lg font-semibold'
+        className='className="inline-flex items-center rounded border border-transparent bg-indigo-600 px-2.5 py-1.5 text-xs font-medium text-white shadow-sm hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2'
         onClick={handleClick}>
         Claim
       </button>

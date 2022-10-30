@@ -25,7 +25,12 @@ export default function MarketplaceItem({ payment }: { payment: PaymentWithMetad
 
   return (
     <div className='flex flex-col'>
-      <span ref={svgContainerRef} />
+      <a
+        target={'_blank'}
+        rel={'noreferrer'}
+        href={`https://testnets.opensea.io/assets/goerli/0x3f5f310a63ad54256403586f133d578fca80b8fc/${payment.tokenId}`}>
+        <span ref={svgContainerRef} />
+      </a>
       {/* {token && (
         <>
           {ethers.utils.formatUnits(payment.totalAmount.toString(), token?.decimals)}

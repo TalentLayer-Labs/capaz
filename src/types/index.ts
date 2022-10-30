@@ -22,4 +22,5 @@ export interface Metadata {
 
 export interface PaymentWithMetadata extends Payment {
   metadata: Metadata;
+  tokenId: number;
 }

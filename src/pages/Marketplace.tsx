@@ -37,7 +37,7 @@ function Marketplace() {
         const metadataUri = await contract.tokenURI(tokenId);
         const metadata = await fetch(metadataUri);
         const metadataJson = await metadata.json();
-        return { ...escrow, metadata: metadataJson };
+        return { ...escrow, metadata: metadataJson, tokenId };
       };
 
       const promises = [...Array(totalSupply.toNumber()).keys()].map((value, index) =>

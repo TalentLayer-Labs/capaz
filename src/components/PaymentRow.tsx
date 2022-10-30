@@ -1,5 +1,5 @@
 import { Payment } from '../types';
-import { ethers } from 'ethers';
+import { BigNumber, ethers } from 'ethers';
 import { formatDate } from '../utils/dates';
 import ClaimButton from './ClaimButton';
 import DistributeYieldButton from './DistributeYieldButton';
@@ -31,17 +31,12 @@ function getStatus(payment: Payment): string {
 }
 
 function PaymentRow({ payment }: { payment: Payment }) {
-  const { account, isReady } = useAccount();
+  const { account } = useAccount();
   const { data: token } = useToken({
     address: payment.tokenAddress,
   });
 
-  const {
-    data: releasableAmount,
-    error,
-    isLoading,
-    refetch,
-  } = useContractRead({
+  const { data: releasableAmount } = useContractRead({
     address: payment.escrowAddress,
     abi: CapazEscrow.abi,
     functionName: 'releasableAmount',
@@ -88,7 +83,7 @@ function PaymentRow({ payment }: { payment: Payment }) {
         {releasableAmount?.toString() ?? ''}
       </td>
       <td className='border-t-0 px-6 align-center border-l-0 border-r-0 text-xs whitespace-nowrap p-4'>
-        {payment.receiver == account.address && releasableAmount?.toNumber() > 0 && (
+        {payment.receiver == account.address && (releasableAmount as BigNumber)?.toNumber() > 0 && (
           <ClaimButton escrowAddress={payment.escrowAddress} />
         )}
         {payment.sender == account.address &&

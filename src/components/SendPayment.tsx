@@ -1,3 +1,4 @@
+// eslint-disable-next-line @typescript-eslint/ban-ts-comment
 // @ts-nocheck
 import { Fragment, useEffect, useState } from 'react';
 import { Combobox, Transition } from '@headlessui/react';
@@ -18,7 +19,7 @@ export default function SendPayment() {
   const [frequency, setFrequency] = useState(0);
   const [selectedYieldPlatform, setSelectedYieldPlatform] = useState(yieldStrategy[0]);
   const [selectedSelector, setSelectedSelector] = useState(periodDuration[5]);
-  const [approveTxIsLoading, setApproveTxIsLoading] = useState(false);
+  const [, setApproveTxIsLoading] = useState(false);
   const [approveTxHasLoaded, setApproveTxHasLoaded] = useState(false);
   const [receiverAddress, setReceiverAddress] = useState(
     '0x0000000000000000000000000000000000000000',
@@ -106,13 +107,13 @@ export default function SendPayment() {
   });
 
   function getTimestampInSeconds() {
-    return Math.floor(Date.now() / 1000) + 60;
+    return Math.floor(Date.now() / 1000) + 120;
   }
 
   function handleSubmit() {
     console.log('Amount: ', amount);
     setApproveTxIsLoading(true);
-    approveTx.write().then(async hash => {
+    approveTx.write().then(async () => {
       setApproveTxIsLoading(false);
       setApproveTxHasLoaded(true);
       console.log(await executeTx.data);
@@ -298,7 +299,7 @@ export default function SendPayment() {
                     <div className='relative w-full cursor-default overflow-hidden rounded-lg bg-white text-left shadow-md focus:outline-none focus-visible:ring-2 focus-visible:ring-white focus-visible:ring-opacity-75 focus-visible:ring-offset-2 focus-visible:ring-offset-teal-300 sm:text-sm'>
                       <Combobox.Input
                         className='w-full border-none py-2 pl-3 pr-10 text-sm leading-5 text-gray-900 focus:ring-0'
-                        displayValue={yieldStrategy => selectedYieldPlatform.name}
+                        displayValue={() => selectedYieldPlatform.name}
                         onChange={event => {
                           setQuery(event.target.value);
                           handleChangeEstimatedGain(event);
